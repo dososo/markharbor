@@ -77,7 +77,7 @@ function parseAuthorName(spans: HTMLSpanElement[], authorHandle: string): string
   const displayName = spans.find((span) => {
     const text = textFrom(span);
 
-    return text && text !== authorHandle && !text.includes("@") && !span.querySelector("time");
+    return text && text !== authorHandle && !span.querySelector("span, time");
   });
 
   return textFrom(displayName);

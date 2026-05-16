@@ -68,6 +68,32 @@ describe("parseBookmarksFromDocument", () => {
     });
   });
 
+  it("preserves display names containing at signs", () => {
+    document.body.innerHTML = `
+      <article data-testid="tweet">
+        <div data-testid="User-Name">
+          <span>
+            <a href="/alice">
+              <span>Alice @ Acme</span>
+            </a>
+            <span>@alice</span>
+            <a href="/alice/status/1234567890">
+              <time datetime="2026-05-15T12:30:00.000Z">May 15</time>
+            </a>
+          </span>
+        </div>
+        <div data-testid="tweetText">Name contains at sign</div>
+      </article>
+    `;
+
+    const bookmarks = parseBookmarksFromDocument(document, "2026-05-16T00:00:00.000Z");
+
+    expect(bookmarks[0]).toMatchObject({
+      authorName: "Alice @ Acme",
+      authorHandle: "@alice"
+    });
+  });
+
   it("prefers the timestamp permalink over earlier quoted status links", () => {
     document.body.innerHTML = `
       <article data-testid="tweet">

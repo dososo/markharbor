@@ -8,7 +8,7 @@ export const manifest = {
     default_popup: "index.html"
   },
   permissions: ["activeTab", "downloads"],
-  host_permissions: ["https://x.com/*"],
+  host_permissions: ["https://x.com/*", "https://pbs.twimg.com/*"],
   content_scripts: [
     {
       matches: ["https://x.com/i/bookmarks*"],

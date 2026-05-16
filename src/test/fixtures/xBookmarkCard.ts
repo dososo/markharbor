@@ -7,6 +7,14 @@ export const xBookmarkCardHtml = `
         <time datetime="2026-05-15T12:30:00.000Z">May 15</time>
       </div>
       <div data-testid="tweetText">Useful thread about local-first tools.</div>
+      <div data-testid="card.wrapper">
+        <a href="https://example.com/article">
+          <img src="https://pbs.twimg.com/card_img/example.jpg" />
+          <span>example.com</span>
+          <span>Example article title</span>
+          <span>Example article description</span>
+        </a>
+      </div>
       <a href="/alice/status/1234567890">View post</a>
       <img alt="Image" src="https://pbs.twimg.com/media/example.jpg?format=jpg&name=small" />
     </article>

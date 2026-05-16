@@ -18,6 +18,12 @@ describe("parseBookmarksFromDocument", () => {
       postedAt: "2026-05-15T12:30:00.000Z",
       imageUrls: ["https://pbs.twimg.com/media/example.jpg?format=jpg&name=small"]
     });
+    expect(bookmarks[0].linkCard).toEqual({
+      url: "https://example.com/article",
+      title: "Example article title",
+      description: "Example article description",
+      imageUrl: "https://pbs.twimg.com/card_img/example.jpg"
+    });
     expect(bookmarks[1].video?.previewImageUrl).toBe("https://pbs.twimg.com/ext_tw_video_thumb/video.jpg");
   });
 

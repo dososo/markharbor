@@ -1,4 +1,4 @@
-import type { XBookmark, XBookmarkVideo } from "../shared/types";
+import type { XBookmark, XBookmarkLinkCard, XBookmarkVideo } from "../shared/types";
 
 const STATUS_PATH_PATTERN = /^\/([^/]+)\/status\/(\d+)/;
 
@@ -33,6 +33,7 @@ function parseBookmarkArticle(article: HTMLElement, collectedAt: string): XBookm
     postedAt,
     collectedAt,
     imageUrls: parseImageUrls(article),
+    linkCard: parseLinkCard(article),
     video,
     rawText: textFrom(article)
   };
@@ -91,6 +92,29 @@ function parseImageUrls(article: HTMLElement): string[] {
 
       return url.hostname === "pbs.twimg.com" && url.pathname.startsWith("/media/");
     });
+}
+
+function parseLinkCard(article: HTMLElement): XBookmarkLinkCard | undefined {
+  const wrapper = article.querySelector<HTMLElement>('[data-testid="card.wrapper"]');
+  const anchor = wrapper?.querySelector<HTMLAnchorElement>("a[href]");
+
+  if (!wrapper || !anchor) {
+    return undefined;
+  }
+
+  const spans = Array.from(wrapper.querySelectorAll("span"))
+    .map((span) => textFrom(span))
+    .filter(Boolean);
+  const imageUrl = wrapper.querySelector<HTMLImageElement>("img[src]")?.src;
+  const url = new URL(anchor.getAttribute("href") ?? "", "https://x.com").href;
+  const [domain, title, description] = spans;
+
+  return {
+    url,
+    title: title && title !== domain ? title : undefined,
+    description: description && description !== title ? description : undefined,
+    imageUrl
+  };
 }
 
 function parseVideo(article: HTMLElement, sourceUrl: string): XBookmarkVideo | undefined {

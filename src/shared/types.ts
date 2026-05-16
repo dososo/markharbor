@@ -4,6 +4,13 @@ export interface XBookmarkVideo {
   label?: string;
 }
 
+export interface XBookmarkLinkCard {
+  url?: string;
+  title?: string;
+  description?: string;
+  imageUrl?: string;
+}
+
 export interface XBookmark {
   id?: string;
   url: string;
@@ -13,6 +20,7 @@ export interface XBookmark {
   postedAt?: string;
   collectedAt: string;
   imageUrls: string[];
+  linkCard?: XBookmarkLinkCard;
   video?: XBookmarkVideo;
   rawText: string;
 }

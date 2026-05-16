@@ -27,10 +27,24 @@ describe("renderCombinedMarkdown", () => {
 
     expect(markdown).toContain("# X Bookmarks Export");
     expect(markdown).toContain("## Alice");
-    expect(markdown).toContain("[原帖](https://x.com/alice/status/123)");
-    expect(markdown).toContain("![](attachments/x-bookmarks/example.jpg)");
+    expect(markdown).toContain("[原帖](<https://x.com/alice/status/123>)");
+    expect(markdown).toContain("![](<attachments/x-bookmarks/example.jpg>)");
     expect(markdown).toContain("视频： https://x.com/alice/status/123");
     expect(markdown).toContain("视频预览： https://pbs.twimg.com/thumb.jpg");
+  });
+
+  it("wraps link destinations containing closing parens in angle brackets", () => {
+    const markdown = renderCombinedMarkdown(
+      [{
+        ...bookmark,
+        url: "https://x.com/alice/status/123?note=hello)",
+        imageUrls: ["https://pbs.twimg.com/media/example).jpg"]
+      }],
+      new Map([["https://pbs.twimg.com/media/example).jpg", "attachments/x-bookmarks/example).jpg"]])
+    );
+
+    expect(markdown).toContain("[原帖](<https://x.com/alice/status/123?note=hello)>)");
+    expect(markdown).toContain("![](<attachments/x-bookmarks/example).jpg>)");
   });
 });
 
@@ -55,9 +69,22 @@ describe("renderBookmarkMarkdown", () => {
     expect(markdown).toContain('author: "A \\"Quoted\\" \\\\ Author"');
   });
 
+  it("escapes YAML newlines as one-line values", () => {
+    const markdown = renderBookmarkMarkdown(
+      {
+        ...bookmark,
+        authorName: "Alice\nAdmin"
+      },
+      new Map()
+    );
+
+    expect(markdown).toContain('author: "Alice\\nAdmin"');
+    expect(markdown).not.toContain("author: \"Alice\nAdmin\"");
+  });
+
   it("falls back to image URLs when local paths are missing", () => {
     const markdown = renderBookmarkMarkdown(bookmark, new Map());
 
-    expect(markdown).toContain("![](https://pbs.twimg.com/media/example.jpg)");
+    expect(markdown).toContain("![](<https://pbs.twimg.com/media/example.jpg>)");
   });
 });

@@ -23,8 +23,12 @@ export function bookmarkFileName(bookmark: XBookmark): string {
 
 export function imageFileName(url: string, index: number): string {
   const parsed = new URL(url);
-  const base = parsed.pathname.split("/").pop() || `image-${index}.jpg`;
+  const base = parsed.pathname.split("/").pop();
+  if (!base) {
+    return `image-${index}.jpg`;
+  }
+
   const fileName = safeFileName(decodeURIComponent(base));
 
-  return fileName || `image-${index}.jpg`;
+  return fileName ? `image-${index}-${fileName}` : `image-${index}.jpg`;
 }

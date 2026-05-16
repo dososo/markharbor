@@ -49,10 +49,16 @@ describe("bookmarkFileName", () => {
 
 describe("imageFileName", () => {
   it("uses the URL pathname filename", () => {
-    expect(imageFileName("https://pbs.twimg.com/media/Example.JPG?format=jpg&name=large", 2)).toBe("example.jpg");
+    expect(imageFileName("https://pbs.twimg.com/media/Example.JPG?format=jpg&name=large", 2)).toBe("image-2-example.jpg");
   });
 
   it("falls back to image index", () => {
     expect(imageFileName("https://pbs.twimg.com/media/", 2)).toBe("image-2.jpg");
+  });
+
+  it("disambiguates different URLs with the same basename", () => {
+    expect(imageFileName("https://pbs.twimg.com/media/a/example.jpg", 1)).not.toBe(
+      imageFileName("https://pbs.twimg.com/media/b/example.jpg", 2)
+    );
   });
 });

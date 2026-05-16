@@ -20,4 +20,25 @@ describe("parseBookmarksFromDocument", () => {
     });
     expect(bookmarks[1].video?.previewImageUrl).toBe("https://pbs.twimg.com/ext_tw_video_thumb/video.jpg");
   });
+
+  it("parses absolute X status links", () => {
+    document.body.innerHTML = `
+      <article data-testid="tweet">
+        <div data-testid="User-Name">
+          <span>Alice Zhang</span>
+          <span>@alice</span>
+        </div>
+        <div data-testid="tweetText">Absolute link</div>
+        <a href="https://x.com/alice/status/1234567890">View post</a>
+      </article>
+    `;
+
+    const bookmarks = parseBookmarksFromDocument(document, "2026-05-16T00:00:00.000Z");
+
+    expect(bookmarks).toHaveLength(1);
+    expect(bookmarks[0]).toMatchObject({
+      id: "1234567890",
+      url: "https://x.com/alice/status/1234567890"
+    });
+  });
 });

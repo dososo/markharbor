@@ -42,7 +42,7 @@ function findStatusLink(article: HTMLElement): { handle: string; id: string } | 
 
   for (const link of links) {
     const href = link.getAttribute("href");
-    const match = href?.match(STATUS_PATH_PATTERN);
+    const match = href ? statusPathFromHref(href).match(STATUS_PATH_PATTERN) : undefined;
 
     if (match) {
       return { handle: match[1], id: match[2] };
@@ -50,6 +50,10 @@ function findStatusLink(article: HTMLElement): { handle: string; id: string } | 
   }
 
   return undefined;
+}
+
+function statusPathFromHref(href: string): string {
+  return new URL(href, "https://x.com").pathname;
 }
 
 function parseImageUrls(article: HTMLElement): string[] {

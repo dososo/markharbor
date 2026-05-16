@@ -15,6 +15,9 @@ const state: CollectionState = {
   idleScans: 0
 };
 
+let nextRunId = 1;
+let activeRunId: number | undefined;
+
 function isBookmarksPage(): boolean {
   return window.location.hostname === "x.com" && window.location.pathname.startsWith("/i/bookmarks");
 }
@@ -44,12 +47,20 @@ function delay(ms: number): Promise<void> {
   return new Promise((resolve) => window.setTimeout(resolve, ms));
 }
 
+function isCurrentRun(runId: number): boolean {
+  return activeRunId === runId;
+}
+
 async function collectLoop(): Promise<void> {
+  const runId = nextRunId;
+  nextRunId += 1;
+  activeRunId = runId;
   state.isCollecting = true;
   state.scrollAttempts = 0;
   state.idleScans = 0;
 
   while (
+    isCurrentRun(runId) &&
     state.isCollecting &&
     state.scrollAttempts < MAX_SCROLL_ATTEMPTS &&
     state.idleScans < MAX_IDLE_SCANS
@@ -59,11 +70,20 @@ async function collectLoop(): Promise<void> {
     await delay(SCAN_DELAY_MS);
   }
 
-  scan();
+  if (isCurrentRun(runId)) {
+    scan();
+    state.isCollecting = false;
+    activeRunId = undefined;
+  }
+}
+
+function stopCollection(): void {
+  activeRunId = undefined;
   state.isCollecting = false;
 }
 
 function clearCollection(): void {
+  activeRunId = undefined;
   state.bookmarks = [];
   state.isCollecting = false;
   state.lastScanAdded = 0;
@@ -98,7 +118,7 @@ function handleMessage(message: unknown): ContentToPopupResponse {
       return { ok: true, bookmarks: state.bookmarks, state };
 
     case "STOP_COLLECTION":
-      state.isCollecting = false;
+      stopCollection();
       return { ok: true, bookmarks: state.bookmarks, state };
 
     case "CLEAR_COLLECTION":

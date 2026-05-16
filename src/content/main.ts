@@ -19,6 +19,15 @@ function isBookmarksPage(): boolean {
   return window.location.hostname === "x.com" && window.location.pathname.startsWith("/i/bookmarks");
 }
 
+function isKnownMessage(message: PopupToContentMessage): boolean {
+  return (
+    message.type === "GET_STATUS" ||
+    message.type === "START_COLLECTION" ||
+    message.type === "STOP_COLLECTION" ||
+    message.type === "CLEAR_COLLECTION"
+  );
+}
+
 function scan(): void {
   const parsed = parseBookmarksFromDocument(document, new Date().toISOString());
   const previousLength = state.bookmarks.length;
@@ -46,6 +55,8 @@ function delay(ms: number): Promise<void> {
 
 async function collectLoop(): Promise<void> {
   state.isCollecting = true;
+  state.scrollAttempts = 0;
+  state.idleScans = 0;
 
   while (
     state.isCollecting &&
@@ -70,15 +81,15 @@ function clearCollection(): void {
 }
 
 function handleMessage(message: PopupToContentMessage): ContentToPopupResponse {
+  if (isKnownMessage(message) && !isBookmarksPage()) {
+    return { ok: false, error: "Open https://x.com/i/bookmarks before collecting.", state };
+  }
+
   switch (message.type) {
     case "GET_STATUS":
       return { ok: true, bookmarks: state.bookmarks, state };
 
     case "START_COLLECTION":
-      if (!isBookmarksPage()) {
-        return { ok: false, error: "Open https://x.com/i/bookmarks before collecting.", state };
-      }
-
       if (!state.isCollecting) {
         void collectLoop();
       }

@@ -51,6 +51,10 @@ Build a simple, convenient Chrome extension for exporting X Bookmarks into an Ob
 - [x] Task 6: Implement content script collection loop. Verification: content script handles status, start, stop, clear, off-page, and unknown messages.
 - [x] Task 6: Typecheck and test. Verification: `npm run typecheck` and `npm test` pass.
 - [x] Task 6: Commit content collection loop. Verification: commit message is `feat: collect bookmarks from content script`.
+- [x] Task 7: Implement popup collection and export controls. Verification: popup can send start, stop, clear, status, and export actions.
+- [x] Task 7: Add image download host permission. Verification: manifest includes `https://pbs.twimg.com/*` for X media attachments.
+- [x] Task 7: Typecheck, test, and build. Verification: `npm run typecheck`, `npm test`, and `npm run build` pass.
+- [x] Task 8: Add README usage and privacy documentation. Verification: README explains local development, usage, privacy, export contents, and manual validation.
 
 ## Review
 
@@ -99,3 +103,20 @@ Task 6 content collection loop completed:
 - Replaced the content script placeholder with an in-memory collection state, X bookmarks page guard, scan/merge loop, smooth scrolling, stop/clear handling, and unknown-operation error response.
 - `npm run typecheck` passed.
 - `npm test` passed.
+
+Task 7 popup UI and downloads completed:
+- Added popup controls for start, stop, clear, image attachment toggle, and zip export.
+- Added status refresh while collection is running.
+- Added zip download via Chrome downloads API.
+- Added `https://pbs.twimg.com/*` host permission so image attachments from X media can be fetched.
+- `npm run typecheck`, `npm test`, and `npm run build` passed.
+
+Task 8 README and verification checklist completed:
+- Added local development instructions.
+- Documented privacy boundaries: no cloud account, no upload, no cookie access, no internal X API calls, no video downloads in v1.
+- Documented usage and expected zip contents.
+- Added manual validation checklist.
+
+Implementation plan execution note:
+- Execution started with subagent-driven development.
+- After subagent usage limits were reached, remaining work continued inline using the approved plan and the same verification standards.

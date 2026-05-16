@@ -1,6 +1,7 @@
 import { buildExportZip } from "../shared/exportZip";
 import type { ContentToPopupResponse, PopupToContentMessage } from "../shared/messages";
 import type { CollectionState, XBookmark } from "../shared/types";
+import { type AppLanguage, loadLanguage, resolveLanguage, saveLanguage, t } from "./i18n";
 import "./styles.css";
 
 const root = document.querySelector<HTMLDivElement>("#app");
@@ -11,10 +12,11 @@ let errorMessage: string | undefined;
 let includeImages = true;
 let isExporting = false;
 let statusTimer: number | undefined;
+let language: AppLanguage = resolveLanguage(navigator.language);
 
 async function sendToActiveTab(message: PopupToContentMessage): Promise<ContentToPopupResponse> {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-  if (!tab.id) throw new Error("没有找到当前标签页。");
+  if (!tab.id) throw new Error("Active tab not found.");
   return chrome.tabs.sendMessage(tab.id, message);
 }
 
@@ -43,7 +45,7 @@ async function downloadZip(): Promise<void> {
     });
     errorMessage = undefined;
   } catch {
-    errorMessage = "导出 zip 失败，请稍后重试。";
+    errorMessage = t(language, "exportError");
   } finally {
     if (objectUrl) {
       const urlToRevoke = objectUrl;
@@ -72,10 +74,18 @@ async function runMessage(message: PopupToContentMessage): Promise<void> {
   try {
     applyResponse(await sendToActiveTab(message));
   } catch {
-    errorMessage = "请先打开 X Bookmarks 页面，并确认插件已获得当前页面权限。";
+    errorMessage = t(language, "openBookmarksError");
   }
 
   render();
+}
+
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
 }
 
 function render(): void {
@@ -83,33 +93,61 @@ function render(): void {
 
   const count = bookmarks.length;
   const isCollecting = state?.isCollecting ?? false;
+  const statusLabel = errorMessage ? t(language, "pageHint") : t(language, "pageReady");
+  const exportFiles = ["Obsidian", "JSON", "CSV", "TXT", "HTML", "manifest"];
 
   root.innerHTML = `
     <section class="panel">
-      <header>
-        <h1>X 书签导出</h1>
-        <p class="muted">在 X Bookmarks 页面采集并导出到 Obsidian。</p>
+      <header class="hero">
+        <div>
+          <span class="status-chip">${statusLabel}</span>
+          <h1>${t(language, "appTitle")}</h1>
+          <p class="muted">${t(language, "appSubtitle")}</p>
+        </div>
+        <div class="language" aria-label="${t(language, "language")}">
+          <button id="langZh" class="language-option ${language === "zh" ? "active" : ""}" type="button">中文</button>
+          <button id="langEn" class="language-option ${language === "en" ? "active" : ""}" type="button">EN</button>
+        </div>
       </header>
-      ${errorMessage ? `<p class="error">${errorMessage}</p>` : ""}
+      ${errorMessage ? `<p class="error">${escapeHtml(errorMessage)}</p>` : ""}
       <dl class="stats">
-        <div><dt>已采集</dt><dd>${count}</dd></div>
-        <div><dt>本次新增</dt><dd>${state?.lastScanAdded ?? 0}</dd></div>
-        <div><dt>滚动次数</dt><dd>${state?.scrollAttempts ?? 0}</dd></div>
+        <div><dt>${t(language, "collected")}</dt><dd>${count}</dd></div>
+        <div><dt>${t(language, "lastAdded")}</dt><dd>${state?.lastScanAdded ?? 0}</dd></div>
+        <div><dt>${t(language, "scrolls")}</dt><dd>${state?.scrollAttempts ?? 0}</dd></div>
       </dl>
-      <label class="check">
-        <input id="includeImages" type="checkbox" ${includeImages ? "checked" : ""} />
-        下载图片附件
-      </label>
+      <section class="export-card">
+        <div>
+          <h2>${t(language, "exportPackage")}</h2>
+          <p>${t(language, "exportPreview")}</p>
+        </div>
+        <div class="format-list">
+          ${exportFiles.map((file) => `<span>${file}</span>`).join("")}
+        </div>
+        <label class="check">
+          <input id="includeImages" type="checkbox" ${includeImages ? "checked" : ""} />
+          ${t(language, "includeImages")}
+        </label>
+      </section>
       <div class="actions">
-        <button id="start" type="button" ${isCollecting ? "disabled" : ""}>${isCollecting ? "采集中..." : "开始采集"}</button>
-        <button id="stop" type="button" ${isCollecting ? "" : "disabled"}>停止</button>
-        <button id="clear" type="button" ${count === 0 && !isCollecting ? "disabled" : ""}>清空</button>
-        <button id="export" type="button" ${count === 0 || isExporting ? "disabled" : ""}>${isExporting ? "导出中..." : "导出 zip"}</button>
+        <button id="start" type="button" ${isCollecting ? "disabled" : ""}>${isCollecting ? t(language, "collecting") : t(language, "startCollection")}</button>
+        <button id="stop" type="button" ${isCollecting ? "" : "disabled"}>${t(language, "stopCollection")}</button>
+        <button id="clear" type="button" ${count === 0 && !isCollecting ? "disabled" : ""}>${t(language, "clearCollection")}</button>
+        <button id="export" class="primary" type="button" ${count === 0 || isExporting ? "disabled" : ""}>${isExporting ? t(language, "exporting") : t(language, "exportZip")}</button>
       </div>
-      <p class="hint">视频不会下载，只会保存原帖链接和预览信息。</p>
+      <p class="hint">${t(language, "videoHint")}</p>
     </section>
   `;
 
+  document.querySelector("#langZh")?.addEventListener("click", () => {
+    language = "zh";
+    saveLanguage(language);
+    render();
+  });
+  document.querySelector("#langEn")?.addEventListener("click", () => {
+    language = "en";
+    saveLanguage(language);
+    render();
+  });
   document.querySelector<HTMLInputElement>("#includeImages")?.addEventListener("change", (event) => {
     includeImages = (event.currentTarget as HTMLInputElement).checked;
   });
@@ -133,5 +171,10 @@ function updateStatusTimer(isCollecting: boolean): void {
   }
 }
 
-render();
-void runMessage({ type: "GET_STATUS" });
+async function init(): Promise<void> {
+  language = await loadLanguage();
+  render();
+  await runMessage({ type: "GET_STATUS" });
+}
+
+void init();

@@ -1,10 +1,11 @@
 export const manifest = {
   manifest_version: 3,
-  name: "X Bookmarks Obsidian Exporter",
+  name: "__MSG_extName__",
   version: "0.1.0",
-  description: "Export loaded X Bookmarks into Obsidian-friendly Markdown and JSON.",
+  description: "__MSG_extDescription__",
+  default_locale: "zh_CN",
   action: {
-    default_title: "X Bookmarks Exporter",
+    default_title: "__MSG_extName__",
     default_popup: "index.html"
   },
   permissions: ["activeTab", "downloads"],

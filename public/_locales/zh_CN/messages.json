@@ -1,0 +1,8 @@
+{
+  "extName": {
+    "message": "X 书签 Obsidian 导出器"
+  },
+  "extDescription": {
+    "message": "将已加载的 X 书签导出为适合 Obsidian 的 Markdown、JSON、CSV 和媒体文件。"
+  }
+}

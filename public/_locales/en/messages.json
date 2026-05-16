@@ -1,0 +1,8 @@
+{
+  "extName": {
+    "message": "X Bookmarks Obsidian Exporter"
+  },
+  "extDescription": {
+    "message": "Export loaded X Bookmarks to Obsidian-friendly Markdown, JSON, CSV, and media files."
+  }
+}

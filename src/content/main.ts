@@ -1,5 +1,5 @@
 import { mergeBookmarks } from "../shared/dedupe";
-import type { ContentToPopupResponse, PopupToContentMessage } from "../shared/messages";
+import type { ContentToPopupResponse } from "../shared/messages";
 import type { CollectionState } from "../shared/types";
 import { parseBookmarksFromDocument } from "./parseBookmarks";
 
@@ -17,15 +17,6 @@ const state: CollectionState = {
 
 function isBookmarksPage(): boolean {
   return window.location.hostname === "x.com" && window.location.pathname.startsWith("/i/bookmarks");
-}
-
-function isKnownMessage(message: PopupToContentMessage): boolean {
-  return (
-    message.type === "GET_STATUS" ||
-    message.type === "START_COLLECTION" ||
-    message.type === "STOP_COLLECTION" ||
-    message.type === "CLEAR_COLLECTION"
-  );
 }
 
 function scan(): void {
@@ -80,12 +71,22 @@ function clearCollection(): void {
   state.idleScans = 0;
 }
 
-function handleMessage(message: PopupToContentMessage): ContentToPopupResponse {
-  if (isKnownMessage(message) && !isBookmarksPage()) {
+function messageType(message: unknown): string | undefined {
+  if (typeof message !== "object" || message === null || !("type" in message)) {
+    return undefined;
+  }
+
+  const type = message.type;
+
+  return typeof type === "string" ? type : undefined;
+}
+
+function handleMessage(message: unknown): ContentToPopupResponse {
+  if (!isBookmarksPage()) {
     return { ok: false, error: "Open https://x.com/i/bookmarks before collecting.", state };
   }
 
-  switch (message.type) {
+  switch (messageType(message)) {
     case "GET_STATUS":
       return { ok: true, bookmarks: state.bookmarks, state };
 
@@ -109,6 +110,6 @@ function handleMessage(message: PopupToContentMessage): ContentToPopupResponse {
   }
 }
 
-chrome.runtime.onMessage.addListener((message: PopupToContentMessage, _sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((message: unknown, _sender, sendResponse) => {
   sendResponse(handleMessage(message));
 });

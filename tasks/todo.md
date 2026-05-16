@@ -63,7 +63,7 @@ Build a simple, convenient Chrome extension for exporting X Bookmarks into an Ob
 - [x] V2 Task 4: Package V2 zip with traceable media. Verification: zip tests prove V2 file structure, media manifest, export report, and local media references.
 - [x] V2 Task 5: Add bilingual popup and expressive UI. Verification: i18n tests, typecheck, and build pass; locale files are copied to `dist/`.
 - [x] V2 Task 6: Complete README and user documentation. Verification: README covers install, usage, formats, Obsidian workflow, privacy, limits, testing, publishing, FAQ, and English Quick Start.
-- [x] V2 Task 7: Full verification, live browser test, and audit. Verification: automated checks, security audit result, local zip validation, and Chrome live validation limits are recorded.
+- [ ] V2 Task 7: Full verification, live browser test, and audit. Verification: automated checks, security audit result, local zip validation, and Chrome live validation limits are recorded; final acceptance still requires manual Chrome checklist pass.
 
 ## Review
 
@@ -163,3 +163,4 @@ V2 verification:
 - Local zip validation passed: generated zip contains `X Bookmarks Index.md`, `bookmarks.json`, `bookmarks.csv`, `links.txt`, `bookmarks.html`, `media-manifest.json`, `export-report.json`, `bookmarks/`, and `attachments/x-bookmarks/`; the sample note includes local image references and the expected Obsidian sections.
 - `npm audit --audit-level=moderate` still reports 5 moderate dev-dependency findings in the Vite/esbuild/Vitest chain. npm's fix requires `npm audit fix --force` and a breaking upgrade to `vite@8.0.13`; this was not applied.
 - Chrome live validation was attempted through the real Chrome profile. Chrome automation confirmed an `https://x.com/i/bookmarks` tab existed, but reading page contents timed out twice, so popup/end-to-end live interaction is not marked as fully passed in this run.
+- Final acceptance remains open until the manual Chrome checklist passes on the user's machine.

@@ -27,3 +27,6 @@ Build a simple, convenient Chrome extension for exporting X Bookmarks into an Ob
 
 Chinese design spec written at `docs/superpowers/specs/2026-05-16-x-bookmarks-obsidian-exporter-design.md`.
 Self-review found no placeholders or obvious contradictions. No implementation has started.
+
+Implementation plan created at `docs/superpowers/plans/2026-05-16-x-bookmarks-obsidian-exporter.md`.
+Next step is user approval of execution mode before code implementation.

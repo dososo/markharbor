@@ -33,6 +33,11 @@ Build a simple, convenient Chrome extension for exporting X Bookmarks into an Ob
 - [x] Task 2: Implement merge dedupe. Verification: dedupe test passes.
 - [x] Task 2: Typecheck. Verification: `npm run typecheck` passes.
 - [x] Task 2: Commit shared types and dedupe. Verification: commit message is `feat: add bookmark types and dedupe`.
+- [x] Task 3: Add X bookmark card fixture. Verification: parser test can load representative X card HTML.
+- [x] Task 3: Write DOM bookmark parser test. Verification: `npm test -- src/content/parseBookmarks.test.ts` fails before implementation.
+- [x] Task 3: Implement DOM bookmark parser. Verification: parser test passes.
+- [x] Task 3: Typecheck. Verification: `npm run typecheck` passes.
+- [x] Task 3: Commit parser. Verification: commit message is `feat: parse loaded x bookmark cards`.
 
 ## Review
 
@@ -53,4 +58,11 @@ Task 2 shared types and dedupe completed:
 - Added `XBookmarkVideo`, `XBookmark`, and `CollectionState` shared interfaces.
 - Added `mergeBookmarks` with id-first and normalized-url fallback deduplication.
 - Confirmed `npm test -- src/shared/dedupe.test.ts` fails before implementation and passes after implementation.
+- `npm run typecheck` passed.
+
+Task 3 DOM bookmark parser completed:
+- Added representative X bookmark card fixture and parser test.
+- Confirmed `npm test -- src/content/parseBookmarks.test.ts` failed before implementation because `parseBookmarks` did not exist.
+- Implemented DOM parsing for loaded tweet articles, canonical X status URLs, author fields, tweet text, posted time, media image URLs, video preview metadata, and raw article text.
+- `npm test -- src/content/parseBookmarks.test.ts` passed.
 - `npm run typecheck` passed.

@@ -18,6 +18,7 @@ function parseBookmarkArticle(article: HTMLElement, collectedAt: string): XBookm
   const { handle, id } = statusLink;
   const userName = article.querySelector<HTMLElement>('[data-testid="User-Name"]');
   const userSpans = Array.from(userName?.querySelectorAll("span") ?? []);
+  const authorHandle = textFrom(userSpans.find((span) => textFrom(span).startsWith("@")));
   const text = textFrom(article.querySelector('[data-testid="tweetText"]'));
   const postedAt = article.querySelector<HTMLTimeElement>("time[datetime]")?.dateTime;
   const url = `https://x.com/${handle}/status/${id}`;
@@ -26,8 +27,8 @@ function parseBookmarkArticle(article: HTMLElement, collectedAt: string): XBookm
   return {
     id,
     url,
-    authorName: textFrom(userSpans[0]),
-    authorHandle: textFrom(userSpans.find((span) => textFrom(span).startsWith("@"))),
+    authorName: parseAuthorName(userSpans, authorHandle),
+    authorHandle,
     text,
     postedAt,
     collectedAt,
@@ -38,22 +39,48 @@ function parseBookmarkArticle(article: HTMLElement, collectedAt: string): XBookm
 }
 
 function findStatusLink(article: HTMLElement): { handle: string; id: string } | undefined {
+  const timestampLink = article.querySelector("time[datetime]")?.closest<HTMLAnchorElement>("a[href]");
+  const timestampStatusLink = timestampLink ? parseStatusLinkHref(timestampLink.getAttribute("href")) : undefined;
+
+  if (timestampStatusLink) {
+    return timestampStatusLink;
+  }
+
   const links = Array.from(article.querySelectorAll<HTMLAnchorElement>("a[href]"));
 
   for (const link of links) {
-    const href = link.getAttribute("href");
-    const match = href ? statusPathFromHref(href).match(STATUS_PATH_PATTERN) : undefined;
+    const statusLink = parseStatusLinkHref(link.getAttribute("href"));
 
-    if (match) {
-      return { handle: match[1], id: match[2] };
+    if (statusLink) {
+      return statusLink;
     }
   }
 
   return undefined;
 }
 
+function parseStatusLinkHref(href: string | null): { handle: string; id: string } | undefined {
+  const match = href ? statusPathFromHref(href).match(STATUS_PATH_PATTERN) : undefined;
+
+  if (!match) {
+    return undefined;
+  }
+
+  return { handle: match[1], id: match[2] };
+}
+
 function statusPathFromHref(href: string): string {
   return new URL(href, "https://x.com").pathname;
+}
+
+function parseAuthorName(spans: HTMLSpanElement[], authorHandle: string): string {
+  const displayName = spans.find((span) => {
+    const text = textFrom(span);
+
+    return text && text !== authorHandle && !text.includes("@") && !span.querySelector("time");
+  });
+
+  return textFrom(displayName);
 }
 
 function parseImageUrls(article: HTMLElement): string[] {

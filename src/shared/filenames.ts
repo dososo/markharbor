@@ -21,6 +21,28 @@ export function bookmarkFileName(bookmark: XBookmark): string {
   return `${date}-${author}-${title}.md`;
 }
 
+function imageExtensionFromUrl(url: URL): string | undefined {
+  const format = url.searchParams.get("format")?.toLowerCase();
+  if (!format) {
+    return undefined;
+  }
+
+  if (format === "jpeg") {
+    return "jpg";
+  }
+
+  return ["jpg", "png", "webp", "gif"].includes(format) ? format : undefined;
+}
+
+function withImageExtension(fileName: string, url: URL): string {
+  if (/\.(jpe?g|png|webp|gif)$/i.test(fileName)) {
+    return fileName;
+  }
+
+  const extension = imageExtensionFromUrl(url);
+  return extension ? `${fileName}.${extension}` : fileName;
+}
+
 export function imageFileName(url: string, index: number): string {
   const parsed = new URL(url);
   const base = parsed.pathname.split("/").pop();
@@ -28,7 +50,7 @@ export function imageFileName(url: string, index: number): string {
     return `image-${index}.jpg`;
   }
 
-  const fileName = safeFileName(decodeURIComponent(base));
+  const fileName = withImageExtension(safeFileName(decodeURIComponent(base)), parsed);
 
   return fileName ? `image-${index}-${fileName}` : `image-${index}.jpg`;
 }
@@ -42,7 +64,7 @@ export function bookmarkAttachmentFolder(bookmark: XBookmark): string {
 export function mediaFileName(url: string, index: number): string {
   const parsed = new URL(url);
   const base = parsed.pathname.split("/").pop();
-  const fileName = base ? safeFileName(decodeURIComponent(base)) : "";
+  const fileName = base ? withImageExtension(safeFileName(decodeURIComponent(base)), parsed) : "";
   const padded = String(index).padStart(2, "0");
 
   return fileName ? `image-${padded}-${fileName}` : `image-${padded}.jpg`;

@@ -165,3 +165,9 @@ V2 verification:
 - Dependency upgrade verification passed with `vite@8.0.13`, `vitest@4.1.6`, and `@types/node@20.19.41`.
 - Chrome live validation was attempted through the real Chrome profile. Chrome automation confirmed an `https://x.com/i/bookmarks` tab existed, but reading page contents timed out twice, so popup/end-to-end live interaction is not marked as fully passed in this run.
 - Final acceptance remains open until the manual Chrome checklist passes on the user's machine.
+
+V2 attachment filename follow-up:
+- Fixed X media URLs that store file type in query parameters, such as `/media/<id>?format=jpg&name=large`, so exported attachments now include image extensions like `.jpg` or `.png`.
+- Added tests for extensionless X media paths and zip integration using query-based media formats.
+- Image attachments are written with normal file permissions in the zip.
+- Verification passed: `npm test` now reports 7 files and 43 tests, `npm run typecheck` passed, `npm run build` passed, and `npm audit --audit-level=moderate` reports 0 vulnerabilities.

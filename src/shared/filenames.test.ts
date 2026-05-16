@@ -66,6 +66,10 @@ describe("imageFileName", () => {
     expect(imageFileName("https://pbs.twimg.com/media/Example.JPG?format=jpg&name=large", 2)).toBe("image-2-example.jpg");
   });
 
+  it("adds an extension from the X media format query when the path has no extension", () => {
+    expect(imageFileName("https://pbs.twimg.com/media/ExampleId?format=jpg&name=large", 2)).toBe("image-2-exampleid.jpg");
+  });
+
   it("falls back to image index", () => {
     expect(imageFileName("https://pbs.twimg.com/media/", 2)).toBe("image-2.jpg");
   });
@@ -86,5 +90,9 @@ describe("bookmarkAttachmentFolder", () => {
 describe("mediaFileName", () => {
   it("uses a padded media index and URL pathname filename", () => {
     expect(mediaFileName("https://pbs.twimg.com/media/example.jpg", 1)).toBe("image-01-example.jpg");
+  });
+
+  it("adds an extension from the X media format query when the path has no extension", () => {
+    expect(mediaFileName("https://pbs.twimg.com/media/ExampleId?format=png&name=large", 1)).toBe("image-01-exampleid.png");
   });
 });

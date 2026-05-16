@@ -77,7 +77,7 @@ describe("buildExportZip", () => {
   });
 
   it("downloads images into per-bookmark folders and records media manifest failures", async () => {
-    const imageUrl = "https://pbs.twimg.com/media/example.jpg";
+    const imageUrl = "https://pbs.twimg.com/media/example?format=jpg&name=large";
     const missingUrl = "https://pbs.twimg.com/media/missing.jpg";
     const rejectedUrl = "https://pbs.twimg.com/media/rejected.jpg";
     const fetchImage = vi.fn(async (url: string) => {

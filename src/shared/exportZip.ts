@@ -16,6 +16,8 @@ export interface BuildExportZipOptions {
   fetchImage: (url: string) => Promise<Blob | undefined>;
 }
 
+const mediaZipOptions = { unixPermissions: 0o100644 };
+
 function markdownFileNameWithSuffix(fileName: string, suffix: string): string {
   return fileName.endsWith(".md")
     ? `${fileName.slice(0, -3)}-${suffix}.md`
@@ -89,7 +91,7 @@ async function addImages(
 
       const blob = await fetchOptionalImage(url, fetchImage);
       if (blob) {
-        zip.file(path, blob);
+        zip.file(path, blob, mediaZipOptions);
         imagePaths.set(url, path);
         mediaItems.push({
           bookmarkId: bookmark.id,
@@ -118,7 +120,7 @@ async function addImages(
       const blob = await fetchOptionalImage(url, fetchImage);
 
       if (blob) {
-        zip.file(path, blob);
+        zip.file(path, blob, mediaZipOptions);
         imagePaths.set(url, path);
         mediaItems.push({
           bookmarkId: bookmark.id,

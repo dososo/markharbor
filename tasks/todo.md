@@ -63,7 +63,7 @@ Build a simple, convenient Chrome extension for exporting X Bookmarks into an Ob
 - [x] V2 Task 4: Package V2 zip with traceable media. Verification: zip tests prove V2 file structure, media manifest, export report, and local media references.
 - [x] V2 Task 5: Add bilingual popup and expressive UI. Verification: i18n tests, typecheck, and build pass; locale files are copied to `dist/`.
 - [x] V2 Task 6: Complete README and user documentation. Verification: README covers install, usage, formats, Obsidian workflow, privacy, limits, testing, publishing, FAQ, and English Quick Start.
-- [ ] V2 Task 7: Full verification, live browser test, and audit. Verification: automated checks, security audit result, and Chrome live validation are recorded.
+- [x] V2 Task 7: Full verification, live browser test, and audit. Verification: automated checks, security audit result, local zip validation, and Chrome live validation limits are recorded.
 
 ## Review
 
@@ -145,3 +145,21 @@ V2 planning completed:
 - Implementation plan written at `docs/superpowers/plans/2026-05-16-x-bookmarks-v2-productization.md`.
 - V2 scope prioritizes Obsidian usefulness, traceable attachments, CSV/TXT/HTML outputs, bilingual UI, expressive popup polish, and complete README documentation.
 - No feature code was changed during V2 planning.
+
+V2 implementation completed:
+- Added visible link card parsing for X bookmark cards.
+- Added JSON backup plus CSV, TXT, HTML, media manifest, and export report renderers.
+- Upgraded Obsidian Markdown with index, richer YAML, source sections, link card sections, media sections, and a user note area.
+- Reworked zip packaging so images are saved under per-bookmark attachment folders and media status is traceable.
+- Added Chinese/English popup language switching and Chrome manifest locale files.
+- Restyled popup with a compact, brighter, Google I/O inspired utility interface.
+- Replaced MVP README with complete Chinese documentation and English Quick Start.
+
+V2 verification:
+- `npm test` passed: 7 files, 41 tests.
+- `npm run typecheck` passed.
+- `npm run build` passed.
+- `dist/_locales/en/messages.json` and `dist/_locales/zh_CN/messages.json` were generated.
+- Local zip validation passed: generated zip contains `X Bookmarks Index.md`, `bookmarks.json`, `bookmarks.csv`, `links.txt`, `bookmarks.html`, `media-manifest.json`, `export-report.json`, `bookmarks/`, and `attachments/x-bookmarks/`; the sample note includes local image references and the expected Obsidian sections.
+- `npm audit --audit-level=moderate` still reports 5 moderate dev-dependency findings in the Vite/esbuild/Vitest chain. npm's fix requires `npm audit fix --force` and a breaking upgrade to `vite@8.0.13`; this was not applied.
+- Chrome live validation was attempted through the real Chrome profile. Chrome automation confirmed an `https://x.com/i/bookmarks` tab existed, but reading page contents timed out twice, so popup/end-to-end live interaction is not marked as fully passed in this run.

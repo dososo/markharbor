@@ -32,19 +32,23 @@ async function downloadZip(): Promise<void> {
   isExporting = true;
   render();
 
+  let objectUrl: string | undefined;
   try {
     const blob = await buildExportZip({ bookmarks, includeImages, fetchImage });
-    const url = URL.createObjectURL(blob);
+    objectUrl = URL.createObjectURL(blob);
     await chrome.downloads.download({
-      url,
+      url: objectUrl,
       filename: `x-bookmarks-export-${new Date().toISOString().slice(0, 10)}.zip`,
       saveAs: true
     });
-    window.setTimeout(() => URL.revokeObjectURL(url), 5000);
     errorMessage = undefined;
   } catch {
     errorMessage = "导出 zip 失败，请稍后重试。";
   } finally {
+    if (objectUrl) {
+      const urlToRevoke = objectUrl;
+      window.setTimeout(() => URL.revokeObjectURL(urlToRevoke), 5000);
+    }
     isExporting = false;
     render();
   }

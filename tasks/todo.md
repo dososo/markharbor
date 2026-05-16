@@ -55,6 +55,15 @@ Build a simple, convenient Chrome extension for exporting X Bookmarks into an Ob
 - [x] Task 7: Add image download host permission. Verification: manifest includes `https://pbs.twimg.com/*` for X media attachments.
 - [x] Task 7: Typecheck, test, and build. Verification: `npm run typecheck`, `npm test`, and `npm run build` pass.
 - [x] Task 8: Add README usage and privacy documentation. Verification: README explains local development, usage, privacy, export contents, and manual validation.
+- [x] V2 planning: Write productization design spec. Verification: `docs/superpowers/specs/2026-05-16-x-bookmarks-v2-productization-design.md` covers export formats, Obsidian structure, attachments, competitor insights, visual direction, i18n, README, and success criteria.
+- [x] V2 planning: Write implementation plan. Verification: `docs/superpowers/plans/2026-05-16-x-bookmarks-v2-productization.md` breaks work into testable tasks with file paths and verification steps.
+- [ ] V2 Task 1: Enrich bookmark data model and parser. Verification: parser tests cover visible link card metadata and typecheck passes.
+- [ ] V2 Task 2: Add export format renderers. Verification: CSV, TXT, HTML, media manifest, and export report tests pass.
+- [ ] V2 Task 3: Upgrade Markdown and attachment structure. Verification: Markdown tests prove useful Obsidian notes, index links, and per-bookmark attachment paths.
+- [ ] V2 Task 4: Package V2 zip with traceable media. Verification: zip tests prove V2 file structure, media manifest, export report, and local media references.
+- [ ] V2 Task 5: Add bilingual popup and expressive UI. Verification: i18n tests, typecheck, and build pass; locale files are copied to `dist/`.
+- [ ] V2 Task 6: Complete README and user documentation. Verification: README covers install, usage, formats, Obsidian workflow, privacy, limits, testing, publishing, FAQ, and English Quick Start.
+- [ ] V2 Task 7: Full verification, live browser test, and audit. Verification: automated checks, security audit result, and Chrome live validation are recorded.
 
 ## Review
 
@@ -130,3 +139,9 @@ Live Chrome acceptance test completed:
 - Found a real extraction issue with non-ASCII per-bookmark filenames, fixed it by switching export filenames to portable ASCII-safe slugs, rebuilt, reloaded the extension, and re-exported.
 - Verified the fixed zip extracts with the system `unzip` command and preserves Chinese content inside Markdown/JSON.
 - Current security audit status: `npm audit --audit-level=moderate` still reports 5 moderate dev-dependency findings in the Vite/esbuild/Vitest chain. npm's automatic fix requires a breaking upgrade to `vite@8.0.13`; this has not been applied.
+
+V2 planning completed:
+- Productization design spec written at `docs/superpowers/specs/2026-05-16-x-bookmarks-v2-productization-design.md`.
+- Implementation plan written at `docs/superpowers/plans/2026-05-16-x-bookmarks-v2-productization.md`.
+- V2 scope prioritizes Obsidian usefulness, traceable attachments, CSV/TXT/HTML outputs, bilingual UI, expressive popup polish, and complete README documentation.
+- No feature code was changed during V2 planning.

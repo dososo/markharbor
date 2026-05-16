@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { renderBookmarkMarkdown, renderCombinedMarkdown } from "./markdown";
-import type { XBookmark } from "./types";
+import { renderBookmarkMarkdown, renderCombinedMarkdown, renderIndexMarkdown } from "./markdown";
+import type { ExportReport, XBookmark } from "./types";
 
 const bookmark: XBookmark = {
   id: "123",
@@ -11,6 +11,12 @@ const bookmark: XBookmark = {
   postedAt: "2026-05-15T12:30:00.000Z",
   collectedAt: "2026-05-16T00:00:00.000Z",
   imageUrls: ["https://pbs.twimg.com/media/example.jpg"],
+  linkCard: {
+    url: "https://example.com/article",
+    title: "Example article",
+    description: "Example description",
+    imageUrl: "https://pbs.twimg.com/card_img/example.jpg"
+  },
   video: {
     sourceUrl: "https://x.com/alice/status/123",
     previewImageUrl: "https://pbs.twimg.com/thumb.jpg"
@@ -49,12 +55,23 @@ describe("renderCombinedMarkdown", () => {
 });
 
 describe("renderBookmarkMarkdown", () => {
-  it("includes front matter url and body text", () => {
-    const markdown = renderBookmarkMarkdown(bookmark, new Map());
+  it("includes useful Obsidian front matter sections and local media paths", () => {
+    const markdown = renderBookmarkMarkdown(
+      bookmark,
+      new Map([[bookmark.imageUrls[0], "attachments/x-bookmarks/123/image-01-example.jpg"]])
+    );
 
-    expect(markdown).toContain("source: x-bookmarks");
-    expect(markdown).toContain('url: "https://x.com/alice/status/123"');
+    expect(markdown).toContain("title:");
+    expect(markdown).toContain('source: "x-bookmarks"');
+    expect(markdown).toContain('x_url: "https://x.com/alice/status/123"');
+    expect(markdown).toContain('bookmark_id: "123"');
+    expect(markdown).toContain("## 原文");
+    expect(markdown).toContain("## 链接卡片");
+    expect(markdown).toContain("## 媒体");
+    expect(markdown).toContain("## 来源");
+    expect(markdown).toContain("## 我的笔记");
     expect(markdown).toContain("Useful thread");
+    expect(markdown).toContain("![](../attachments/x-bookmarks/123/image-01-example.jpg)");
   });
 
   it("escapes YAML double quotes and backslashes", () => {
@@ -86,5 +103,33 @@ describe("renderBookmarkMarkdown", () => {
     const markdown = renderBookmarkMarkdown(bookmark, new Map());
 
     expect(markdown).toContain("![](<https://pbs.twimg.com/media/example.jpg>)");
+  });
+
+  it("marks empty body text honestly", () => {
+    const markdown = renderBookmarkMarkdown({ ...bookmark, text: "" }, new Map());
+
+    expect(markdown).toContain("（未采集到可见正文）");
+  });
+});
+
+describe("renderIndexMarkdown", () => {
+  it("links to per-bookmark notes and summarizes export status", () => {
+    const report: ExportReport = {
+      exportedAt: "2026-05-16T00:00:00.000Z",
+      bookmarkCount: 1,
+      generatedFileCount: 8,
+      mediaDownloadedCount: 1,
+      mediaFailedCount: 0,
+      videoSkippedCount: 1
+    };
+    const markdown = renderIndexMarkdown(
+      [bookmark],
+      new Map([[bookmark.url, "bookmarks/2026-05-16-alice-useful-thread.md"]]),
+      report
+    );
+
+    expect(markdown).toContain("# X Bookmarks Index");
+    expect(markdown).toContain("导出时间： 2026-05-16T00:00:00.000Z");
+    expect(markdown).toContain("[[bookmarks/2026-05-16-alice-useful-thread|Alice - Useful thread]]");
   });
 });

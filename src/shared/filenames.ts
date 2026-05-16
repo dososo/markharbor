@@ -32,3 +32,18 @@ export function imageFileName(url: string, index: number): string {
 
   return fileName ? `image-${index}-${fileName}` : `image-${index}.jpg`;
 }
+
+export function bookmarkAttachmentFolder(bookmark: XBookmark): string {
+  const id = safeFileName(bookmark.id ?? "") || safeFileName(bookmark.url).slice(0, 48) || "bookmark";
+
+  return `attachments/x-bookmarks/${id}`;
+}
+
+export function mediaFileName(url: string, index: number): string {
+  const parsed = new URL(url);
+  const base = parsed.pathname.split("/").pop();
+  const fileName = base ? safeFileName(decodeURIComponent(base)) : "";
+  const padded = String(index).padStart(2, "0");
+
+  return fileName ? `image-${padded}-${fileName}` : `image-${padded}.jpg`;
+}

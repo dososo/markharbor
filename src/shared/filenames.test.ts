@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { bookmarkFileName, imageFileName, safeFileName } from "./filenames";
+import { bookmarkAttachmentFolder, bookmarkFileName, imageFileName, mediaFileName, safeFileName } from "./filenames";
 import type { XBookmark } from "./types";
 
 function bookmark(overrides: Partial<XBookmark> = {}): XBookmark {
@@ -74,5 +74,17 @@ describe("imageFileName", () => {
     expect(imageFileName("https://pbs.twimg.com/media/a/example.jpg", 1)).not.toBe(
       imageFileName("https://pbs.twimg.com/media/b/example.jpg", 2)
     );
+  });
+});
+
+describe("bookmarkAttachmentFolder", () => {
+  it("uses the bookmark id when available", () => {
+    expect(bookmarkAttachmentFolder(bookmark())).toBe("attachments/x-bookmarks/123");
+  });
+});
+
+describe("mediaFileName", () => {
+  it("uses a padded media index and URL pathname filename", () => {
+    expect(mediaFileName("https://pbs.twimg.com/media/example.jpg", 1)).toBe("image-01-example.jpg");
   });
 });

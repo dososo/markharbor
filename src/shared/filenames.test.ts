@@ -22,8 +22,12 @@ describe("safeFileName", () => {
     expect(safeFileName('A/B:C*D?"E<F>G|')).toBe("a-b-c-d-e-f-g");
   });
 
-  it("keeps ascii chinese and selected punctuation while normalizing spaces", () => {
-    expect(safeFileName(" Alice @作者._ title  with   spaces! ")).toBe("alice-@作者._-title-with-spaces");
+  it("keeps ascii and selected punctuation while normalizing spaces", () => {
+    expect(safeFileName(" Alice @author._ title  with   spaces! ")).toBe("alice-@author._-title-with-spaces");
+  });
+
+  it("removes non-ascii characters so zip extraction is portable", () => {
+    expect(safeFileName("Jacky 观察笔记")).toBe("jacky");
   });
 });
 
@@ -44,6 +48,16 @@ describe("bookmarkFileName", () => {
       postedAt: undefined,
       collectedAt: "2026-05-16T00:00:00.000Z"
     }))).toBe("2026-05-16-@alice-abc123.md");
+  });
+
+  it("falls back to handle when display name is not portable", () => {
+    expect(bookmarkFileName(bookmark({
+      id: "2048046255151206471",
+      authorName: "观察笔记",
+      authorHandle: "@JackyNotes",
+      text: "中文正文",
+      postedAt: "2026-04-25T00:00:00.000Z"
+    }))).toBe("2026-04-25-@jackynotes-2048046255151206471.md");
   });
 });
 

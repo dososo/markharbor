@@ -25,6 +25,24 @@ export interface XBookmark {
   rawText: string;
 }
 
+export interface ExportedMediaItem {
+  bookmarkId?: string;
+  bookmarkUrl: string;
+  kind: "image" | "card-image" | "video-preview";
+  originalUrl: string;
+  localPath?: string;
+  status: "downloaded" | "failed" | "remote-only";
+}
+
+export interface ExportReport {
+  exportedAt: string;
+  bookmarkCount: number;
+  generatedFileCount: number;
+  mediaDownloadedCount: number;
+  mediaFailedCount: number;
+  videoSkippedCount: number;
+}
+
 export interface CollectionState {
   bookmarks: XBookmark[];
   isCollecting: boolean;

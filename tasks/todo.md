@@ -58,7 +58,7 @@ Build a simple, convenient Chrome extension for exporting X Bookmarks into an Ob
 - [x] V2 planning: Write productization design spec. Verification: `docs/superpowers/specs/2026-05-16-x-bookmarks-v2-productization-design.md` covers export formats, Obsidian structure, attachments, competitor insights, visual direction, i18n, README, and success criteria.
 - [x] V2 planning: Write implementation plan. Verification: `docs/superpowers/plans/2026-05-16-x-bookmarks-v2-productization.md` breaks work into testable tasks with file paths and verification steps.
 - [x] V2 Task 1: Enrich bookmark data model and parser. Verification: parser tests cover visible link card metadata and typecheck passes.
-- [ ] V2 Task 2: Add export format renderers. Verification: CSV, TXT, HTML, media manifest, and export report tests pass.
+- [x] V2 Task 2: Add export format renderers. Verification: CSV, TXT, HTML, media manifest, and export report tests pass.
 - [ ] V2 Task 3: Upgrade Markdown and attachment structure. Verification: Markdown tests prove useful Obsidian notes, index links, and per-bookmark attachment paths.
 - [ ] V2 Task 4: Package V2 zip with traceable media. Verification: zip tests prove V2 file structure, media manifest, export report, and local media references.
 - [ ] V2 Task 5: Add bilingual popup and expressive UI. Verification: i18n tests, typecheck, and build pass; locale files are copied to `dist/`.

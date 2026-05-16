@@ -174,7 +174,7 @@ Create `src/shared/exportFormats.test.ts` with tests asserting:
 
 ```ts
 expect(renderLinksText([bookmark])).toBe("https://x.com/alice/status/123\n");
-expect(renderBookmarksCsv([bookmark])).toContain("url,author_name,author_handle,text,posted_at,collected_at,image_urls,link_card_url,link_card_title");
+expect(renderBookmarksCsv([bookmark])).toContain("id,url,author_name,author_handle,text,posted_at,collected_at,image_urls,link_card_url,link_card_title");
 expect(renderBookmarksHtml([bookmark])).toContain("<title>X Bookmarks Export</title>");
 expect(renderExportReport(report)).toContain('"bookmarkCount": 1');
 expect(renderMediaManifest(mediaItems)).toContain('"status": "downloaded"');
@@ -227,7 +227,7 @@ export function renderExportReport(report: ExportReport): string;
 CSV columns must be exactly:
 
 ```text
-url,author_name,author_handle,text,posted_at,collected_at,image_urls,link_card_url,link_card_title
+id,url,author_name,author_handle,text,posted_at,collected_at,image_urls,link_card_url,link_card_title
 ```
 
 `renderLinksText` outputs one source post URL per line and ends with a newline when non-empty.

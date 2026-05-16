@@ -1,5 +1,5 @@
 import JSZip from "jszip";
-import { bookmarkFileName, imageFileName } from "./filenames";
+import { bookmarkFileName, imageFileName, safeFileName } from "./filenames";
 import { renderBookmarkMarkdown, renderCombinedMarkdown } from "./markdown";
 import type { XBookmark } from "./types";
 
@@ -7,6 +7,45 @@ export interface BuildExportZipOptions {
   bookmarks: XBookmark[];
   includeImages: boolean;
   fetchImage: (url: string) => Promise<Blob | undefined>;
+}
+
+function markdownFileNameWithSuffix(fileName: string, suffix: string): string {
+  return fileName.endsWith(".md")
+    ? `${fileName.slice(0, -3)}-${suffix}.md`
+    : `${fileName}-${suffix}`;
+}
+
+function bookmarkZipPath(bookmark: XBookmark, usedFileNames: Set<string>): string {
+  const fileName = bookmarkFileName(bookmark);
+  if (!usedFileNames.has(fileName)) {
+    usedFileNames.add(fileName);
+    return `bookmarks/${fileName}`;
+  }
+
+  const idSuffix = bookmark.id ? safeFileName(bookmark.id) : "";
+  let counter = 2;
+  let candidate = idSuffix ? markdownFileNameWithSuffix(fileName, idSuffix) : markdownFileNameWithSuffix(fileName, `${counter}`);
+
+  while (usedFileNames.has(candidate)) {
+    counter += 1;
+    candidate = idSuffix
+      ? markdownFileNameWithSuffix(fileName, `${idSuffix}-${counter}`)
+      : markdownFileNameWithSuffix(fileName, `${counter}`);
+  }
+
+  usedFileNames.add(candidate);
+  return `bookmarks/${candidate}`;
+}
+
+async function fetchOptionalImage(
+  url: string,
+  fetchImage: (url: string) => Promise<Blob | undefined>
+): Promise<Blob | undefined> {
+  try {
+    return await fetchImage(url);
+  } catch {
+    return undefined;
+  }
 }
 
 async function addImages(
@@ -27,15 +66,11 @@ async function addImages(
       seenUrls.add(url);
       index += 1;
 
-      try {
-        const blob = await fetchImage(url);
-        if (blob) {
-          const path = `attachments/x-bookmarks/${imageFileName(url, index)}`;
-          zip.file(path, blob);
-          imagePaths.set(url, path);
-        }
-      } catch {
-        // Missing attachments intentionally fall back to the original image URL in Markdown.
+      const blob = await fetchOptionalImage(url, fetchImage);
+      if (blob) {
+        const path = `attachments/x-bookmarks/${imageFileName(url, index)}`;
+        zip.file(path, blob);
+        imagePaths.set(url, path);
       }
     }
   }
@@ -52,8 +87,9 @@ export async function buildExportZip(options: BuildExportZipOptions): Promise<Bl
   zip.file("bookmarks.json", JSON.stringify(options.bookmarks, null, 2));
   zip.file("X Bookmarks Export.md", renderCombinedMarkdown(options.bookmarks, imagePaths));
 
+  const usedBookmarkFileNames = new Set<string>();
   for (const bookmark of options.bookmarks) {
-    zip.file(`bookmarks/${bookmarkFileName(bookmark)}`, renderBookmarkMarkdown(bookmark, imagePaths));
+    zip.file(bookmarkZipPath(bookmark, usedBookmarkFileNames), renderBookmarkMarkdown(bookmark, imagePaths));
   }
 
   return zip.generateAsync({ type: "blob" });

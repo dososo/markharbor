@@ -32,6 +32,26 @@ describe("buildExportZip", () => {
     expect(zip.file("bookmarks/2026-05-16-alice-useful-thread.md")).toBeTruthy();
   });
 
+  it("keeps duplicate per-bookmark filenames as distinct markdown files", async () => {
+    const blob = await buildExportZip({
+      bookmarks: [
+        bookmark({ id: "123", url: "https://x.com/alice/status/123", text: "Useful thread" }),
+        bookmark({ id: "456", url: "https://x.com/alice/status/456", text: "Useful thread" })
+      ],
+      includeImages: false,
+      fetchImage: async () => undefined
+    });
+    const zip = await JSZip.loadAsync(blob);
+    const firstMarkdown = await zip.file("bookmarks/2026-05-16-alice-useful-thread.md")?.async("string");
+    const secondMarkdown = await zip.file("bookmarks/2026-05-16-alice-useful-thread-456.md")?.async("string");
+
+    expect(firstMarkdown).toContain("url: \"https://x.com/alice/status/123\"");
+    expect(secondMarkdown).toContain("url: \"https://x.com/alice/status/456\"");
+    expect(firstMarkdown).toContain("Useful thread");
+    expect(secondMarkdown).toContain("Useful thread");
+    expect(firstMarkdown).not.toBe(secondMarkdown);
+  });
+
   it("does not fetch images when image inclusion is disabled", async () => {
     const fetchImage = vi.fn(async () => new Blob(["image"]));
 
@@ -84,5 +104,13 @@ describe("buildExportZip", () => {
     expect(combinedMarkdown).toContain("![](<attachments/x-bookmarks/image-1-example.jpg>)");
     expect(combinedMarkdown).toContain("![](<https://pbs.twimg.com/media/missing.jpg>)");
     expect(combinedMarkdown).toContain("![](<https://pbs.twimg.com/media/rejected.jpg>)");
+  });
+
+  it("does not treat attachment filename errors as image fetch failures", async () => {
+    await expect(buildExportZip({
+      bookmarks: [bookmark({ imageUrls: ["not a url"] })],
+      includeImages: true,
+      fetchImage: async () => new Blob(["image-bytes"])
+    })).rejects.toThrow("Invalid URL");
   });
 });

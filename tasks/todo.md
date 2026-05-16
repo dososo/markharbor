@@ -120,3 +120,13 @@ Task 8 README and verification checklist completed:
 Implementation plan execution note:
 - Execution started with subagent-driven development.
 - After subagent usage limits were reached, remaining work continued inline using the approved plan and the same verification standards.
+
+Live Chrome acceptance test completed:
+- Loaded the unpacked extension from `dist/` in Chrome.
+- Opened an authenticated X Bookmarks page at `https://x.com/i/bookmarks`.
+- Verified the popup initially detected 4 loaded bookmarks.
+- Ran guided collection once and verified it collected 20 bookmarks after 12 scroll attempts.
+- Exported a zip from Chrome downloads and verified it contained JSON, combined Markdown, per-bookmark Markdown files, and image attachments.
+- Found a real extraction issue with non-ASCII per-bookmark filenames, fixed it by switching export filenames to portable ASCII-safe slugs, rebuilt, reloaded the extension, and re-exported.
+- Verified the fixed zip extracts with the system `unzip` command and preserves Chinese content inside Markdown/JSON.
+- Current security audit status: `npm audit --audit-level=moderate` still reports 5 moderate dev-dependency findings in the Vite/esbuild/Vitest chain. npm's automatic fix requires a breaking upgrade to `vite@8.0.13`; this has not been applied.

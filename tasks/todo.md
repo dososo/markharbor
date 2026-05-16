@@ -22,6 +22,12 @@ Build a simple, convenient Chrome extension for exporting X Bookmarks into an Ob
 - [x] Propose 2-3 implementation approaches with trade-offs.
 - [x] Present MVP design for approval.
 - [x] Write approved design spec under `docs/superpowers/specs/`.
+- [x] Task 1: Create project config files. Verification: config files exist and match the approved scaffold.
+- [x] Task 1: Create Vite build config. Verification: build emits popup and content entries.
+- [x] Task 1: Create extension manifest and placeholder entries. Verification: manifest references `index.html` and `assets/content.js`.
+- [x] Task 1: Install dependencies. Verification: `npm install` completes and writes `package-lock.json`.
+- [x] Task 1: Typecheck and build. Verification: `npm run typecheck` and `npm run build` pass.
+- [x] Task 1: Commit scaffold. Verification: commit message is `chore: scaffold chrome extension project`.
 
 ## Review
 
@@ -30,3 +36,10 @@ Self-review found no placeholders or obvious contradictions. No implementation h
 
 Implementation plan created at `docs/superpowers/plans/2026-05-16-x-bookmarks-obsidian-exporter.md`.
 Next step is user approval of execution mode before code implementation.
+
+Task 1 scaffold completed:
+- Created TypeScript, Vite, Vitest, popup, manifest, and content script scaffold.
+- `npm install` completed and created `package-lock.json`.
+- `npm run typecheck` passed.
+- `npm run build` passed and generated `dist/manifest.json`.
+- `npm install` reported 5 moderate audit findings in transitive dependencies; no dependency versions were changed outside the approved scaffold.

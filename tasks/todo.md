@@ -28,6 +28,11 @@ Build a simple, convenient Chrome extension for exporting X Bookmarks into an Ob
 - [x] Task 1: Install dependencies. Verification: `npm install` completes and writes `package-lock.json`.
 - [x] Task 1: Typecheck and build. Verification: `npm run typecheck` and `npm run build` pass.
 - [x] Task 1: Commit scaffold. Verification: commit message is `chore: scaffold chrome extension project`.
+- [x] Task 2: Write dedupe tests. Verification: `npm test -- src/shared/dedupe.test.ts` fails before implementation.
+- [x] Task 2: Create shared bookmark types. Verification: `src/shared/types.ts` exports planned interfaces.
+- [x] Task 2: Implement merge dedupe. Verification: dedupe test passes.
+- [x] Task 2: Typecheck. Verification: `npm run typecheck` passes.
+- [x] Task 2: Commit shared types and dedupe. Verification: commit message is `feat: add bookmark types and dedupe`.
 
 ## Review
 
@@ -43,3 +48,9 @@ Task 1 scaffold completed:
 - `npm run typecheck` passed.
 - `npm run build` passed and generated `dist/manifest.json`.
 - `npm install` reported 5 moderate audit findings in transitive dependencies; no dependency versions were changed outside the approved scaffold.
+
+Task 2 shared types and dedupe completed:
+- Added `XBookmarkVideo`, `XBookmark`, and `CollectionState` shared interfaces.
+- Added `mergeBookmarks` with id-first and normalized-url fallback deduplication.
+- Confirmed `npm test -- src/shared/dedupe.test.ts` fails before implementation and passes after implementation.
+- `npm run typecheck` passed.

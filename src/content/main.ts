@@ -1,1 +1,103 @@
-console.info("X Bookmarks Exporter content script loaded.");
+import { mergeBookmarks } from "../shared/dedupe";
+import type { ContentToPopupResponse, PopupToContentMessage } from "../shared/messages";
+import type { CollectionState } from "../shared/types";
+import { parseBookmarksFromDocument } from "./parseBookmarks";
+
+const MAX_SCROLL_ATTEMPTS = 60;
+const MAX_IDLE_SCANS = 3;
+const SCAN_DELAY_MS = 1200;
+
+const state: CollectionState = {
+  bookmarks: [],
+  isCollecting: false,
+  lastScanAdded: 0,
+  scrollAttempts: 0,
+  idleScans: 0
+};
+
+function isBookmarksPage(): boolean {
+  return window.location.hostname === "x.com" && window.location.pathname.startsWith("/i/bookmarks");
+}
+
+function scan(): void {
+  const parsed = parseBookmarksFromDocument(document, new Date().toISOString());
+  const previousLength = state.bookmarks.length;
+  state.bookmarks = mergeBookmarks(state.bookmarks, parsed);
+  state.lastScanAdded = state.bookmarks.length - previousLength;
+
+  if (state.lastScanAdded === 0) {
+    state.idleScans += 1;
+  } else {
+    state.idleScans = 0;
+  }
+}
+
+function scrollPage(): void {
+  window.scrollBy({
+    top: window.innerHeight * 0.85,
+    behavior: "smooth"
+  });
+  state.scrollAttempts += 1;
+}
+
+function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => window.setTimeout(resolve, ms));
+}
+
+async function collectLoop(): Promise<void> {
+  state.isCollecting = true;
+
+  while (
+    state.isCollecting &&
+    state.scrollAttempts < MAX_SCROLL_ATTEMPTS &&
+    state.idleScans < MAX_IDLE_SCANS
+  ) {
+    scan();
+    scrollPage();
+    await delay(SCAN_DELAY_MS);
+  }
+
+  scan();
+  state.isCollecting = false;
+}
+
+function clearCollection(): void {
+  state.bookmarks = [];
+  state.isCollecting = false;
+  state.lastScanAdded = 0;
+  state.scrollAttempts = 0;
+  state.idleScans = 0;
+}
+
+function handleMessage(message: PopupToContentMessage): ContentToPopupResponse {
+  switch (message.type) {
+    case "GET_STATUS":
+      return { ok: true, bookmarks: state.bookmarks, state };
+
+    case "START_COLLECTION":
+      if (!isBookmarksPage()) {
+        return { ok: false, error: "Open https://x.com/i/bookmarks before collecting.", state };
+      }
+
+      if (!state.isCollecting) {
+        void collectLoop();
+      }
+
+      return { ok: true, bookmarks: state.bookmarks, state };
+
+    case "STOP_COLLECTION":
+      state.isCollecting = false;
+      return { ok: true, bookmarks: state.bookmarks, state };
+
+    case "CLEAR_COLLECTION":
+      clearCollection();
+      return { ok: true, bookmarks: state.bookmarks, state };
+
+    default:
+      return { ok: false, error: "Unknown operation.", state };
+  }
+}
+
+chrome.runtime.onMessage.addListener((message: PopupToContentMessage, _sender, sendResponse) => {
+  sendResponse(handleMessage(message));
+});

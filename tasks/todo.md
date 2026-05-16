@@ -47,6 +47,10 @@ Build a simple, convenient Chrome extension for exporting X Bookmarks into an Ob
 - [x] Task 5: Run zip tests. Verification: `npm test -- src/shared/exportZip.test.ts` passes.
 - [x] Task 5: Typecheck. Verification: `npm run typecheck` passes.
 - [x] Task 5: Commit zip export. Verification: commit message is `feat: build local export zip`.
+- [x] Task 6: Add popup/content message contracts. Verification: `src/shared/messages.ts` exports required types.
+- [x] Task 6: Implement content script collection loop. Verification: content script handles status, start, stop, clear, off-page, and unknown messages.
+- [x] Task 6: Typecheck and test. Verification: `npm run typecheck` and `npm test` pass.
+- [x] Task 6: Commit content collection loop. Verification: commit message is `feat: collect bookmarks from content script`.
 
 ## Review
 
@@ -89,3 +93,9 @@ Task 5 zip export completed:
 - Added coverage for includeImages false, unique image fetching, successful local attachment paths, undefined image fetch results, and rejected image fetch fallback.
 - `npm test -- src/shared/exportZip.test.ts` passed.
 - `npm run typecheck` passed.
+
+Task 6 content collection loop completed:
+- Added popup/content message contracts in `src/shared/messages.ts`.
+- Replaced the content script placeholder with an in-memory collection state, X bookmarks page guard, scan/merge loop, smooth scrolling, stop/clear handling, and unknown-operation error response.
+- `npm run typecheck` passed.
+- `npm test` passed.

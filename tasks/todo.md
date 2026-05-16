@@ -62,7 +62,7 @@ Build a simple, convenient Chrome extension for exporting X Bookmarks into an Ob
 - [x] V2 Task 3: Upgrade Markdown and attachment structure. Verification: Markdown tests prove useful Obsidian notes, index links, and per-bookmark attachment paths.
 - [x] V2 Task 4: Package V2 zip with traceable media. Verification: zip tests prove V2 file structure, media manifest, export report, and local media references.
 - [x] V2 Task 5: Add bilingual popup and expressive UI. Verification: i18n tests, typecheck, and build pass; locale files are copied to `dist/`.
-- [ ] V2 Task 6: Complete README and user documentation. Verification: README covers install, usage, formats, Obsidian workflow, privacy, limits, testing, publishing, FAQ, and English Quick Start.
+- [x] V2 Task 6: Complete README and user documentation. Verification: README covers install, usage, formats, Obsidian workflow, privacy, limits, testing, publishing, FAQ, and English Quick Start.
 - [ ] V2 Task 7: Full verification, live browser test, and audit. Verification: automated checks, security audit result, and Chrome live validation are recorded.
 
 ## Review

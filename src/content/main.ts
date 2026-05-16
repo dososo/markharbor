@@ -108,6 +108,7 @@ function handleMessage(message: unknown): ContentToPopupResponse {
 
   switch (messageType(message)) {
     case "GET_STATUS":
+      scan();
       return { ok: true, bookmarks: state.bookmarks, state };
 
     case "START_COLLECTION":

@@ -1,101 +1,101 @@
-# X Bookmarks Obsidian Exporter Design
+# X 书签 Obsidian 导出器设计
 
-Date: 2026-05-16
-Status: Draft for user review
+日期：2026-05-16
+状态：待用户 review
 
-## Goal
+## 目标
 
-Build a Chrome extension that helps users export their own X Bookmarks into Obsidian-friendly files with minimal setup.
+构建一个 Chrome 插件，帮助用户用尽量少的配置，把自己的 X Bookmarks 导出成适合 Obsidian 使用的本地文件。
 
-The first version optimizes for convenience, privacy, and a small implementation surface. It should feel close to one-click export, while staying honest about the limits of what a browser extension can reliably collect from X's infinite-scroll bookmark page.
+第一版优先考虑便捷、隐私和较小的实现范围。体验上应尽量接近一键导出，同时对浏览器插件从 X 无限滚动书签页采集内容的限制保持诚实。
 
-## Non-Goals
+## 非目标
 
-- Do not build a cloud SaaS account system in v1.
-- Do not upload bookmark data to any server.
-- Do not read X cookies.
-- Do not call undocumented X internal APIs.
-- Do not run hidden background scraping.
-- Do not promise complete full-history export.
-- Do not download X video files in v1.
-- Do not add AI summarization, tagging, search, sync, or team features in v1.
+- v1 不做云端 SaaS 账号系统。
+- 不把书签数据上传到任何服务器。
+- 不读取 X cookie。
+- 不调用未公开的 X 内部接口。
+- 不做隐藏的后台抓取。
+- 不承诺完整导出全部历史书签。
+- v1 不下载 X 视频文件。
+- v1 不做 AI 总结、自动打标签、搜索、同步或团队功能。
 
-## User Flow
+## 用户流程
 
-1. The user installs the Chrome extension.
-2. The user opens `https://x.com/i/bookmarks` while logged in to X.
-3. The user opens the extension popup and clicks `Start collecting`.
-4. The extension assists in-page scrolling so more bookmarks load.
-5. The extension parses loaded bookmark cards and deduplicates them by post URL or post ID when available.
-6. The popup shows collection status:
-   - total collected bookmarks
-   - newly collected bookmarks from the last scan
-   - whether collection is currently running
-   - a stop control
-7. The user stops collection or lets it stop after no new bookmarks are found for a defined number of scans.
-8. The user chooses an export format:
-   - one combined Markdown file
-   - one Markdown file per bookmark
-   - JSON raw export
-9. The extension downloads a local export package.
+1. 用户安装 Chrome 插件。
+2. 用户登录 X 后打开 `https://x.com/i/bookmarks`。
+3. 用户打开插件弹窗，点击“开始采集”。
+4. 插件在当前页面内辅助滚动，让更多书签加载出来。
+5. 插件解析已经加载的书签卡片，并根据帖子链接或可识别的帖子 ID 去重。
+6. 插件弹窗显示采集状态：
+   - 已采集书签总数
+   - 最近一次扫描新增数量
+   - 当前是否正在采集
+   - 停止采集按钮
+7. 用户可以手动停止采集；如果连续多次扫描没有新增书签，插件也可以自动停止。
+8. 用户选择导出格式：
+   - 一个合集 Markdown 文件
+   - 每条书签一个 Markdown 文件
+   - JSON 原始数据导出
+9. 插件下载本地导出包。
 
-## Collection Model
+## 采集模型
 
-The extension collects only content visible in, or loaded into, the current X Bookmarks page. It may scroll the page in response to the user's explicit action, but it does not scrape in the background.
+插件只采集当前 X Bookmarks 页面中可见或已经加载到页面里的内容。它可以在用户明确点击“开始采集”后辅助滚动页面，但不在后台静默抓取。
 
-Collection should be resilient but conservative:
+采集逻辑应尽量稳健，但保持保守：
 
-- Parse tweet/bookmark cards from the DOM.
-- Prefer stable links and visible text over brittle class names.
-- Deduplicate entries as they are collected.
-- Keep partial results if collection is stopped.
-- Show the user that export completeness depends on how much the page was able to load.
+- 从 DOM 中解析 tweet/bookmark 卡片。
+- 优先使用稳定的链接和可见文本，避免依赖脆弱的 class 名称。
+- 采集过程中持续去重。
+- 用户停止采集时保留已采集的部分结果。
+- 明确提示用户：导出完整度取决于页面实际加载了多少内容。
 
-If X changes its DOM, the extension may need parser updates. This is an accepted maintenance cost for the Chrome-extension route.
+如果 X 修改页面 DOM，插件解析器可能需要更新。这是 Chrome 插件路线需要接受的维护成本。
 
-## Bookmark Data
+## 书签数据
 
-Each collected bookmark should store:
+每条采集到的书签应保存：
 
-- source post URL
-- post ID, when derivable from the URL
-- author display name, when visible
-- author handle, when visible
-- post text
-- visible timestamp or datetime value, when available
-- collection timestamp
-- image URLs found in the card
-- video source post URL and visible preview/thumbnail metadata, when available
-- raw text fallback for debugging parser misses
+- 原帖链接
+- 帖子 ID，如果能从链接中解析出来
+- 作者显示名，如果页面可见
+- 作者 handle，如果页面可见
+- 帖子正文
+- 可见的发布时间或 `datetime` 值，如果可获取
+- 采集时间
+- 卡片中发现的图片链接
+- 视频原帖链接，以及可见的预览图/缩略图信息，如果可获取
+- 原始文本兜底字段，用于排查解析遗漏
 
-The extension should not store credentials, cookies, or unrelated browsing data.
+插件不应保存凭据、cookie 或无关浏览数据。
 
-## Obsidian Export
+## Obsidian 导出
 
-The extension supports both Obsidian output styles at export time.
+插件在导出时支持两种 Obsidian 输出方式。
 
-### Combined Markdown
+### 合集 Markdown
 
-Generate one file, for example:
+生成一个文件，例如：
 
 `X Bookmarks Export 2026-05-16.md`
 
-Each bookmark appears as a section containing:
+每条书签作为一个小节，包含：
 
-- author and handle
-- original X link
-- timestamp, if available
-- post text
-- embedded local images when downloaded
-- video link and preview metadata when available
+- 作者和 handle
+- 原始 X 链接
+- 发布时间，如果可获取
+- 帖子正文
+- 已下载图片的本地引用
+- 视频链接和预览信息，如果可获取
 
-### One Note Per Bookmark
+### 每条书签一个 Markdown 文件
 
-Generate one Markdown file per bookmark. File names should be deterministic and filesystem-safe, using available metadata:
+每条书签生成一个 Markdown 文件。文件名应稳定、可重复生成，并且对文件系统安全。优先使用可获得的元数据：
 
 `2026-05-16-author-short-title.md`
 
-Each note should include YAML front matter:
+每篇笔记包含 YAML front matter：
 
 ```yaml
 source: x-bookmarks
@@ -107,98 +107,98 @@ tags:
   - x-bookmarks
 ```
 
-The note body should include the post text, source link, and media references.
+正文包含帖子文本、原始链接和媒体引用。
 
-### Attachments
+### 附件
 
-Images may be downloaded into an attachment folder:
+图片可以下载到附件目录：
 
 `attachments/x-bookmarks/`
 
-Markdown files should reference local image paths when image downloads succeed. If an image download fails, the Markdown should keep the original image URL as a fallback.
+当图片下载成功时，Markdown 文件应引用本地图片路径。如果图片下载失败，Markdown 中保留原始图片 URL 作为兜底。
 
-Videos are not downloaded in v1. Video bookmarks should include the source post URL and any visible preview/thumbnail information.
+v1 不下载视频。包含视频的书签应写入原帖链接，以及可见的预览图/缩略图信息。
 
-### JSON Export
+### JSON 导出
 
-Always allow raw JSON export. This gives users a stable backup and allows future versions to regenerate Markdown without recollecting from X.
+始终允许导出原始 JSON。这样用户有稳定备份，未来版本也可以不重新从 X 采集，直接用 JSON 重新生成 Markdown。
 
-## Chrome Extension Surface
+## Chrome 插件范围
 
-The v1 extension should include:
+v1 插件包含：
 
-- a popup UI with collection controls
-- a content script for parsing the X Bookmarks page
-- an export module for Markdown, JSON, and attachment packaging
-- minimal permissions limited to X and downloads
+- 带采集控制的 popup UI
+- 用于解析 X Bookmarks 页面的 content script
+- 用于生成 Markdown、JSON 和附件包的导出模块
+- 最小化权限，只覆盖 X 页面和下载能力
 
-Suggested permissions:
+建议权限：
 
 - `activeTab`
 - `downloads`
-- host permission for `https://x.com/*`
+- `https://x.com/*` host permission
 
-Avoid broad host permissions.
+避免申请过宽的网站权限。
 
-## Error Handling
+## 错误处理
 
-The extension should handle common failures with clear local messages:
+插件应对常见失败给出清晰的本地提示：
 
-- user is not on the X Bookmarks page
-- no bookmarks detected
-- X page has not loaded enough content yet
-- image download failed
-- export package generation failed
+- 用户不在 X Bookmarks 页面
+- 没有检测到书签
+- X 页面尚未加载足够内容
+- 图片下载失败
+- 导出包生成失败
 
-Failures should not discard already collected bookmarks unless the user explicitly clears them.
+除非用户明确清空，否则失败不应丢弃已经采集到的书签。
 
-## Privacy Position
+## 隐私定位
 
-The product should be explicit:
+产品应明确说明：
 
-- bookmark data stays local
-- no cloud account is required
-- no server receives exported data
-- the extension does not read passwords, cookies, or unrelated browsing history
+- 书签数据保留在本地
+- 不需要云端账号
+- 没有服务器接收导出的数据
+- 插件不读取密码、cookie 或无关浏览历史
 
-This privacy position should be reflected in the Chrome Web Store listing and any README.
+这些隐私承诺应体现在 Chrome Web Store 介绍和 README 中。
 
-## Testing Strategy
+## 测试策略
 
-Use focused tests for the pieces most likely to break:
+对最容易出问题的部分做聚焦测试：
 
-- DOM parser fixtures for representative X bookmark cards
-- Markdown generation snapshots
-- filename sanitization
-- deduplication behavior
-- JSON export shape
+- 代表性 X 书签卡片的 DOM parser fixture
+- Markdown 生成快照测试
+- 文件名安全化测试
+- 去重行为测试
+- JSON 导出结构测试
 
-Manual browser verification should cover:
+手动浏览器验证应覆盖：
 
-- not-on-bookmarks-page state
-- collecting visible bookmarks
-- guided scrolling collection
-- stopping collection
-- combined Markdown export
-- one-note-per-bookmark export
-- image attachment fallback behavior
+- 不在书签页时的状态
+- 采集可见书签
+- 引导滚动采集
+- 停止采集
+- 合集 Markdown 导出
+- 每条书签一个 Markdown 文件导出
+- 图片附件失败时的兜底行为
 
-## Open Implementation Decisions
+## 待实现阶段决策
 
-These should be resolved during implementation planning:
+这些问题在 implementation plan 阶段解决：
 
-- Whether exports are downloaded as a zip package or as individual files.
-- Whether image downloading happens by default or behind a checkbox.
-- The exact stop condition for guided scrolling.
-- The project stack for extension build tooling.
+- 导出结果是 zip 包，还是多个单独文件。
+- 图片下载默认开启，还是通过 checkbox 控制。
+- 引导滚动采集的具体停止条件。
+- Chrome 插件项目的构建工具栈。
 
-## Success Criteria
+## 成功标准
 
-The MVP is successful when:
+MVP 达成的标准：
 
-- a user can open X Bookmarks, click one control, and collect loaded bookmarks with guided scrolling
-- the user can export either one combined Markdown file or one Markdown file per bookmark
-- the export works well when moved into an Obsidian vault
-- images are preserved as local attachments when possible
-- videos are represented by links and preview metadata, not downloaded files
-- no bookmark data is uploaded to a server
+- 用户打开 X Bookmarks 后，可以点击一个控制项开始引导式采集已加载书签。
+- 用户可以导出一个合集 Markdown，或每条书签一个 Markdown 文件。
+- 导出结果放入 Obsidian vault 后可正常使用。
+- 图片在可行时保存成本地附件。
+- 视频以链接和预览信息表示，不下载视频文件。
+- 没有书签数据被上传到服务器。

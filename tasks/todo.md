@@ -138,7 +138,7 @@ Live Chrome acceptance test completed:
 - Exported a zip from Chrome downloads and verified it contained JSON, combined Markdown, per-bookmark Markdown files, and image attachments.
 - Found a real extraction issue with non-ASCII per-bookmark filenames, fixed it by switching export filenames to portable ASCII-safe slugs, rebuilt, reloaded the extension, and re-exported.
 - Verified the fixed zip extracts with the system `unzip` command and preserves Chinese content inside Markdown/JSON.
-- Current security audit status: `npm audit --audit-level=moderate` still reports 5 moderate dev-dependency findings in the Vite/esbuild/Vitest chain. npm's automatic fix requires a breaking upgrade to `vite@8.0.13`; this has not been applied.
+- Current security audit status: resolved in V2 follow-up by upgrading `vite` to `^8.0.13` and `vitest` to `^4.1.6`; `npm audit --audit-level=moderate` reports 0 vulnerabilities.
 
 V2 planning completed:
 - Productization design spec written at `docs/superpowers/specs/2026-05-16-x-bookmarks-v2-productization-design.md`.
@@ -161,6 +161,7 @@ V2 verification:
 - `npm run build` passed.
 - `dist/_locales/en/messages.json` and `dist/_locales/zh_CN/messages.json` were generated.
 - Local zip validation passed: generated zip contains `X Bookmarks Index.md`, `bookmarks.json`, `bookmarks.csv`, `links.txt`, `bookmarks.html`, `media-manifest.json`, `export-report.json`, `bookmarks/`, and `attachments/x-bookmarks/`; the sample note includes local image references and the expected Obsidian sections.
-- `npm audit --audit-level=moderate` still reports 5 moderate dev-dependency findings in the Vite/esbuild/Vitest chain. npm's fix requires `npm audit fix --force` and a breaking upgrade to `vite@8.0.13`; this was not applied.
+- `npm audit --audit-level=moderate` passed after upgrading the vulnerable Vite/Vitest development dependency chain; audit now reports 0 vulnerabilities.
+- Dependency upgrade verification passed with `vite@8.0.13`, `vitest@4.1.6`, and `@types/node@20.19.41`.
 - Chrome live validation was attempted through the real Chrome profile. Chrome automation confirmed an `https://x.com/i/bookmarks` tab existed, but reading page contents timed out twice, so popup/end-to-end live interaction is not marked as fully passed in this run.
 - Final acceptance remains open until the manual Chrome checklist passes on the user's machine.

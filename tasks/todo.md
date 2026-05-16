@@ -42,6 +42,11 @@ Build a simple, convenient Chrome extension for exporting X Bookmarks into an Ob
 - [x] Task 4: Implement filename helpers and Markdown renderers. Verification: target tests pass.
 - [x] Task 4: Typecheck. Verification: `npm run typecheck` passes.
 - [x] Task 4: Commit rendering helpers. Verification: commit message is `feat: render obsidian markdown exports`.
+- [x] Task 5: Write failing zip export tests. Verification: `npm test -- src/shared/exportZip.test.ts` fails before implementation.
+- [x] Task 5: Implement zip export builder. Verification: zip includes JSON, combined Markdown, per-bookmark Markdown, and optional image attachments.
+- [x] Task 5: Run zip tests. Verification: `npm test -- src/shared/exportZip.test.ts` passes.
+- [x] Task 5: Typecheck. Verification: `npm run typecheck` passes.
+- [x] Task 5: Commit zip export. Verification: commit message is `feat: build local export zip`.
 
 ## Review
 
@@ -76,4 +81,11 @@ Task 4 Markdown and filename rendering completed:
 - Confirmed `npm test -- src/shared/filenames.test.ts src/shared/markdown.test.ts` failed before implementation because the modules did not exist.
 - Implemented filename helpers and Markdown renderers for Obsidian-oriented exports.
 - `npm test -- src/shared/filenames.test.ts src/shared/markdown.test.ts` passed.
+- `npm run typecheck` passed.
+
+Task 5 zip export completed:
+- Added `buildExportZip` for JSZip packages containing `bookmarks.json`, combined Markdown, per-bookmark Markdown files, and optional image attachments.
+- Confirmed `npm test -- src/shared/exportZip.test.ts` failed before implementation because `src/shared/exportZip.ts` did not exist.
+- Added coverage for includeImages false, unique image fetching, successful local attachment paths, undefined image fetch results, and rejected image fetch fallback.
+- `npm test -- src/shared/exportZip.test.ts` passed.
 - `npm run typecheck` passed.

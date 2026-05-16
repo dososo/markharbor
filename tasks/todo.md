@@ -38,6 +38,10 @@ Build a simple, convenient Chrome extension for exporting X Bookmarks into an Ob
 - [x] Task 3: Implement DOM bookmark parser. Verification: parser test passes.
 - [x] Task 3: Typecheck. Verification: `npm run typecheck` passes.
 - [x] Task 3: Commit parser. Verification: commit message is `feat: parse loaded x bookmark cards`.
+- [x] Task 4: Write filename and Markdown rendering tests. Verification: target tests fail before implementation.
+- [x] Task 4: Implement filename helpers and Markdown renderers. Verification: target tests pass.
+- [x] Task 4: Typecheck. Verification: `npm run typecheck` passes.
+- [x] Task 4: Commit rendering helpers. Verification: commit message is `feat: render obsidian markdown exports`.
 
 ## Review
 
@@ -65,4 +69,11 @@ Task 3 DOM bookmark parser completed:
 - Confirmed `npm test -- src/content/parseBookmarks.test.ts` failed before implementation because `parseBookmarks` did not exist.
 - Implemented DOM parsing for loaded tweet articles, canonical X status URLs, author fields, tweet text, posted time, media image URLs, video preview metadata, and raw article text.
 - `npm test -- src/content/parseBookmarks.test.ts` passed.
+- `npm run typecheck` passed.
+
+Task 4 Markdown and filename rendering completed:
+- Added tests for safe filenames, bookmark filenames, image filenames, combined Markdown, per-bookmark front matter, YAML escaping, and image URL fallback.
+- Confirmed `npm test -- src/shared/filenames.test.ts src/shared/markdown.test.ts` failed before implementation because the modules did not exist.
+- Implemented filename helpers and Markdown renderers for Obsidian-oriented exports.
+- `npm test -- src/shared/filenames.test.ts src/shared/markdown.test.ts` passed.
 - `npm run typecheck` passed.

@@ -4,6 +4,18 @@ All notable changes to MarkHarbor will be documented in this file.
 
 This project follows a practical versioned release style. Public release tags should use `vMAJOR.MINOR.PATCH`.
 
+## [0.1.11] - 2026-05-17
+
+### Changed
+
+- Updated GitHub Actions runtime actions to the current major versions.
+- Updated development dependencies: `@types/node`, `@types/chrome`, `jsdom`, and `typescript`.
+
+### Fixed
+
+- Added CSS side-effect import typing for TypeScript 6.
+- Adjusted Chrome API wrapper and popup tests for newer Chrome type declarations.
+
 ## [0.1.10] - 2026-05-17
 
 ### Added

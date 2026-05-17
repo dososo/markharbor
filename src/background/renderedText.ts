@@ -13,7 +13,7 @@ interface RenderedTextChromeApi {
     remove: (tabId: number) => Promise<void>;
   };
   windows?: {
-    create: (properties: chrome.windows.CreateData) => Promise<{ id?: number; tabs?: Array<{ id?: number }> }>;
+    create: (properties: chrome.windows.CreateData) => Promise<{ id?: number; tabs?: Array<{ id?: number }> } | undefined>;
     remove: (windowId: number) => Promise<void>;
   };
   scripting: {
@@ -569,10 +569,10 @@ async function createDetailTarget(
       width: 900,
       height: 900
     });
-    const tabId = captureWindow.tabs?.[0]?.id;
+    const tabId = captureWindow?.tabs?.[0]?.id;
 
-    if (!captureWindow.id || !tabId) {
-      if (captureWindow.id) {
+    if (!captureWindow?.id || !tabId) {
+      if (captureWindow?.id) {
         await chromeApi.windows.remove(captureWindow.id);
       }
       throw new Error("Created detail capture window has no tab id.");

@@ -34,6 +34,9 @@ const staleState: CollectionState = {
   detailEnhancementTotal: 0
 };
 
+let tabsQueryMock: ReturnType<typeof vi.fn>;
+let tabsSendMessageMock: ReturnType<typeof vi.fn>;
+
 async function flushAsyncWork(): Promise<void> {
   await Promise.resolve();
   await Promise.resolve();
@@ -45,14 +48,16 @@ describe("popup main", () => {
     document.body.innerHTML = '<div id="app"></div>';
     localStorage.clear();
     localStorage.setItem("markharbor-language", "zh");
+    tabsQueryMock = vi.fn(async () => [{ id: 1 }]);
+    tabsSendMessageMock = vi.fn(async () => ({
+      ok: false,
+      errorKey: "openBookmarksError",
+      state: emptyState
+    }));
     vi.stubGlobal("chrome", {
       tabs: {
-        query: vi.fn(async () => [{ id: 1 }]),
-        sendMessage: vi.fn(async () => ({
-          ok: false,
-          errorKey: "openBookmarksError",
-          state: emptyState
-        }))
+        query: tabsQueryMock,
+        sendMessage: tabsSendMessageMock
       },
       scripting: {
         executeScript: vi.fn(async () => undefined)
@@ -81,7 +86,7 @@ describe("popup main", () => {
   });
 
   it("does not show stale collected bookmarks before the user starts this popup session", async () => {
-    vi.mocked(chrome.tabs.sendMessage).mockResolvedValueOnce({
+    tabsSendMessageMock.mockResolvedValueOnce({
       ok: true,
       bookmarks: [staleBookmark],
       state: staleState
@@ -96,11 +101,11 @@ describe("popup main", () => {
   });
 
   it("injects the content script into an already-open bookmarks tab when messaging is not ready", async () => {
-    vi.mocked(chrome.tabs.query).mockResolvedValueOnce([{
+    tabsQueryMock.mockResolvedValueOnce([{
       id: 1,
       url: "https://x.com/i/bookmarks"
     } as chrome.tabs.Tab]);
-    vi.mocked(chrome.tabs.sendMessage)
+    tabsSendMessageMock
       .mockRejectedValueOnce(new Error("Could not establish connection. Receiving end does not exist."))
       .mockResolvedValueOnce({
         ok: true,
@@ -119,7 +124,7 @@ describe("popup main", () => {
   });
 
   it("shows a prominent working state while collection is running", async () => {
-    vi.mocked(chrome.tabs.sendMessage).mockResolvedValueOnce({
+    tabsSendMessageMock.mockResolvedValueOnce({
       ok: true,
       bookmarks: [],
       state: {

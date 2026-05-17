@@ -239,6 +239,12 @@
   - 修复：补齐社区健康文件、issue/PR 模板、Dependabot、CI workflow、Release workflow、发布 zip 打包脚本、安装说明、发布说明、隐私说明、路线图和变更记录。
   - 修复：README 安装区改为普通用户优先从 GitHub Releases 下载 `markharbor-vX.Y.Z.zip`，解压后加载 `markharbor/` unpacked extension；源码构建作为开发者路径。
   - 验证：`npm test` 12 个测试文件、90 个测试通过；`npm run typecheck` 通过；`npm run build` 通过；`npm run package` 通过并确认 `release/markharbor-v0.1.10.zip` 内含 `markharbor/manifest.json`；`npm audit --audit-level=moderate` 通过，0 个漏洞；`git diff --check` 通过。
+- GitHub 发布后依赖维护
+  - 背景：发布后 Dependabot 自动打开多个维护 PR。
+  - 修复：合并 CI 通过的 PR #1、#2、#3、#4；在 main 上手动吸收 PR #5、#6、#7 的依赖升级并修复 TypeScript 6 / 新版 Chrome 类型问题。
+  - 修复：新增 `src/vite-env.d.ts`，调整 `RenderedTextChromeApi`，并让 popup 测试使用本地 mock 引用以避免新版 Chrome 重载类型影响测试。
+  - 版本：同步升到 `0.1.11`，`dist/manifest.json` 版本确认为 `0.1.11`。
+  - 验证：`npm test` 12 个测试文件、90 个测试通过；`npm run typecheck` 通过；`npm run build` 通过；`npm run package` 通过并确认 `release/markharbor-v0.1.11.zip` 内含 `markharbor/manifest.json`；`npm audit --audit-level=moderate` 通过，0 个漏洞；`git diff --check` 通过。
 
 ## 风险点
 

@@ -16,6 +16,12 @@ async function keepBookmark(bookmark: XBookmark): Promise<XBookmark> {
   return bookmark;
 }
 
+async function flushAsyncWork(): Promise<void> {
+  for (let index = 0; index < 6; index += 1) {
+    await Promise.resolve();
+  }
+}
+
 describe("createCollectionController", () => {
   it("does not scan the page when only reading status", () => {
     const controller = createCollectionController({
@@ -117,8 +123,37 @@ describe("createCollectionController", () => {
 
     expect(started).toHaveLength(1);
     resolvers[0]();
-    await Promise.resolve();
-    await Promise.resolve();
+    await flushAsyncWork();
+    expect(started).toHaveLength(2);
+    resolvers[1]();
+    await controller.whenIdle();
+  });
+
+  it("scrolls after each enhanced bookmark instead of waiting for the whole visible batch", async () => {
+    let scrolls = 0;
+    const started: string[] = [];
+    const resolvers: Array<() => void> = [];
+    const enhanceBookmarkText = vi.fn((bookmark: XBookmark) => new Promise<XBookmark>((resolve) => {
+      started.push(bookmark.url);
+      resolvers.push(() => resolve(bookmark));
+    }));
+    const controller = createCollectionController({
+      doc: bookmarkDocument(),
+      getLocation: xBookmarksLocation,
+      delay: async () => undefined,
+      maxScrollAttempts: 2,
+      scrollPage: () => {
+        scrolls += 1;
+      },
+      enhanceBookmarkText
+    });
+
+    controller.handleMessage({ type: "START_COLLECTION" });
+
+    expect(started).toHaveLength(1);
+    resolvers[0]();
+    await flushAsyncWork();
+    expect(scrolls).toBe(1);
     expect(started).toHaveLength(2);
     resolvers[1]();
     await controller.whenIdle();

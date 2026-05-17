@@ -184,6 +184,12 @@
   - 修复：popup 增加“完整正文配图高级模式”开关，并显示当前阶段和当前采集标题。
   - 版本：同步升到 `0.1.5`，`dist/manifest.json` 版本确认为 `0.1.5`。
   - 验证：`npm test` 12 个测试文件、86 个测试通过；`npm run typecheck` 通过；`npm run build` 通过；`npm audit --audit-level=moderate` 通过，0 个漏洞；`git diff --check` 通过。
+- 书签列表滚动与采集节奏匹配
+  - 背景：用户反馈当前书签列表长时间不滚动，虽然 popup 显示采集中，但体感像没有推进。
+  - 根因：`0.1.5` 会把当前可见批次的待增强书签全部处理完再滚动；高级正文配图耗时较长时，主列表会静止很久。
+  - 修复：增强队列保留已发现书签，但每个采集循环只处理一条；一条增强完成后立即滚动列表，再继续下一条。
+  - 版本：同步升到 `0.1.6`，`dist/manifest.json` 版本确认为 `0.1.6`。
+  - 验证：`npm test` 12 个测试文件、87 个测试通过；`npm run typecheck` 通过；`npm run build` 通过；`npm audit --audit-level=moderate` 通过，0 个漏洞；`git diff --check` 通过。
 
 ## 风险点
 

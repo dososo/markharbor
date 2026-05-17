@@ -306,3 +306,18 @@ X Article 正文图片懒加载回归修复记录：
 - 兼容补强：正文图片可能不是直接 `<img>`，而是 `tweetPhoto` 内层元素的 `background-image`；提取逻辑现在会查找后代元素样式中的 `pbs.twimg.com/media`。
 - 版本号已从 `0.1.2` 升到 `0.1.3`，`dist/manifest.json` 版本确认为 `0.1.3`。
 - 验证通过：`npm test` 12 个测试文件、83 个测试通过；`npm run typecheck` 通过；`npm run build` 通过；`npm audit --audit-level=moderate` 通过，0 个漏洞；`git diff --check` 通过。
+
+X Article 激活详情页采集修复执行计划：
+- [x] Active Detail P0-1：只读审计最新导出包。验证：`bookmarks.json` 中增强成功的 X Article 仍有 0 个正文 image block，确认问题在采集层。
+- [x] Active Detail P0-2：用真实 Chrome 检查目标 Article。验证：可见详情页中 `twitterArticleRichTextView` 内能看到多张 `pbs.twimg.com/media` 正文图。
+- [x] Active Detail P0-3：补充 Article 详情页需激活打开的失败测试。验证：X Article 调用 `chrome.tabs.create` 时必须 `active: true`，完成后恢复书签页。
+- [x] Active Detail P0-4：补充增强队列限流测试。验证：详情增强一次只跑一个，避免多个激活标签页同时抢焦点。
+- [x] Active Detail P0-5：实现激活采集和串行增强。验证：普通推文仍可非激活采集，X Article 使用激活标签页以触发完整正文图片渲染。
+- [x] Active Detail P0-6：同步版本并跑完整验证。验证：版本升到 `0.1.4`，目标测试、全量测试、类型检查、构建、审计和 diff 空白检查全部通过。
+
+X Article 激活详情页采集修复记录：
+- 根因补充：非激活详情页能拿到 X Article 文字，但可能不完整渲染内联图片；真实可见标签页打开同一文章时，正文 rich text 内可直接看到 20 多张正文图。
+- 修复策略：X Article 详情增强改为短暂激活详情页读取，读取后恢复原书签页；普通推文仍保持非激活读取。
+- 体验控制：详情增强队列改为串行处理，避免同时打开多个激活详情页造成标签页焦点混乱。
+- 版本号已从 `0.1.3` 升到 `0.1.4`，`dist/manifest.json` 版本确认为 `0.1.4`。
+- 验证通过：`npm test` 12 个测试文件、85 个测试通过；`npm run typecheck` 通过；`npm run build` 通过；`npm audit --audit-level=moderate` 通过，0 个漏洞；`git diff --check` 通过。

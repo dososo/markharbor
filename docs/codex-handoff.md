@@ -167,11 +167,21 @@
   - 修复：图片提取扩展到 `tweetPhoto` 后代元素的 `background-image`，覆盖正文图不是直接 `<img>` 的真实 DOM 形态。
   - 版本：同步升到 `0.1.3`，`dist/manifest.json` 版本确认为 `0.1.3`。
   - 验证：`npm test` 12 个测试文件、83 个测试通过；`npm run typecheck` 通过；`npm run build` 通过；`npm audit --audit-level=moderate` 通过，0 个漏洞；`git diff --check` 通过。
+- X Article 激活详情页采集修复
+  - 背景：用户继续反馈最新版导出仍看不到正文配图。
+  - 证据：最新导出包 `bookmarks.json` 中，多篇 `textSource: "post-detail"` 的 X Article 有大量正文块，但 image block 为 0；问题仍在采集层，不在 Markdown/HTML 渲染层。
+  - 证据：真实 Chrome 可见标签页打开 `crypto_dazui`、`_jiaran` 等 X Article 时，`twitterArticleRichTextView` 内能看到 20 多张 `pbs.twimg.com/media` 正文图。
+  - 根因补充：后台用 `active: false` 打开的非激活详情页可能只完整渲染文字，不完整渲染 Article 内联图片。
+  - 修复：X Article 详情增强改为短暂激活详情页读取，读取完成后恢复原书签页；普通推文仍保持非激活读取。
+  - 修复：详情增强队列改为串行处理，避免多个激活详情页同时抢焦点。
+  - 版本：同步升到 `0.1.4`，`dist/manifest.json` 版本确认为 `0.1.4`。
+  - 验证：`npm test` 12 个测试文件、85 个测试通过；`npm run typecheck` 通过；`npm run build` 通过；`npm audit --audit-level=moderate` 通过，0 个漏洞；`git diff --check` 通过。
 
 ## 风险点
 
 - X 页面 DOM 不稳定，后续可能导致解析器失效。
-- X 原帖详情页正文增强依赖 X 页面 HTML 内嵌状态、DOM 和非激活详情页渲染。普通推文、X Article 卡片、X Article rich text view 是不同 DOM 路径，若 X 修改结构或不返回对应数据，可能回退到列表页正文或 X Article 标题/摘要。
+- X 原帖详情页正文增强依赖 X 页面 HTML 内嵌状态、DOM 和详情页渲染。普通推文、X Article 卡片、X Article rich text view 是不同 DOM 路径，若 X 修改结构或不返回对应数据，可能回退到列表页正文或 X Article 标题/摘要。
+- X Article 正文图片采集现在会短暂激活详情页，采集期间可能看到浏览器切到文章标签页；这是为了触发 X 完整渲染内联正文图片。
 - X Article 排版依赖 DOM 字体大小、粗细、列表符号和图片节点推断，只保证尽量保留阅读结构，不保证完全复刻 X 原站视觉。
 - 外部文章全文抓取会引入更宽权限、跨站限制、反爬、付费墙和审核风险。
 - Chrome Web Store 发布文案必须避免暗示“绕过 X 限制”“自动导出全部历史书签”“下载视频”。

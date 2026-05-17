@@ -9,6 +9,7 @@ export interface RenderedDetailContent {
 interface RenderedTextChromeApi {
   tabs: {
     create: (properties: chrome.tabs.CreateProperties) => Promise<{ id?: number }>;
+    update?: (tabId: number, properties: chrome.tabs.UpdateProperties) => Promise<unknown>;
     remove: (tabId: number) => Promise<void>;
   };
   scripting: {
@@ -20,10 +21,12 @@ interface FetchRenderedTextOptions {
   chromeApi?: RenderedTextChromeApi;
   delay?: (ms: number) => Promise<void>;
   maxAttempts?: number;
+  openerTabId?: number;
   waitMs?: number;
 }
 
 const DEFAULT_MAX_ATTEMPTS = 20;
+const DEFAULT_ARTICLE_MAX_ATTEMPTS = 40;
 const DEFAULT_WAIT_MS = 500;
 
 function defaultDelay(ms: number): Promise<void> {
@@ -385,11 +388,12 @@ export async function fetchRenderedDetailContent(
 ): Promise<RenderedDetailContent | undefined> {
   const chromeApi = options.chromeApi ?? chrome;
   const delay = options.delay ?? defaultDelay;
-  const maxAttempts = options.maxAttempts ?? DEFAULT_MAX_ATTEMPTS;
+  const maxAttempts = options.maxAttempts ?? (bookmark.article ? DEFAULT_ARTICLE_MAX_ATTEMPTS : DEFAULT_MAX_ATTEMPTS);
   const waitMs = options.waitMs ?? DEFAULT_WAIT_MS;
+  const shouldActivateDetailTab = bookmark.article !== undefined;
   const tab = await chromeApi.tabs.create({
     url: bookmark.url,
-    active: false
+    active: shouldActivateDetailTab
   });
 
   if (!tab.id) {
@@ -427,6 +431,9 @@ export async function fetchRenderedDetailContent(
     } : undefined;
   } finally {
     await chromeApi.tabs.remove(tab.id);
+    if (shouldActivateDetailTab && options.openerTabId && chromeApi.tabs.update) {
+      await chromeApi.tabs.update(options.openerTabId, { active: true });
+    }
   }
 }
 

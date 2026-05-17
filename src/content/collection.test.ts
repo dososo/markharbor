@@ -95,6 +95,33 @@ describe("createCollectionController", () => {
     await controller.whenIdle();
   });
 
+  it("runs detail enhancements one at a time so X Article tabs do not compete for focus", async () => {
+    const started: string[] = [];
+    const resolvers: Array<() => void> = [];
+    const enhanceBookmarkText = vi.fn((bookmark: XBookmark) => new Promise<XBookmark>((resolve) => {
+      started.push(bookmark.url);
+      resolvers.push(() => resolve(bookmark));
+    }));
+    const controller = createCollectionController({
+      doc: bookmarkDocument(),
+      getLocation: xBookmarksLocation,
+      delay: async () => undefined,
+      maxScrollAttempts: 1,
+      scrollPage: () => undefined,
+      enhanceBookmarkText
+    });
+
+    controller.handleMessage({ type: "START_COLLECTION" });
+
+    expect(started).toHaveLength(1);
+    resolvers[0]();
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(started).toHaveLength(2);
+    resolvers[1]();
+    await controller.whenIdle();
+  });
+
   it("starts a new collection from a clean state so stale empty bookmarks are enhanced", async () => {
     const enhanceBookmarkText = vi.fn(async (bookmark) => ({
       ...bookmark,

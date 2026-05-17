@@ -1,7 +1,7 @@
 export const manifest = {
   manifest_version: 3,
   name: "__MSG_extName__",
-  version: "0.1.3",
+  version: "0.1.4",
   description: "__MSG_extDescription__",
   default_locale: "zh_CN",
   action: {

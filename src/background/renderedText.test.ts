@@ -221,7 +221,7 @@ describe("rendered X detail text", () => {
     ]);
   });
 
-  it("opens an inactive X detail tab, reads rendered text, and closes the tab", async () => {
+  it("opens a normal X detail tab inactive, reads rendered text, and closes the tab", async () => {
     const chromeApi = {
       tabs: {
         create: vi.fn(async () => ({ id: 42 })),
@@ -234,7 +234,10 @@ describe("rendered X detail text", () => {
       }
     };
 
-    const text = await fetchRenderedDetailText(bookmark, {
+    const text = await fetchRenderedDetailText({
+      ...bookmark,
+      article: undefined
+    }, {
       chromeApi,
       delay: async () => undefined,
       maxAttempts: 1
@@ -250,6 +253,40 @@ describe("rendered X detail text", () => {
       args: [bookmark.id, bookmark.url]
     }));
     expect(chromeApi.tabs.remove).toHaveBeenCalledWith(42);
+  });
+
+  it("opens X Article detail tabs active so inline images render and restores the opener tab", async () => {
+    const chromeApi = {
+      tabs: {
+        create: vi.fn(async () => ({ id: 42 })),
+        update: vi.fn(async () => ({})),
+        remove: vi.fn(async () => undefined)
+      },
+      scripting: {
+        executeScript: vi.fn(async () => [{
+          result: {
+            text: "完整长文",
+            contentBlocks: [{ type: "paragraph" as const, text: "完整长文" }],
+            isComplete: true
+          }
+        }])
+      }
+    };
+
+    const content = await fetchRenderedDetailContent(bookmark, {
+      chromeApi,
+      delay: async () => undefined,
+      maxAttempts: 1,
+      openerTabId: 7
+    });
+
+    expect(content?.text).toBe("完整长文");
+    expect(chromeApi.tabs.create).toHaveBeenCalledWith({
+      url: "https://x.com/jinchenma_ai/status/2054167281241051194",
+      active: true
+    });
+    expect(chromeApi.tabs.remove).toHaveBeenCalledWith(42);
+    expect(chromeApi.tabs.update).toHaveBeenCalledWith(7, { active: true });
   });
 
   it("waits for rendered X Article rich text content before returning cover-only early content", async () => {

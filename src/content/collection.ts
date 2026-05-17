@@ -102,7 +102,9 @@ export function createCollectionController(options: CollectionControllerOptions 
   let currentRun: Promise<void> | undefined;
   const enhancedUrls = new Set<string>();
   const enhancedBookmarks = new Map<string, XBookmark>();
+  const enhancementQueue: Array<() => Promise<void>> = [];
   const pendingEnhancements = new Set<Promise<void>>();
+  let isProcessingEnhancements = false;
 
   const scrollPage = options.scrollPage ?? defaultScrollPage;
 
@@ -135,8 +137,9 @@ export function createCollectionController(options: CollectionControllerOptions 
       }
 
       enhancedUrls.add(bookmark.url);
-      const task = enhanceBookmarkText(bookmark)
-        .then((enhancedBookmark) => {
+      enhancementQueue.push(async () => {
+        try {
+          const enhancedBookmark = await enhanceBookmarkText(bookmark);
           if (!isCurrentRun(runId)) {
             return;
           }
@@ -145,13 +148,37 @@ export function createCollectionController(options: CollectionControllerOptions 
           state.bookmarks = state.bookmarks.map((currentBookmark) => (
             currentBookmark.url === bookmark.url ? enhancedBookmark : currentBookmark
           ));
-        })
-        .catch(() => undefined)
-        .finally(() => {
-          pendingEnhancements.delete(task);
-        });
-      pendingEnhancements.add(task);
+        } catch {
+          // 单条详情增强失败时保留列表页数据，不中断整轮采集。
+        }
+      });
     }
+
+    processEnhancementQueue();
+  }
+
+  function processEnhancementQueue(): void {
+    if (isProcessingEnhancements || enhancementQueue.length === 0) {
+      return;
+    }
+
+    isProcessingEnhancements = true;
+    const task = (async () => {
+      try {
+        while (enhancementQueue.length > 0) {
+          const nextTask = enhancementQueue.shift();
+          await nextTask?.();
+        }
+      } finally {
+        isProcessingEnhancements = false;
+      }
+    })().finally(() => {
+      pendingEnhancements.delete(task);
+      if (enhancementQueue.length > 0) {
+        processEnhancementQueue();
+      }
+    });
+    pendingEnhancements.add(task);
   }
 
   function isCurrentRun(runId: number): boolean {
@@ -229,6 +256,7 @@ export function createCollectionController(options: CollectionControllerOptions 
     state.idleScans = 0;
     enhancedUrls.clear();
     enhancedBookmarks.clear();
+    enhancementQueue.length = 0;
     pendingEnhancements.clear();
   }
 
@@ -240,6 +268,7 @@ export function createCollectionController(options: CollectionControllerOptions 
     state.idleScans = 0;
     enhancedUrls.clear();
     enhancedBookmarks.clear();
+    enhancementQueue.length = 0;
     pendingEnhancements.clear();
   }
 

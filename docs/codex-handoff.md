@@ -30,6 +30,13 @@
   - popup 标题：`MarkHarbor`
   - 导出 HTML / 合并 Markdown 标题：`MarkHarbor Export`
   - 当前版本：`0.1.10`
+- GitHub 开源发布材料已补齐：
+  - `LICENSE`、`CONTRIBUTING.md`、`CODE_OF_CONDUCT.md`、`SECURITY.md`、`SUPPORT.md`、`CHANGELOG.md`
+  - `.github/ISSUE_TEMPLATE/`、`.github/pull_request_template.md`
+  - `.github/workflows/ci.yml`、`.github/workflows/release.yml`
+  - `.github/dependabot.yml`
+  - `docs/INSTALL.md`、`docs/RELEASE.md`、`docs/PRIVACY.md`、`docs/ROADMAP.md`
+  - `scripts/package-extension.mjs` 和 `npm run package`
 - 修复安全审计问题：
   - `vite` 升级到 `^8.0.13`
   - `vitest` 升级到 `^4.1.6`
@@ -227,6 +234,11 @@
   - 修复：初始设计/计划文档重命名为 `docs/superpowers/specs/2026-05-16-markharbor-design.md` 和 `docs/superpowers/plans/2026-05-16-markharbor.md`。
   - 版本：同步升到 `0.1.10`，`dist/manifest.json` 版本确认为 `0.1.10`。
   - 验证：`npm test` 12 个测试文件、90 个测试通过；`npm run typecheck` 通过；`npm run build` 通过；`npm audit --audit-level=moderate` 通过，0 个漏洞；`git diff --check` 通过；旧展示名精确搜索无残留。
+- GitHub 开源发布材料准备
+  - 背景：用户准备发布到自己的 GitHub 仓库，要求遵循 GitHub 主流通用做法，并面向全球用户展示。
+  - 修复：补齐社区健康文件、issue/PR 模板、Dependabot、CI workflow、Release workflow、发布 zip 打包脚本、安装说明、发布说明、隐私说明、路线图和变更记录。
+  - 修复：README 安装区改为普通用户优先从 GitHub Releases 下载 `markharbor-vX.Y.Z.zip`，解压后加载 `markharbor/` unpacked extension；源码构建作为开发者路径。
+  - 验证：`npm test` 12 个测试文件、90 个测试通过；`npm run typecheck` 通过；`npm run build` 通过；`npm run package` 通过并确认 `release/markharbor-v0.1.10.zip` 内含 `markharbor/manifest.json`；`npm audit --audit-level=moderate` 通过，0 个漏洞；`git diff --check` 通过。
 
 ## 风险点
 

@@ -8,6 +8,13 @@ MarkHarbor 把 X Bookmarks 变成一个可离线保存、可检索、可二次�
 
 [English](#english)
 
+## 当前状态
+
+- 当前版本：`0.1.10`
+- 发布方式：GitHub Releases 下载 zip，手动加载为 Chrome unpacked extension
+- 许可证：MIT
+- 商店状态：尚未上架 Chrome Web Store
+
 ## 为什么做它？
 
 X Bookmarks 很适合“先收藏，之后再看”，但它不适合长期知识管理：
@@ -88,36 +95,50 @@ MarkHarbor 是一个 Chrome Manifest V3 扩展。它在 `https://x.com/i/bookmar
 
 ## 安装
 
-当前推荐本地加载开发版扩展。
+MarkHarbor 尚未上架 Chrome Web Store。公开发布阶段推荐从 GitHub Releases 下载扩展 zip，解压后作为“已解压的扩展程序”加载。
 
-### 1. 准备环境
+### 方式 A：从 GitHub Releases 安装
 
-- Node.js 20+
-- Chrome 或 Chromium 系浏览器
+适合普通用户。
 
-### 2. 安装依赖并构建
+1. 打开本仓库的 `Releases` 页面。
+2. 下载最新版本的 `markharbor-vX.Y.Z.zip`。
+3. 解压 zip。
+4. 打开 Chrome 的 `chrome://extensions`。
+5. 开启右上角“开发者模式”。
+6. 点击“加载已解压的扩展程序”。
+7. 选择解压后的 `markharbor/` 文件夹。这个文件夹里应当包含 `manifest.json`。
+8. 打开 `https://x.com/i/bookmarks`。
+9. 点击浏览器工具栏中的 MarkHarbor 图标。
+
+请保留解压后的 `markharbor/` 文件夹。Chrome 会从这个本地目录读取插件文件，移动或删除目录可能导致插件失效。
+
+更新版本时，下载新的 release zip，解压后替换旧文件夹，然后在 `chrome://extensions` 中点击 MarkHarbor 的“重新加载”。
+
+### 方式 B：从源码构建
+
+适合开发者或想先审计源码的用户。
 
 ```bash
-npm install
+npm ci
 npm run build
 ```
 
-### 3. 在 Chrome 中加载扩展
+然后在 `chrome://extensions` 中加载生成的 `dist/` 目录。
 
-1. 打开 `chrome://extensions`。
-2. 开启右上角“开发者模式”。
-3. 点击“加载已解压的扩展程序”。
-4. 选择本项目生成的 `dist/` 目录。
-5. 打开 `https://x.com/i/bookmarks`。
-6. 点击浏览器工具栏中的扩展图标。
-
-每次代码更新后，重新运行：
+### 方式 C：本地生成 release zip
 
 ```bash
-npm run build
+npm run package
 ```
 
-然后在 `chrome://extensions` 中点击扩展的“重新加载”按钮。
+生成文件：
+
+```text
+release/markharbor-vX.Y.Z.zip
+```
+
+更详细的安装说明见 [docs/INSTALL.md](docs/INSTALL.md)。
 
 ## 使用方法
 
@@ -311,10 +332,11 @@ Markdown 和 HTML 会优先引用本地图片；下载失败时保留远程 URL�
 ## 本地开发
 
 ```bash
-npm install
+npm ci
 npm test
 npm run typecheck
 npm run build
+npm run package
 ```
 
 当前测试覆盖：
@@ -328,15 +350,24 @@ npm run build
 - zip 打包结构。
 - 文件名安全化和去重。
 
-## 开源发布前建议
+## 开源仓库材料
 
-如果你准备把这个项目发布到 GitHub，建议补齐：
+本仓库已包含面向 GitHub 开源发布的基础材料：
 
-- `LICENSE`：建议 MIT。
-- `CONTRIBUTING.md`：说明如何提 issue、如何跑测试。
-- `SECURITY.md`：说明隐私和安全问题反馈方式。
+- [LICENSE](LICENSE)：MIT License。
+- [CONTRIBUTING.md](CONTRIBUTING.md)：贡献指南。
+- [SECURITY.md](SECURITY.md)：安全和隐私问题反馈方式。
+- [SUPPORT.md](SUPPORT.md)：支持和提问说明。
+- [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)：社区行为准则。
+- [CHANGELOG.md](CHANGELOG.md)：版本变更记录。
+- [docs/INSTALL.md](docs/INSTALL.md)：安装说明。
+- [docs/RELEASE.md](docs/RELEASE.md)：发布流程。
+- [docs/PRIVACY.md](docs/PRIVACY.md)：隐私说明。
+- [docs/ROADMAP.md](docs/ROADMAP.md)：路线图。
 - `.github/ISSUE_TEMPLATE/`：bug report 和 feature request 模板。
-- `.github/workflows/ci.yml`：在 PR 上运行 `npm test`、`npm run typecheck`、`npm run build`。
+- `.github/workflows/ci.yml`：PR 和 push 的测试、类型检查、构建、审计和打包。
+- `.github/workflows/release.yml`：推送 `vX.Y.Z` tag 后自动生成 GitHub Release zip。
+- `.github/dependabot.yml`：依赖和 GitHub Actions 更新提醒。
 
 ## 适合用于 X 长文的一句话
 
@@ -344,7 +375,7 @@ npm run build
 
 ## License
 
-当前仓库尚未添加 `LICENSE` 文件。正式开源前建议使用 MIT License。
+MIT License. See [LICENSE](LICENSE).
 
 ---
 
@@ -401,19 +432,38 @@ MarkHarbor focuses on a narrower workflow: batch-exporting X Bookmarks into an O
 
 ## Install
 
+MarkHarbor is not on the Chrome Web Store yet. The recommended public installation path is a GitHub Release zip loaded as an unpacked extension.
+
+### Option A: Install from GitHub Releases
+
+1. Open this repository's `Releases` page.
+2. Download the latest `markharbor-vX.Y.Z.zip`.
+3. Unzip it.
+4. Open `chrome://extensions`.
+5. Enable `Developer mode`.
+6. Click `Load unpacked`.
+7. Select the extracted `markharbor/` folder that contains `manifest.json`.
+8. Open `https://x.com/i/bookmarks`.
+9. Click the MarkHarbor extension icon.
+
+Keep the extracted `markharbor/` folder on disk. Chrome loads unpacked extensions from that local folder.
+
+### Option B: Build from source
+
 ```bash
-npm install
+npm ci
 npm run build
 ```
 
-Then:
+Then load the generated `dist/` folder from `chrome://extensions`.
 
-1. Open `chrome://extensions`.
-2. Enable Developer Mode.
-3. Click `Load unpacked`.
-4. Select the generated `dist/` folder.
-5. Open `https://x.com/i/bookmarks`.
-6. Click the extension icon.
+### Option C: Package locally
+
+```bash
+npm run package
+```
+
+This creates `release/markharbor-vX.Y.Z.zip`.
 
 ## Usage
 
@@ -500,4 +550,4 @@ No. It only saves source links and visible preview information.
 
 ## License
 
-No `LICENSE` file has been added yet. MIT License is recommended before public release.
+MIT License. See [LICENSE](LICENSE).

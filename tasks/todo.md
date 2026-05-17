@@ -423,3 +423,18 @@ GitHub 开源 README 重写记录：
 - 初始设计/计划文档已重命名为 `docs/superpowers/specs/2026-05-16-markharbor-design.md` 和 `docs/superpowers/plans/2026-05-16-markharbor.md`。
 - 版本号已从 `0.1.9` 升到 `0.1.10`，`dist/manifest.json` 版本确认为 `0.1.10`。
 - 验证通过：`npm test` 12 个测试文件、90 个测试通过；`npm run typecheck` 通过；`npm run build` 通过；`npm audit --audit-level=moderate` 通过，0 个漏洞；`git diff --check` 通过；旧展示名精确搜索无残留。
+
+GitHub 开源发布材料准备执行计划：
+- [x] OSS P0-1：补齐社区健康文件。验证：存在 `LICENSE`、`CONTRIBUTING.md`、`CODE_OF_CONDUCT.md`、`SECURITY.md`、issue 模板和 PR 模板。
+- [x] OSS P0-2：补齐 CI 和发布打包流程。验证：GitHub Actions 能跑测试/类型检查/构建，tag release 能生成扩展 zip。
+- [x] OSS P0-3：补齐未上架 Chrome Web Store 的安装说明。验证：README 和 `docs/INSTALL.md` 明确 GitHub Releases 下载、解压、加载 unpacked extension、更新方式和源码构建方式。
+- [x] OSS P0-4：补齐发布、隐私、路线图和变更记录文档。验证：存在 `docs/RELEASE.md`、`docs/PRIVACY.md`、`docs/ROADMAP.md`、`CHANGELOG.md`。
+- [x] OSS P0-5：跑完整验证并提交。验证：`npm test`、`npm run typecheck`、`npm run build`、`npm run package`、`npm audit --audit-level=moderate`、`git diff --check` 全部通过。
+
+GitHub 开源发布材料准备记录：
+- 新增 MIT `LICENSE`、`CONTRIBUTING.md`、`CODE_OF_CONDUCT.md`、`SECURITY.md`、`SUPPORT.md` 和 `CHANGELOG.md`。
+- 新增 GitHub issue 模板、PR 模板、Dependabot 配置、CI workflow 和 tag release workflow。
+- 新增 `scripts/package-extension.mjs` 和 `npm run package`，可生成 `release/markharbor-v0.1.10.zip`。
+- README 和 `docs/INSTALL.md` 已改为未上架 Chrome Web Store 的主流安装路径：从 GitHub Releases 下载 zip、解压、在 `chrome://extensions` 中加载解压后的 `markharbor/` 文件夹。
+- 新增 `docs/RELEASE.md`、`docs/PRIVACY.md` 和 `docs/ROADMAP.md`，覆盖发布流程、隐私权限和项目边界。
+- 验证通过：`npm test` 12 个测试文件、90 个测试通过；`npm run typecheck` 通过；`npm run build` 通过；`npm run package` 通过并确认 zip 内含 `markharbor/manifest.json`；`npm audit --audit-level=moderate` 通过，0 个漏洞；`git diff --check` 通过。

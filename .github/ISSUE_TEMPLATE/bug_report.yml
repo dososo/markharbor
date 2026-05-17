@@ -1,0 +1,62 @@
+name: Bug report
+description: Report a reproducible MarkHarbor problem.
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve MarkHarbor. Please remove private bookmark content before posting screenshots or logs.
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What went wrong?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: List the exact steps from opening X Bookmarks to seeing the issue.
+      placeholder: |
+        1. Open https://x.com/i/bookmarks
+        2. Click MarkHarbor
+        3. Click Start collection
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: MarkHarbor version
+      placeholder: v0.1.10
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and OS
+      placeholder: Chrome 125 on macOS 14
+    validations:
+      required: true
+  - type: textarea
+    id: export
+    attributes:
+      label: Export details
+      description: If relevant, include counts from export-report.json. Do not upload private bookmarks.
+  - type: textarea
+    id: extra
+    attributes:
+      label: Additional context

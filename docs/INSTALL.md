@@ -5,7 +5,7 @@ MarkHarbor is not yet published on the Chrome Web Store. The recommended public 
 ## Recommended: Install from GitHub Releases
 
 1. Open the repository's `Releases` page.
-2. Download `markharbor-vX.Y.Z.zip` from the latest release assets.
+2. Download `markharbor-v0.1.11.zip` or the newest `markharbor-vX.Y.Z.zip` from the latest release assets.
 3. Unzip the file.
 4. Open Chrome and go to `chrome://extensions`.
 5. Enable `Developer mode`.
@@ -55,6 +55,6 @@ The zip contains a `markharbor/` folder ready to load as an unpacked extension.
 
 ## 中文安装说明
 
-MarkHarbor 还没有上架 Chrome Web Store。公开发布时，普通用户建议从 GitHub Releases 下载 `markharbor-vX.Y.Z.zip`，解压后在 `chrome://extensions` 中开启开发者模式，并选择解压得到的 `markharbor/` 文件夹进行“加载已解压的扩展程序”。
+MarkHarbor 还没有上架 Chrome Web Store。公开发布时，普通用户建议从 GitHub Releases 下载 `markharbor-v0.1.11.zip` 或最新的 `markharbor-vX.Y.Z.zip`，解压后在 `chrome://extensions` 中开启开发者模式，并选择解压得到的 `markharbor/` 文件夹进行“加载已解压的扩展程序”。
 
 注意：不要删除或移动这个解压目录，否则 Chrome 可能找不到插件文件。

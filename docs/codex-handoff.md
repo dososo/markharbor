@@ -29,7 +29,7 @@
   - Chrome 扩展显示名：`MarkHarbor`
   - popup 标题：`MarkHarbor`
   - 导出 HTML / 合并 Markdown 标题：`MarkHarbor Export`
-  - 当前版本：`0.1.10`
+  - 当前版本：`0.1.11`
 - GitHub 开源发布材料已补齐：
   - `LICENSE`、`CONTRIBUTING.md`、`CODE_OF_CONDUCT.md`、`SECURITY.md`、`SUPPORT.md`、`CHANGELOG.md`
   - `.github/ISSUE_TEMPLATE/`、`.github/pull_request_template.md`
@@ -247,6 +247,11 @@
   - 验证：`npm test` 12 个测试文件、90 个测试通过；`npm run typecheck` 通过；`npm run build` 通过；`npm run package` 通过并确认 `release/markharbor-v0.1.11.zip` 内含 `markharbor/manifest.json`；`npm audit --audit-level=moderate` 通过，0 个漏洞；`git diff --check` 通过。
   - 发布：`main` 和 `v0.1.11` 已推送，GitHub CI 与 Release workflow 均通过，Release asset `markharbor-v0.1.11.zip` 已生成。
   - 清理：Dependabot PR #5、#6、#7 已因被 `v0.1.11` supersede 而关闭，当前 open PR 列表为空。
+- GitHub 对外展示材料增强
+  - 背景：继续完善面向全球用户的仓库展示、安装转化、排障和发布传播材料。
+  - 修复：README 增加 CI、Release、License、Chrome Extension 徽章，并同步当前版本为 `0.1.11`。
+  - 新增：`docs/assets/markharbor-social-preview.svg`、`docs/assets/markharbor-social-preview.png`、`docs/TROUBLESHOOTING.md`、`docs/STORE_LISTING.md`、`docs/LAUNCH.md`、`docs/SCREENSHOTS.md`。
+  - 说明：GitHub social preview 需要在仓库 Settings 中手动上传 `docs/assets/markharbor-social-preview.png`。
 
 ## 风险点
 

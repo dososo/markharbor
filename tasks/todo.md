@@ -455,3 +455,16 @@ GitHub 发布后依赖维护记录：
 - 本地验证通过：`npm test` 12 个测试文件、90 个测试通过；`npm run typecheck` 通过；`npm run build` 通过；`npm run package` 通过并确认 zip 内含 `markharbor/manifest.json`；`npm audit --audit-level=moderate` 通过，0 个漏洞；`git diff --check` 通过。
 - 已推送 `main` 和 `v0.1.11`，GitHub CI 与 Release workflow 均通过，Release asset `markharbor-v0.1.11.zip` 已生成。
 - 已关闭被 main 手动维护提交 supersede 的 Dependabot PR #5、#6、#7；当前 open PR 列表为空。
+
+GitHub 对外展示材料增强执行计划：
+- [x] Showcase P0-1：同步 README 和安装文档到最新版本。验证：README 当前版本显示 `0.1.11`，安装说明指向 `markharbor-v0.1.11.zip` 或最新版 release。
+- [x] Showcase P0-2：补齐仓库展示资产。验证：新增 `docs/assets/markharbor-social-preview.svg` 和截图清单。
+- [x] Showcase P0-3：补齐转化和排障文档。验证：新增 `docs/TROUBLESHOOTING.md`、`docs/STORE_LISTING.md`、`docs/LAUNCH.md`。
+- [x] Showcase P0-4：验证、提交并推送。验证：文档检查和必要构建通过，GitHub main CI 通过。
+
+GitHub 对外展示材料增强记录：
+- README 增加 CI、Release、MIT License、Chrome Extension 徽章，并同步当前版本为 `0.1.11`。
+- 新增 GitHub social preview SVG 和 PNG，可在仓库 Settings 中手动上传 PNG 作为社交预览图。
+- 新增 Chrome Web Store listing 草稿，覆盖产品名、短描述、详细描述、权限解释、隐私实践和截图素材需求。
+- 新增 X / GitHub / 社区发布文案，方便直接对外宣传。
+- 新增故障排查文档和截图清单，减少普通用户从 GitHub Releases 安装 unpacked extension 时的阻力。

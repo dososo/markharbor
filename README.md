@@ -1,19 +1,27 @@
 # MarkHarbor
 
+[![CI](https://github.com/dososo/markharbor/actions/workflows/ci.yml/badge.svg)](https://github.com/dososo/markharbor/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/dososo/markharbor)](https://github.com/dososo/markharbor/releases/latest)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Chrome Extension](https://img.shields.io/badge/Chrome-extension-4285F4)](docs/INSTALL.md)
+
 **X Bookmarks to Obsidian，本地优先的书签归档港。**
 
 MarkHarbor 把 X Bookmarks 变成一个可离线保存、可检索、可二次写作的 Obsidian 知识库包。
 
 > 本项目是一个本地优先的 Chrome 扩展：在你自己的浏览器里读取已加载的 X Bookmarks，导出 Markdown、JSON、CSV、TXT、HTML 和媒体清单。当前版本面向本地加载和开源协作，尚未上架 Chrome Web Store。
 
+![MarkHarbor social preview](docs/assets/markharbor-social-preview.svg)
+
 [English](#english)
 
 ## 当前状态
 
-- 当前版本：`0.1.10`
+- 当前版本：`0.1.11`
 - 发布方式：GitHub Releases 下载 zip，手动加载为 Chrome unpacked extension
 - 许可证：MIT
 - 商店状态：尚未上架 Chrome Web Store
+- 最新版本：[GitHub Releases](https://github.com/dososo/markharbor/releases/latest)
 
 ## 为什么做它？
 
@@ -361,9 +369,13 @@ npm run package
 - [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)：社区行为准则。
 - [CHANGELOG.md](CHANGELOG.md)：版本变更记录。
 - [docs/INSTALL.md](docs/INSTALL.md)：安装说明。
+- [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md)：故障排查。
 - [docs/RELEASE.md](docs/RELEASE.md)：发布流程。
 - [docs/PRIVACY.md](docs/PRIVACY.md)：隐私说明。
 - [docs/ROADMAP.md](docs/ROADMAP.md)：路线图。
+- [docs/STORE_LISTING.md](docs/STORE_LISTING.md)：Chrome Web Store 上架文案草稿。
+- [docs/LAUNCH.md](docs/LAUNCH.md)：X / GitHub / 社区发布文案。
+- [docs/SCREENSHOTS.md](docs/SCREENSHOTS.md)：截图清单。
 - `.github/ISSUE_TEMPLATE/`：bug report 和 feature request 模板。
 - `.github/workflows/ci.yml`：PR 和 push 的测试、类型检查、构建、审计和打包。
 - `.github/workflows/release.yml`：推送 `vX.Y.Z` tag 后自动生成 GitHub Release zip。

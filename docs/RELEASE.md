@@ -50,4 +50,4 @@ After creating the repository on GitHub:
 
 ## 中文发布说明
 
-首次开源时，建议先推送代码到 GitHub，确认 CI 通过，再创建 `v0.1.10` 这类 tag。Release workflow 会生成可供普通用户下载的 `markharbor-v0.1.10.zip`。发布前必须手动加载 release zip 验证一次真实 Chrome 使用流程。
+首次开源时，建议先推送代码到 GitHub，确认 CI 通过，再创建 `v0.1.11` 这类 tag。Release workflow 会生成可供普通用户下载的 `markharbor-v0.1.11.zip`。发布前必须手动加载 release zip 验证一次真实 Chrome 使用流程。

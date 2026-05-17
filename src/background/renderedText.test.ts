@@ -221,6 +221,23 @@ describe("rendered X detail text", () => {
     ]);
   });
 
+  it("does not treat a reply or recommendation link as the target post content", () => {
+    document.body.innerHTML = `
+      <article data-testid="tweet">
+        <a href="/alice/status/123">回复给目标帖</a>
+        <div data-testid="tweetText">选 id 一直不对怎么办啊</div>
+      </article>
+    `;
+
+    const content = extractRenderedDetailContentFromPage(
+      "123",
+      "https://x.com/alice/status/123",
+      "推特身份证认证最新教程，亲测通过"
+    );
+
+    expect(content).toBeUndefined();
+  });
+
   it("opens a normal X detail tab inactive, reads rendered text, and closes the tab", async () => {
     const chromeApi = {
       tabs: {
@@ -250,7 +267,7 @@ describe("rendered X detail text", () => {
     });
     expect(chromeApi.scripting.executeScript).toHaveBeenCalledWith(expect.objectContaining({
       target: { tabId: 42 },
-      args: [bookmark.id, bookmark.url]
+      args: [bookmark.id, bookmark.url, undefined]
     }));
     expect(chromeApi.tabs.remove).toHaveBeenCalledWith(42);
   });
@@ -353,5 +370,76 @@ describe("rendered X detail text", () => {
       { type: "paragraph", text: "正文配图后。" }
     ]);
     expect(chromeApi.scripting.executeScript).toHaveBeenCalledTimes(2);
+  });
+
+  it("accumulates virtualized X Article snapshots while scrolling", async () => {
+    const chromeApi = {
+      tabs: {
+        create: vi.fn(async () => ({ id: 42 })),
+        remove: vi.fn(async () => undefined)
+      },
+      scripting: {
+        executeScript: vi.fn()
+          .mockResolvedValueOnce([{
+            result: {
+              text: "图文长文标题\n\n第一段\n\n第二段",
+              contentBlocks: [
+                { type: "heading", level: 2, text: "图文长文标题" },
+                { type: "paragraph", text: "第一段" },
+                { type: "paragraph", text: "第二段" }
+              ],
+              isComplete: false
+            }
+          }])
+          .mockResolvedValueOnce([{
+            result: {
+              text: "第二段\n\n正文配图\n\n第三段",
+              contentBlocks: [
+                { type: "paragraph", text: "第二段" },
+                { type: "image", url: "https://pbs.twimg.com/media/body-1.jpg", alt: "正文配图" },
+                { type: "paragraph", text: "第三段" }
+              ],
+              isComplete: false
+            }
+          }])
+          .mockResolvedValueOnce([{
+            result: {
+              text: "第三段\n\n第二张图\n\n第四段",
+              contentBlocks: [
+                { type: "paragraph", text: "第三段" },
+                { type: "image", url: "https://pbs.twimg.com/media/body-2.jpg", alt: "第二张图" },
+                { type: "paragraph", text: "第四段" }
+              ],
+              isComplete: true
+            }
+          }])
+      }
+    };
+
+    const content = await fetchRenderedDetailContent({
+      ...bookmark,
+      text: "图文长文标题\n\n预览...",
+      article: {
+        title: "图文长文标题",
+        preview: "预览..."
+      }
+    }, {
+      chromeApi,
+      delay: async () => undefined,
+      maxAttempts: 3
+    });
+
+    expect(content?.contentBlocks).toEqual([
+      { type: "heading", level: 2, text: "图文长文标题" },
+      { type: "paragraph", text: "第一段" },
+      { type: "paragraph", text: "第二段" },
+      { type: "image", url: "https://pbs.twimg.com/media/body-1.jpg", alt: "正文配图" },
+      { type: "paragraph", text: "第三段" },
+      { type: "image", url: "https://pbs.twimg.com/media/body-2.jpg", alt: "第二张图" },
+      { type: "paragraph", text: "第四段" }
+    ]);
+    expect(content?.text).toContain("第一段");
+    expect(content?.text).toContain("第四段");
+    expect(chromeApi.scripting.executeScript).toHaveBeenCalledTimes(3);
   });
 });

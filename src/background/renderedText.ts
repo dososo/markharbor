@@ -1,4 +1,5 @@
 import type { XBookmark, XBookmarkContentBlock } from "../shared/types";
+import { textFromContentBlocks } from "../shared/contentBlocks";
 
 export interface RenderedDetailContent {
   text: string;
@@ -41,7 +42,7 @@ function defaultDelay(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-export function extractRenderedDetailContentFromPage(targetId?: string, targetUrl?: string): RenderedDetailContent | undefined {
+export function extractRenderedDetailContentFromPage(targetId?: string, targetUrl?: string, targetTitle?: string): RenderedDetailContent | undefined {
   function normalizedText(value: string | undefined | null): string {
     return (value ?? "").replace(/\s+/g, " ").trim();
   }
@@ -202,13 +203,56 @@ export function extractRenderedDetailContentFromPage(targetId?: string, targetUr
     });
   }
 
-  function articleMatches(article: HTMLElement, id: string | undefined): boolean {
-    if (!id) {
+  function statusIdFromLink(link: HTMLAnchorElement): string | undefined {
+    try {
+      return new URL(link.href, "https://x.com").pathname.match(/\/status\/(\d+)/)?.[1];
+    } catch {
+      return undefined;
+    }
+  }
+
+  function articleIdFromLink(link: HTMLAnchorElement): string | undefined {
+    try {
+      return new URL(link.href, "https://x.com").pathname.match(/\/article\/(\d+)/)?.[1];
+    } catch {
+      return undefined;
+    }
+  }
+
+  function articleContainsTitle(article: HTMLElement, title: string | undefined): boolean {
+    const normalizedTitle = normalizedText(title);
+    if (!normalizedTitle) {
+      return false;
+    }
+
+    const articleText = textFrom(article);
+    const titlePrefix = normalizedTitle.slice(0, Math.min(60, normalizedTitle.length));
+
+    return articleText.includes(normalizedTitle)
+      || (titlePrefix.length >= 16 && articleText.includes(titlePrefix));
+  }
+
+  function articleMatches(article: HTMLElement, id: string | undefined, title: string | undefined): boolean {
+    if (!id && !normalizedText(title)) {
       return true;
     }
 
-    return Array.from(article.querySelectorAll<HTMLAnchorElement>("a[href]"))
-      .some((link) => link.href.includes(`/status/${id}`) || link.href.includes(`/article/${id}`));
+    const timeStatusIds = Array.from(article.querySelectorAll("time"))
+      .map((time) => time.closest<HTMLAnchorElement>("a[href]"))
+      .filter((link): link is HTMLAnchorElement => Boolean(link))
+      .map(statusIdFromLink)
+      .filter((value): value is string => Boolean(value));
+
+    if (id && timeStatusIds.length > 0) {
+      return timeStatusIds.includes(id);
+    }
+
+    if (articleContainsTitle(article, title)) {
+      return true;
+    }
+
+    return Boolean(id) && Array.from(article.querySelectorAll<HTMLAnchorElement>("a[href]"))
+      .some((link) => articleIdFromLink(link) === id);
   }
 
   function renderedArticleContent(
@@ -335,14 +379,14 @@ export function extractRenderedDetailContentFromPage(targetId?: string, targetUr
 
   const targetStatusId = targetId ?? statusIdFromUrl(targetUrl);
   const articles = Array.from(document.querySelectorAll<HTMLElement>('article[data-testid="tweet"]'));
-  const article = articles.find((candidate) => articleMatches(candidate, targetStatusId)) ?? articles[0];
+  const article = articles.find((candidate) => articleMatches(candidate, targetStatusId, targetTitle))
+    ?? (!normalizedText(targetTitle) && articles.length === 1 ? articles[0] : undefined);
 
   if (!article) {
     return undefined;
   }
 
-  const articleReadView = article.querySelector<HTMLElement>('[data-testid="twitterArticleReadView"]')
-    ?? document.querySelector<HTMLElement>('[data-testid="twitterArticleReadView"]');
+  const articleReadView = article.querySelector<HTMLElement>('[data-testid="twitterArticleReadView"]');
   const articleRichText = articleReadView?.querySelector<HTMLElement>('[data-testid="twitterArticleRichTextView"]')
     ?? articleReadView?.querySelector<HTMLElement>('[data-testid="longformRichTextComponent"]');
   if (articleReadView && articleRichText) {
@@ -377,13 +421,135 @@ function candidateFromResult(content: RenderedDetailContent | string | undefined
     return text ? { text } : undefined;
   }
 
-  const text = content?.text?.trim();
+  const contentBlocks = content?.contentBlocks;
+  const text = content?.text?.trim() || textFromContentBlocks(contentBlocks);
 
-  return text ? {
+  return text || contentBlocks?.length ? {
     text,
-    contentBlocks: content?.contentBlocks,
+    contentBlocks,
     isComplete: content?.isComplete
   } : undefined;
+}
+
+function contentBlockKey(block: XBookmarkContentBlock): string {
+  switch (block.type) {
+    case "heading":
+      return `${block.type}:${block.level}:${block.text}`;
+    case "paragraph":
+      return `${block.type}:${block.text}`;
+    case "list":
+      return `${block.type}:${block.items.join("|")}`;
+    case "image":
+      return `${block.type}:${block.url}`;
+    default:
+      return "";
+  }
+}
+
+function indexContentBlockKeys(blocks: XBookmarkContentBlock[]): Map<string, number> {
+  return new Map(blocks.map((block, index) => [contentBlockKey(block), index]));
+}
+
+function mergeContentBlocks(
+  currentBlocks: XBookmarkContentBlock[] | undefined,
+  incomingBlocks: XBookmarkContentBlock[] | undefined
+): XBookmarkContentBlock[] | undefined {
+  if (!incomingBlocks?.length) {
+    return currentBlocks;
+  }
+
+  if (!currentBlocks?.length) {
+    return [...incomingBlocks];
+  }
+
+  const merged = [...currentBlocks];
+
+  for (let incomingIndex = 0; incomingIndex < incomingBlocks.length; incomingIndex += 1) {
+    const block = incomingBlocks[incomingIndex];
+    const blockKey = contentBlockKey(block);
+    let keyIndexes = indexContentBlockKeys(merged);
+
+    if (keyIndexes.has(blockKey)) {
+      continue;
+    }
+
+    let insertIndex = -1;
+
+    for (let previousIndex = incomingIndex - 1; previousIndex >= 0; previousIndex -= 1) {
+      const previousKnownIndex = keyIndexes.get(contentBlockKey(incomingBlocks[previousIndex]));
+      if (previousKnownIndex !== undefined) {
+        insertIndex = previousKnownIndex + 1;
+        break;
+      }
+    }
+
+    if (insertIndex === -1) {
+      for (let nextIndex = incomingIndex + 1; nextIndex < incomingBlocks.length; nextIndex += 1) {
+        const nextKnownIndex = keyIndexes.get(contentBlockKey(incomingBlocks[nextIndex]));
+        if (nextKnownIndex !== undefined) {
+          insertIndex = nextKnownIndex;
+          break;
+        }
+      }
+    }
+
+    if (insertIndex === -1) {
+      insertIndex = merged.length;
+    }
+
+    merged.splice(insertIndex, 0, block);
+  }
+
+  return merged;
+}
+
+function longerText(first: string | undefined, second: string | undefined): string {
+  const safeFirst = first ?? "";
+  const safeSecond = second ?? "";
+
+  return safeFirst.length >= safeSecond.length ? safeFirst : safeSecond;
+}
+
+function mergeRenderedDetailContent(
+  current: RenderedDetailContent | undefined,
+  incoming: RenderedDetailContent
+): RenderedDetailContent {
+  if (!current) {
+    return {
+      text: incoming.contentBlocks?.length ? textFromContentBlocks(incoming.contentBlocks) : incoming.text,
+      contentBlocks: incoming.contentBlocks,
+      isComplete: incoming.isComplete
+    };
+  }
+
+  const contentBlocks = mergeContentBlocks(current.contentBlocks, incoming.contentBlocks);
+  const text = contentBlocks?.length
+    ? textFromContentBlocks(contentBlocks)
+    : longerText(current.text, incoming.text);
+
+  return {
+    text,
+    contentBlocks,
+    isComplete: incoming.isComplete
+  };
+}
+
+function omitKnownListImages(
+  content: RenderedDetailContent,
+  imageUrls: string[]
+): RenderedDetailContent {
+  if (!content.contentBlocks?.length || imageUrls.length === 0) {
+    return content;
+  }
+
+  const listImageUrls = new Set(imageUrls);
+  const contentBlocks = content.contentBlocks.filter((block) => block.type !== "image" || !listImageUrls.has(block.url));
+
+  return {
+    text: contentBlocks.length ? textFromContentBlocks(contentBlocks) : content.text,
+    contentBlocks,
+    isComplete: content.isComplete
+  };
 }
 
 export function extractRenderedDetailTextFromPage(targetId?: string, targetUrl?: string): string | undefined {
@@ -448,14 +614,14 @@ export async function fetchRenderedDetailContent(
   );
 
   try {
-    let bestContent: RenderedDetailContent | undefined;
+    let accumulatedContent: RenderedDetailContent | undefined;
 
     for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
       await delay(waitMs);
       const [result] = await chromeApi.scripting.executeScript({
         target: { tabId: target.tabId },
         func: extractRenderedDetailContentFromPage,
-        args: [bookmark.id, bookmark.url]
+        args: [bookmark.id, bookmark.url, bookmark.article?.title]
       });
       const content = candidateFromResult(result?.result);
 
@@ -463,18 +629,26 @@ export async function fetchRenderedDetailContent(
         continue;
       }
 
-      bestContent = content;
-      if (!bookmark.article || content.isComplete || attempt === maxAttempts - 1) {
+      if (!bookmark.article) {
         return {
           text: content.text,
           contentBlocks: content.contentBlocks
         };
       }
+
+      const articleContent = omitKnownListImages(content, bookmark.imageUrls);
+      accumulatedContent = mergeRenderedDetailContent(accumulatedContent, articleContent);
+      if (content.isComplete || attempt === maxAttempts - 1) {
+        return {
+          text: accumulatedContent.text,
+          contentBlocks: accumulatedContent.contentBlocks
+        };
+      }
     }
 
-    return bestContent ? {
-      text: bestContent.text,
-      contentBlocks: bestContent.contentBlocks
+    return accumulatedContent ? {
+      text: accumulatedContent.text,
+      contentBlocks: accumulatedContent.contentBlocks
     } : undefined;
   } finally {
     await target.close();

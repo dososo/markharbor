@@ -1,4 +1,4 @@
-# X 书签导出器 V2 产品化 Implementation Plan
+# MarkHarbor V2 产品化 Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
@@ -175,7 +175,7 @@ Create `src/shared/exportFormats.test.ts` with tests asserting:
 ```ts
 expect(renderLinksText([bookmark])).toBe("https://x.com/alice/status/123\n");
 expect(renderBookmarksCsv([bookmark])).toContain("id,url,author_name,author_handle,text,posted_at,collected_at,image_urls,link_card_url,link_card_title");
-expect(renderBookmarksHtml([bookmark])).toContain("<title>X Bookmarks Export</title>");
+expect(renderBookmarksHtml([bookmark])).toContain("<title>MarkHarbor Export</title>");
 expect(renderExportReport(report)).toContain('"bookmarkCount": 1');
 expect(renderMediaManifest(mediaItems)).toContain('"status": "downloaded"');
 ```
@@ -494,7 +494,7 @@ Create `public/_locales/en/messages.json`:
 ```json
 {
   "extName": {
-    "message": "X Bookmarks Obsidian Exporter"
+    "message": "MarkHarbor"
   },
   "extDescription": {
     "message": "Export loaded X Bookmarks to Obsidian-friendly Markdown, JSON, CSV, and media files."
@@ -507,7 +507,7 @@ Create `public/_locales/zh_CN/messages.json`:
 ```json
 {
   "extName": {
-    "message": "X 书签 Obsidian 导出器"
+    "message": "MarkHarbor"
   },
   "extDescription": {
     "message": "将已加载的 X 书签导出为适合 Obsidian 的 Markdown、JSON、CSV 和媒体文件。"
@@ -564,7 +564,7 @@ git commit -m "feat: polish bilingual popup"
 README must include these sections:
 
 ```markdown
-# X 书签 Obsidian 导出器
+# MarkHarbor
 ## 它解决什么问题
 ## 功能
 ## 安装

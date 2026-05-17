@@ -1,4 +1,4 @@
-# X 书签 Obsidian 导出器设计
+# MarkHarbor设计
 
 日期：2026-05-16
 状态：待用户 review
@@ -78,7 +78,7 @@
 
 生成一个文件，例如：
 
-`X Bookmarks Export 2026-05-16.md`
+`MarkHarbor Export 2026-05-16.md`
 
 每条书签作为一个小节，包含：
 

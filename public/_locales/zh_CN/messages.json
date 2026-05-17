@@ -1,8 +1,8 @@
 {
   "extName": {
-    "message": "X 书签 Obsidian 导出器"
+    "message": "MarkHarbor"
   },
   "extDescription": {
-    "message": "将已加载的 X 书签导出为适合 Obsidian 的 Markdown、JSON、CSV 和媒体文件。"
+    "message": "本地优先地将 X Bookmarks 导出为适合 Obsidian 的 Markdown、JSON、CSV、HTML 和媒体文件。"
   }
 }

@@ -24,6 +24,12 @@
 - popup 完成一轮更明亮、紧凑的产品化样式。
 - Chrome manifest 增加 `_locales` 中英文文案。
 - README 已补全中文说明和 English Quick Start。
+- 项目整体命名已改为 MarkHarbor：
+  - npm 包名：`markharbor`
+  - Chrome 扩展显示名：`MarkHarbor`
+  - popup 标题：`MarkHarbor`
+  - 导出 HTML / 合并 Markdown 标题：`MarkHarbor Export`
+  - 当前版本：`0.1.10`
 - 修复安全审计问题：
   - `vite` 升级到 `^8.0.13`
   - `vitest` 升级到 `^4.1.6`
@@ -76,9 +82,9 @@
 - `package.json`
 - `package-lock.json`
 - `README.md`
-- `docs/superpowers/specs/2026-05-16-x-bookmarks-obsidian-exporter-design.md`
+- `docs/superpowers/specs/2026-05-16-markharbor-design.md`
 - `docs/superpowers/specs/2026-05-16-x-bookmarks-v2-productization-design.md`
-- `docs/superpowers/plans/2026-05-16-x-bookmarks-obsidian-exporter.md`
+- `docs/superpowers/plans/2026-05-16-markharbor.md`
 - `docs/superpowers/plans/2026-05-16-x-bookmarks-v2-productization.md`
 - `public/_locales/en/messages.json`
 - `public/_locales/zh_CN/messages.json`
@@ -215,6 +221,12 @@
   - 修复：README 改为 GitHub 首页型结构，覆盖产品定位、痛点、功能、与同类工具和 Obsidian Web Clipper 的区别、安装、使用、导出结构、隐私权限、限制、FAQ 和开源发布前建议。
   - 说明：README 中对 Obsidian Web Clipper 的描述参考其官方页面，采用“定位差异”表述，避免误导为替代关系。
   - 验证：`git diff --check` 通过。
+- 项目整体改名为 MarkHarbor
+  - 背景：用户确认采用 MarkHarbor 作为公开项目名，并要求全项目同步。
+  - 修复：同步 `package.json`、`package-lock.json`、`src/manifest.ts`、中英文 locale、popup 标题、HTML 标题、导出标题、README、交接文档、任务记录和历史计划/设计文档。
+  - 修复：初始设计/计划文档重命名为 `docs/superpowers/specs/2026-05-16-markharbor-design.md` 和 `docs/superpowers/plans/2026-05-16-markharbor.md`。
+  - 版本：同步升到 `0.1.10`，`dist/manifest.json` 版本确认为 `0.1.10`。
+  - 验证：`npm test` 12 个测试文件、90 个测试通过；`npm run typecheck` 通过；`npm run build` 通过；`npm audit --audit-level=moderate` 通过，0 个漏洞；`git diff --check` 通过；旧展示名精确搜索无残留。
 
 ## 风险点
 

@@ -51,7 +51,7 @@ describe("export format renderers", () => {
   it("renders a browsable HTML export", () => {
     const html = renderBookmarksHtml([bookmark], new Map([[bookmark.imageUrls[0], "attachments/x-bookmarks/123/image-01-example.jpg"]]));
 
-    expect(html).toContain("<title>X Bookmarks Export</title>");
+    expect(html).toContain("<title>MarkHarbor Export</title>");
     expect(html).toContain("Alice");
     expect(html).toContain("Useful thread, with comma");
     expect(html).toContain('<figure><img src="attachments/x-bookmarks/123/image-01-example.jpg" alt="" /></figure>');

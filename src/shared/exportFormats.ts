@@ -134,10 +134,10 @@ export function renderBookmarksHtml(bookmarks: XBookmark[], imagePaths = new Map
     '<html lang="en">',
     "<head>",
     '<meta charset="utf-8" />',
-    "<title>X Bookmarks Export</title>",
+    "<title>MarkHarbor Export</title>",
     "</head>",
     "<body>",
-    "<h1>X Bookmarks Export</h1>",
+    "<h1>MarkHarbor Export</h1>",
     items,
     "</body>",
     "</html>"

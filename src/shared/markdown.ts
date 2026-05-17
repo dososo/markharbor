@@ -137,7 +137,7 @@ export function renderCombinedMarkdown(bookmarks: XBookmark[], imagePaths: Map<s
     return `## ${title}\n\n${bookmarkBody(bookmark, imagePaths)}`;
   });
 
-  return ["# X Bookmarks Export", "", ...sections].join("\n");
+  return ["# MarkHarbor Export", "", ...sections].join("\n");
 }
 
 export function renderBookmarkMarkdown(bookmark: XBookmark, imagePaths: Map<string, string>): string {

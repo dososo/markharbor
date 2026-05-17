@@ -1,6 +1,6 @@
 {
-  "name": "x-bookmarks-obsidian-exporter",
-  "version": "0.1.9",
+  "name": "markharbor",
+  "version": "0.1.10",
   "private": true,
   "type": "module",
   "scripts": {

@@ -1,4 +1,4 @@
-# X Bookmarks Obsidian Exporter Implementation Plan
+# MarkHarbor Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
@@ -61,7 +61,7 @@ Create `package.json`:
 
 ```json
 {
-  "name": "x-bookmarks-obsidian-exporter",
+  "name": "markharbor",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -171,11 +171,11 @@ Create `src/manifest.ts`:
 ```ts
 export const manifest = {
   manifest_version: 3,
-  name: "X Bookmarks Obsidian Exporter",
+  name: "MarkHarbor",
   version: "0.1.0",
   description: "Export loaded X Bookmarks into Obsidian-friendly Markdown and JSON.",
   action: {
-    default_title: "X Bookmarks Exporter",
+    default_title: "MarkHarbor",
     default_popup: "index.html"
   },
   permissions: ["activeTab", "downloads"],
@@ -198,7 +198,7 @@ Create `index.html`:
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>X Bookmarks Exporter</title>
+    <title>MarkHarbor</title>
     <script type="module" src="/src/popup/main.ts"></script>
   </head>
   <body>
@@ -217,7 +217,7 @@ const root = document.querySelector<HTMLDivElement>("#app");
 if (root) {
   root.innerHTML = `
     <section class="panel">
-      <h1>X 书签导出</h1>
+      <h1>MarkHarbor</h1>
       <p class="muted">打开 X Bookmarks 页面后开始采集。</p>
       <button type="button" disabled>开始采集</button>
     </section>
@@ -254,7 +254,7 @@ h1 {
 Create `src/content/main.ts`:
 
 ```ts
-console.info("X Bookmarks Exporter content script loaded.");
+console.info("MarkHarbor content script loaded.");
 ```
 
 - [ ] **Step 4: Install dependencies**
@@ -653,7 +653,7 @@ describe("renderCombinedMarkdown", () => {
   it("renders source link text and local image references", () => {
     const markdown = renderCombinedMarkdown([bookmark], new Map([[bookmark.imageUrls[0], "attachments/x-bookmarks/example.jpg"]]));
 
-    expect(markdown).toContain("# X Bookmarks Export");
+    expect(markdown).toContain("# MarkHarbor Export");
     expect(markdown).toContain("[原帖](https://x.com/alice/status/123)");
     expect(markdown).toContain("![](attachments/x-bookmarks/example.jpg)");
     expect(markdown).toContain("视频： https://x.com/alice/status/123");
@@ -749,7 +749,7 @@ export function renderCombinedMarkdown(bookmarks: XBookmark[], imagePaths: Map<s
     return `## ${title}\n\n${bookmarkBody(bookmark, imagePaths)}`;
   });
 
-  return [`# X Bookmarks Export`, "", ...sections].join("\n");
+  return [`# MarkHarbor Export`, "", ...sections].join("\n");
 }
 
 export function renderBookmarkMarkdown(bookmark: XBookmark, imagePaths: Map<string, string>): string {
@@ -821,7 +821,7 @@ describe("buildExportZip", () => {
     const zip = await JSZip.loadAsync(blob);
 
     expect(zip.file("bookmarks.json")).toBeTruthy();
-    expect(zip.file("X Bookmarks Export.md")).toBeTruthy();
+    expect(zip.file("MarkHarbor Export.md")).toBeTruthy();
     expect(zip.file("bookmarks/2026-05-16-alice-useful-thread.md")).toBeTruthy();
   });
 });
@@ -876,7 +876,7 @@ export async function buildExportZip(options: BuildExportZipOptions): Promise<Bl
     : new Map<string, string>();
 
   zip.file("bookmarks.json", JSON.stringify(options.bookmarks, null, 2));
-  zip.file("X Bookmarks Export.md", renderCombinedMarkdown(options.bookmarks, imagePaths));
+  zip.file("MarkHarbor Export.md", renderCombinedMarkdown(options.bookmarks, imagePaths));
 
   for (const bookmark of options.bookmarks) {
     zip.file(`bookmarks/${bookmarkFileName(bookmark)}`, renderBookmarkMarkdown(bookmark, imagePaths));
@@ -1088,7 +1088,7 @@ function render(error?: string): void {
   root.innerHTML = `
     <section class="panel">
       <header>
-        <h1>X 书签导出</h1>
+        <h1>MarkHarbor</h1>
         <p class="muted">在 X Bookmarks 页面采集并导出到 Obsidian。</p>
       </header>
       ${error ? `<p class="error">${error}</p>` : ""}
@@ -1258,7 +1258,7 @@ git commit -m "feat: add popup collection and export controls"
 Create `README.md`:
 
 ```md
-# X 书签 Obsidian 导出器
+# MarkHarbor
 
 一个本地优先的 Chrome 插件，用于把已加载的 X Bookmarks 导出为 Obsidian 友好的 Markdown、JSON 和图片附件。
 
@@ -1297,7 +1297,7 @@ npm run build
 - 引导滚动后采集数量增加。
 - 停止采集后保留已采集结果。
 - 导出的 zip 包包含 `bookmarks.json`。
-- 导出的 zip 包包含 `X Bookmarks Export.md`。
+- 导出的 zip 包包含 `MarkHarbor Export.md`。
 - 导出的 zip 包包含 `bookmarks/` 下的单条书签 Markdown 文件。
 - 图片下载失败时 Markdown 保留原始图片 URL。
 ```
@@ -1308,7 +1308,7 @@ Append:
 
 ```md
 
-Implementation plan created at `docs/superpowers/plans/2026-05-16-x-bookmarks-obsidian-exporter.md`.
+Implementation plan created at `docs/superpowers/plans/2026-05-16-markharbor.md`.
 Next step is user approval of execution mode before code implementation.
 ```
 

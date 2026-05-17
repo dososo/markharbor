@@ -1,9 +1,9 @@
-const languageStorageKey = "x-bookmarks-language";
+const languageStorageKey = "markharbor-language";
 
 export const messages = {
   zh: {
-    appTitle: "X 书签导出",
-    appSubtitle: "采集当前页面已加载的 X Bookmarks，导出为 Obsidian 知识库包。",
+    appTitle: "MarkHarbor",
+    appSubtitle: "X Bookmarks to Obsidian，本地优先的书签归档港。",
     pageReady: "页面可用",
     pageHint: "打开 X Bookmarks 页面后开始采集。",
     language: "语言",
@@ -35,8 +35,8 @@ export const messages = {
     exportError: "导出 zip 失败，请稍后重试。"
   },
   en: {
-    appTitle: "X Bookmarks Export",
-    appSubtitle: "Collect loaded X Bookmarks and export an Obsidian-ready knowledge package.",
+    appTitle: "MarkHarbor",
+    appSubtitle: "X Bookmarks to Obsidian, a local-first archive harbor for your saved posts.",
     pageReady: "Page ready",
     pageHint: "Open X Bookmarks before collecting.",
     language: "Language",

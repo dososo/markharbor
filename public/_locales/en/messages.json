@@ -1,8 +1,8 @@
 {
   "extName": {
-    "message": "X Bookmarks Obsidian Exporter"
+    "message": "MarkHarbor"
   },
   "extDescription": {
-    "message": "Export loaded X Bookmarks to Obsidian-friendly Markdown, JSON, CSV, and media files."
+    "message": "Local-first X Bookmarks to Obsidian export with Markdown, JSON, CSV, HTML, and media files."
   }
 }

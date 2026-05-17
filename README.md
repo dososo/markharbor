@@ -1,6 +1,8 @@
-# X Bookmarks Obsidian Exporter
+# MarkHarbor
 
-把 X Bookmarks 变成一个可离线保存、可检索、可二次写作的 Obsidian 知识库包。
+**X Bookmarks to Obsidian，本地优先的书签归档港。**
+
+MarkHarbor 把 X Bookmarks 变成一个可离线保存、可检索、可二次写作的 Obsidian 知识库包。
 
 > 本项目是一个本地优先的 Chrome 扩展：在你自己的浏览器里读取已加载的 X Bookmarks，导出 Markdown、JSON、CSV、TXT、HTML 和媒体清单。当前版本面向本地加载和开源协作，尚未上架 Chrome Web Store。
 
@@ -16,11 +18,11 @@ X Bookmarks 很适合“先收藏，之后再看”，但它不适合长期知�
 - 图片、链接卡片、X Article 长文内容很难和笔记系统保持在一起。
 - Obsidian 用户最终需要的是本地 Markdown，而不是困在平台里的收藏夹。
 
-这个项目的目标很简单：把你已经收藏的 X 内容尽量完整地搬到本地，整理成 Obsidian 友好的文件结构，让它变成你自己的资料库。
+MarkHarbor 的目标很简单：把你已经收藏的 X 内容尽量完整地搬到本地，整理成 Obsidian 友好的文件结构，让它变成你自己的资料库。
 
 ## 它是什么？
 
-X Bookmarks Obsidian Exporter 是一个 Chrome Manifest V3 扩展。它在 `https://x.com/i/bookmarks` 页面工作，辅助滚动并采集当前已加载的书签，随后导出一个 zip 包。
+MarkHarbor 是一个 Chrome Manifest V3 扩展。它在 `https://x.com/i/bookmarks` 页面工作，辅助滚动并采集当前已加载的书签，随后导出一个 zip 包。
 
 核心功能：
 
@@ -72,7 +74,7 @@ X Bookmarks Obsidian Exporter 是一个 Chrome Manifest V3 扩展。它在 `http
 
 这个项目不是替代 Obsidian Web Clipper，而是补齐另一个场景：
 
-| 对比项 | Obsidian Web Clipper | X Bookmarks Obsidian Exporter |
+| 对比项 | Obsidian Web Clipper | MarkHarbor |
 | --- | --- | --- |
 | 核心对象 | 当前网页 | X Bookmarks 列表 |
 | 工作方式 | 手动剪藏当前页面或选区 | 批量采集已加载书签 |
@@ -82,7 +84,7 @@ X Bookmarks Obsidian Exporter 是一个 Chrome Manifest V3 扩展。它在 `http
 | 附件结构 | 由剪藏配置和 Obsidian 工作流决定 | 按书签 ID 保存到 `attachments/x-bookmarks/` |
 | 输出结果 | 直接进入 Obsidian 工作流 | zip 包，可审计、可备份、可迁移 |
 
-一句话：Web Clipper 是通用网页剪藏刀；本项目是专门把 X Bookmarks 批量整理成 Obsidian 资料库的导出器。
+一句话：Web Clipper 是通用网页剪藏刀；MarkHarbor 是专门把 X Bookmarks 批量整理成 Obsidian 资料库的导出器。
 
 ## 安装
 
@@ -338,7 +340,7 @@ npm run build
 
 ## 适合用于 X 长文的一句话
 
-我做了一个开源 Chrome 扩展，可以把 X Bookmarks 批量导出成 Obsidian 知识库包：每条收藏生成独立 Markdown，带索引、YAML、图片附件、JSON、CSV、HTML 和媒体清单；本地运行，不需要账号，不上传数据。
+我做了一个开源 Chrome 扩展 MarkHarbor，可以把 X Bookmarks 批量导出成 Obsidian 知识库包：每条收藏生成独立 Markdown，带索引、YAML、图片附件、JSON、CSV、HTML 和媒体清单；本地运行，不需要账号，不上传数据。
 
 ## License
 
@@ -348,7 +350,9 @@ npm run build
 
 ## English
 
-# X Bookmarks Obsidian Exporter
+# MarkHarbor
+
+**X Bookmarks to Obsidian, a local-first archive harbor for your saved posts.**
 
 A local-first Chrome extension that turns loaded X Bookmarks into an Obsidian-ready knowledge package.
 
@@ -384,9 +388,9 @@ This extension helps you move your saved X content into files you control.
 
 [Obsidian Web Clipper](https://obsidian.md/clipper) is the official general-purpose web clipping tool for Obsidian. It is great for clipping the current page, highlights, templates, variables, and site rules.
 
-This project focuses on a narrower workflow: batch-exporting X Bookmarks into an Obsidian-ready archive.
+MarkHarbor focuses on a narrower workflow: batch-exporting X Bookmarks into an Obsidian-ready archive.
 
-| Area | Obsidian Web Clipper | X Bookmarks Obsidian Exporter |
+| Area | Obsidian Web Clipper | MarkHarbor |
 | --- | --- | --- |
 | Main target | Current web page | X Bookmarks list |
 | Workflow | Clip one page or selection | Batch collect loaded bookmarks |

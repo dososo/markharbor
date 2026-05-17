@@ -31,7 +31,7 @@ describe("renderCombinedMarkdown", () => {
       new Map([[bookmark.imageUrls[0], "attachments/x-bookmarks/example.jpg"]])
     );
 
-    expect(markdown).toContain("# X Bookmarks Export");
+    expect(markdown).toContain("# MarkHarbor Export");
     expect(markdown).toContain("## Alice");
     expect(markdown).toContain("[原帖](<https://x.com/alice/status/123>)");
     expect(markdown).toContain("![](<attachments/x-bookmarks/example.jpg>)");

@@ -1,4 +1,4 @@
-# X Bookmarks Exporter Todo
+# MarkHarbor Todo
 
 ## Current Goal
 
@@ -79,10 +79,10 @@ Build a simple, convenient Chrome extension for exporting X Bookmarks into an Ob
 
 ## Review
 
-Chinese design spec written at `docs/superpowers/specs/2026-05-16-x-bookmarks-obsidian-exporter-design.md`.
+Chinese design spec written at `docs/superpowers/specs/2026-05-16-markharbor-design.md`.
 Self-review found no placeholders or obvious contradictions. No implementation has started.
 
-Implementation plan created at `docs/superpowers/plans/2026-05-16-x-bookmarks-obsidian-exporter.md`.
+Implementation plan created at `docs/superpowers/plans/2026-05-16-markharbor.md`.
 Next step is user approval of execution mode before code implementation.
 
 Task 1 scaffold completed:
@@ -408,3 +408,18 @@ GitHub 开源 README 重写记录：
 - 新增与社区同类工具、Obsidian Web Clipper 的定位差异说明，强调本项目是 X Bookmarks 批量导出到 Obsidian 的专用工具。
 - 新增导出文件逐项解释、计数语义说明、隐私权限表、已知限制、FAQ 和开源发布前建议。
 - 验证通过：`git diff --check` 通过。
+
+项目整体改名为 MarkHarbor 执行计划：
+- [x] Rename P0-1：同步项目元数据。验证：`package.json`、`package-lock.json`、`src/manifest.ts` 版本和包名一致。
+- [x] Rename P0-2：同步扩展显示名。验证：中英文 locale 的 `extName` 均为 `MarkHarbor`，描述文案包含新品牌定位。
+- [x] Rename P0-3：清理公开文档旧名。验证：README、交接文档、任务记录和历史计划文档不再残留旧展示名。
+- [x] Rename P0-4：重新构建产物。验证：`dist/manifest.json` 版本和扩展名与源码一致。
+- [x] Rename P0-5：跑完整验证并提交。验证：测试、类型检查、构建、审计和 diff 空白检查全部通过。
+
+项目整体改名为 MarkHarbor 记录：
+- 项目包名已从旧描述型名称改为 `markharbor`。
+- 扩展显示名、popup 标题、浏览器 HTML 标题、README、交接文档、任务记录和历史计划/设计文档已同步为 `MarkHarbor`。
+- 导出 HTML 和合并 Markdown 的标题已改为 `MarkHarbor Export`，保留 `X Bookmarks Index.md` 作为 Obsidian 导出索引文件名。
+- 初始设计/计划文档已重命名为 `docs/superpowers/specs/2026-05-16-markharbor-design.md` 和 `docs/superpowers/plans/2026-05-16-markharbor.md`。
+- 版本号已从 `0.1.9` 升到 `0.1.10`，`dist/manifest.json` 版本确认为 `0.1.10`。
+- 验证通过：`npm test` 12 个测试文件、90 个测试通过；`npm run typecheck` 通过；`npm run build` 通过；`npm audit --audit-level=moderate` 通过，0 个漏洞；`git diff --check` 通过；旧展示名精确搜索无残留。

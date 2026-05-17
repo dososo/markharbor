@@ -44,7 +44,7 @@ describe("popup main", () => {
     vi.resetModules();
     document.body.innerHTML = '<div id="app"></div>';
     localStorage.clear();
-    localStorage.setItem("x-bookmarks-language", "zh");
+    localStorage.setItem("markharbor-language", "zh");
     vi.stubGlobal("chrome", {
       tabs: {
         query: vi.fn(async () => [{ id: 1 }]),

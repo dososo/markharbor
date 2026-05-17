@@ -198,6 +198,12 @@
   - 修复：列表页已知封面图不会再混入 X Article 正文块，避免封面在 `## 原文` 里重复冒充正文配图。
   - 版本：同步升到 `0.1.7`，`dist/manifest.json` 版本确认为 `0.1.7`。
   - 验证：`npm test` 12 个测试文件、89 个测试通过；`npm run typecheck` 通过；`npm run build` 通过；`npm audit --audit-level=moderate` 通过，0 个漏洞；`git diff --check` 通过。
+- 采集启动可感知性优化
+  - 背景：用户反馈点击“开始采集”后等待时间较长，书签列表不动、popup 状态不够明显，容易误判插件没有工作。
+  - 修复：开始采集后先扫描当前可见书签并入队，然后立即滚动一次作为启动反馈；不会跳过当前可见书签，后续仍保持增强和滚动同步推进。
+  - 修复：popup 采集中进度卡增加高亮、脉冲点和“采集中，请保持 X Bookmarks 页面打开。”提示，继续展示当前采集标题。
+  - 版本：同步升到 `0.1.8`，`dist/manifest.json` 版本确认为 `0.1.8`。
+  - 验证：`npm test` 12 个测试文件、90 个测试通过；`npm run typecheck` 通过；`npm run build` 通过；`npm audit --audit-level=moderate` 通过，0 个漏洞；`git diff --check` 通过。
 
 ## 风险点
 

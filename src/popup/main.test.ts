@@ -113,4 +113,24 @@ describe("popup main", () => {
     });
     expect(document.body.textContent).toContain("页面可用");
   });
+
+  it("shows a prominent working state while collection is running", async () => {
+    vi.mocked(chrome.tabs.sendMessage).mockResolvedValueOnce({
+      ok: true,
+      bookmarks: [],
+      state: {
+        ...emptyState,
+        isCollecting: true,
+        currentStage: "enhancing",
+        currentItemTitle: "示例长文"
+      }
+    });
+
+    await import("./main");
+    await flushAsyncWork();
+
+    expect(document.querySelector(".progress-card.active")).toBeTruthy();
+    expect(document.body.textContent).toContain("采集中，请保持 X Bookmarks 页面打开");
+    expect(document.body.textContent).toContain("示例长文");
+  });
 });

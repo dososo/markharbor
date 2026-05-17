@@ -212,13 +212,25 @@ export function createCollectionController(options: CollectionControllerOptions 
       state.currentItemUrl = undefined;
       const newBookmarks = scan();
       queueBookmarkEnhancements(newBookmarks, runId);
+      const scrolledBeforeEnhancement = state.scrollAttempts === 0;
+
+      if (scrolledBeforeEnhancement) {
+        state.currentStage = "scrolling";
+        scrollPage();
+        state.scrollAttempts += 1;
+      }
+
       await processNextEnhancement();
       if (!isCurrentRun(runId) || !state.isCollecting) {
         break;
       }
-      state.currentStage = "scrolling";
-      scrollPage();
-      state.scrollAttempts += 1;
+
+      if (!scrolledBeforeEnhancement) {
+        state.currentStage = "scrolling";
+        scrollPage();
+        state.scrollAttempts += 1;
+      }
+
       await delay();
 
       const metrics = getPageMetrics();

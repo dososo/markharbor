@@ -186,7 +186,7 @@ function render(): void {
           ${errorKey === "openBookmarksError" ? `<a href="https://x.com/i/bookmarks" target="_blank" rel="noreferrer">${t(language, "openBookmarksAction")}</a>` : ""}
         </div>
       ` : ""}
-      <dl class="stats">
+      <dl class="stats ${isCollecting ? "active" : ""}">
         <div><dt>${t(language, "collected")}</dt><dd>${count}</dd></div>
         <div><dt>${t(language, "runAdded")}</dt><dd>${state?.runAdded ?? 0}</dd></div>
         <div><dt>${t(language, "scrolls")}</dt><dd>${state?.scrollAttempts ?? 0}</dd></div>
@@ -209,8 +209,12 @@ function render(): void {
         </label>
       </section>
       ${isCollecting || state?.currentStage === "stopped" ? `
-        <section class="progress-card">
-          <strong>${stageKey ? t(language, stageKey) : t(language, "collectionStageIdle")}</strong>
+        <section class="progress-card ${isCollecting ? "active" : ""}">
+          <div class="progress-status">
+            <span class="pulse-dot" aria-hidden="true"></span>
+            <strong>${stageKey ? t(language, stageKey) : t(language, "collectionStageIdle")}</strong>
+          </div>
+          ${isCollecting ? `<p>${t(language, "collectionWorking")}</p>` : ""}
           ${state?.currentItemTitle ? `<p>${t(language, "currentTask")}：${escapeHtml(state.currentItemTitle)}</p>` : ""}
         </section>
       ` : ""}

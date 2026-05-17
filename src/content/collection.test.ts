@@ -77,7 +77,7 @@ describe("createCollectionController", () => {
     expect(controller.state.bookmarks[0].textEnhancementStatus).toBe("success");
   });
 
-  it("waits for the current detail enhancement before scrolling to the next batch", async () => {
+  it("scrolls once immediately after the first scan before slow detail enhancement finishes", async () => {
     let scrolls = 0;
     let resolveEnhancement: ((bookmark: XBookmark) => void) | undefined;
     const enhancement = new Promise<XBookmark>((resolve) => {
@@ -96,7 +96,7 @@ describe("createCollectionController", () => {
 
     controller.handleMessage({ type: "START_COLLECTION" });
 
-    expect(scrolls).toBe(0);
+    expect(scrolls).toBe(1);
     expect(controller.state.currentItemTitle).toBeTruthy();
     resolveEnhancement?.(controller.state.bookmarks[0]);
     await controller.whenIdle();

@@ -396,3 +396,15 @@ X Article 正文快照累积与目标锁定记录：
 - 修复：`CollectionState` 新增 `detailEnhancedCount` 和 `detailEnhancementTotal`；详情增强入队时增加总数，单条增强完成或安全回退后增加完成数。
 - 版本号已从 `0.1.8` 升到 `0.1.9`，`dist/manifest.json` 版本确认为 `0.1.9`。
 - 验证通过：`npm test` 12 个测试文件、90 个测试通过；`npm run typecheck` 通过；`npm run build` 通过；`npm audit --audit-level=moderate` 通过，0 个漏洞；`git diff --check` 通过。
+
+GitHub 开源 README 重写执行计划：
+- [x] README P0-1：审阅现有 README、manifest 和导出代码。验证：README 描述和当前 `0.1.9` 功能一致。
+- [x] README P0-2：核对 Obsidian Web Clipper 官方定位。验证：对比段落写成定位差异，不夸大或贬低官方工具。
+- [x] README P0-3：重写中英文 README。验证：覆盖“是什么、为什么、解决什么、区别、安装、使用、导出结构、隐私权限、限制、FAQ、开源发布建议”。
+- [x] README P0-4：跑文档检查。验证：`git diff --check` 通过。
+
+GitHub 开源 README 重写记录：
+- README 已改为 GitHub 首页型结构，中文为主、英文完整快速版，适合仓库展示和对外传播。
+- 新增与社区同类工具、Obsidian Web Clipper 的定位差异说明，强调本项目是 X Bookmarks 批量导出到 Obsidian 的专用工具。
+- 新增导出文件逐项解释、计数语义说明、隐私权限表、已知限制、FAQ 和开源发布前建议。
+- 验证通过：`git diff --check` 通过。

@@ -1,55 +1,146 @@
-# X 书签 Obsidian 导出器
+# X Bookmarks Obsidian Exporter
 
-一个本地优先的 Chrome 插件，用于把当前页面已加载的 X Bookmarks 导出为适合 Obsidian 使用的 Markdown 知识库包，同时提供 JSON、CSV、TXT、HTML 和媒体清单。
+把 X Bookmarks 变成一个可离线保存、可检索、可二次写作的 Obsidian 知识库包。
 
-## 它解决什么问题
+> 本项目是一个本地优先的 Chrome 扩展：在你自己的浏览器里读取已加载的 X Bookmarks，导出 Markdown、JSON、CSV、TXT、HTML 和媒体清单。当前版本面向本地加载和开源协作，尚未上架 Chrome Web Store。
 
-X Bookmarks 适合临时收藏，但不适合长期整理、搜索和沉淀。这个插件把你自己登录浏览器里已经加载出来的书签整理成本地文件，让它们可以进入 Obsidian 或其他知识管理工具。
+[English](#english)
 
-## 功能
+## 为什么做它？
 
-- 从 `https://x.com/i/bookmarks` 采集当前页面已加载的书签。
-- 通过页面滚动辅助加载更多书签。
-- 对本轮新增书签尝试请求 X 原帖详情页，优先读取页面内嵌初始状态里的原帖正文，必要时再解析详情页 DOM，用更完整的正文补齐列表页截断内容；失败时保留列表页正文。
-- 导出一个 zip 包。
-- 生成 `X Bookmarks Index.md` 总索引。
-- 每条书签生成一个 Markdown 笔记。
-- 支持图片附件下载，并按书签 ID 分目录保存。
-- 生成 `media-manifest.json`，说明每个媒体文件来自哪条书签。
-- 生成 `export-report.json`，记录导出统计。
-- 同时导出 JSON、CSV、TXT、HTML。
+X Bookmarks 很适合“先收藏，之后再看”，但它不适合长期知识管理：
+
+- 收藏越多越难找，列表只能反复滚动。
+- 很多高价值内容会被平台、作者删除或改动。
+- 列表页经常只显示截断正文，真正想沉淀时上下文不够。
+- 图片、链接卡片、X Article 长文内容很难和笔记系统保持在一起。
+- Obsidian 用户最终需要的是本地 Markdown，而不是困在平台里的收藏夹。
+
+这个项目的目标很简单：把你已经收藏的 X 内容尽量完整地搬到本地，整理成 Obsidian 友好的文件结构，让它变成你自己的资料库。
+
+## 它是什么？
+
+X Bookmarks Obsidian Exporter 是一个 Chrome Manifest V3 扩展。它在 `https://x.com/i/bookmarks` 页面工作，辅助滚动并采集当前已加载的书签，随后导出一个 zip 包。
+
+核心功能：
+
+- 采集 X Bookmarks 列表中已加载的书签。
+- 自动滚动加载更多书签，支持手动停止。
+- 区分“已发现”和“详情完成”，避免把列表发现误解为全文采集完成。
+- 为每条书签生成单独 Markdown 笔记。
+- 生成 `X Bookmarks Index.md`，可点击跳转到对应笔记。
+- 导出 JSON、CSV、TXT、HTML，便于备份、表格分析和迁移。
+- 下载可访问的 X 图片附件，并按书签 ID 分目录保存。
+- 尝试增强 X 原帖正文，补齐列表页截断内容。
+- 对 X Article 尝试读取详情页正文、正文图片和基础排版结构。
+- 保留链接卡片标题、描述、URL。
+- 不下载视频，只保存原帖链接和可见预览信息。
 - popup 支持中文和英文切换。
+
+## 能解决什么问题？
+
+适合这些场景：
+
+- 把 X Bookmarks 备份到本地，避免收藏内容只存在平台里。
+- 将高价值推文、X Article、链接卡片整理到 Obsidian。
+- 为写作、研究、选题、竞品分析、灵感库建立可检索素材库。
+- 用 CSV/JSON 对收藏做二次处理。
+- 用 HTML 快速浏览导出结果。
+- 用 `media-manifest.json` 追踪每张图片来自哪条书签。
+
+## 和同类工具有什么不同？
+
+社区里已经有不少 X/Twitter bookmark manager 或 exporter。它们通常偏向：
+
+- 搜索和管理收藏库。
+- 云端同步、标签、文件夹、团队分享。
+- 导出 CSV、JSON、Markdown、PDF 等通用格式。
+- 更强的批量管理或商业化功能。
+
+本项目的定位更窄，也更明确：
+
+- **Obsidian-first**：不是只导出一个 Markdown 文件，而是生成索引、单条笔记、YAML 属性、附件目录和媒体清单。
+- **Local-first**：不需要云账号，不上传数据，不接管你的资料库。
+- **X Bookmarks 专用**：围绕 X Bookmarks 的无限滚动、截断正文、X Article、图片附件和链接卡片做定制。
+- **结构化导出**：Markdown 给 Obsidian，JSON 给程序，CSV 给表格，HTML 给浏览，TXT 给最小备份。
+- **失败安全回退**：详情页增强失败时保留列表页可见内容，而不是中断整次导出。
+- **开源可审计**：权限、导出结构和解析逻辑都可以在代码里检查。
+
+## 和 Obsidian Web Clipper 有什么区别？
+
+[Obsidian Web Clipper](https://obsidian.md/clipper) 是官方、通用、功能强大的网页剪藏工具。它适合保存当前网页、选中文本、高亮、模板、变量、站点规则等工作流。
+
+这个项目不是替代 Obsidian Web Clipper，而是补齐另一个场景：
+
+| 对比项 | Obsidian Web Clipper | X Bookmarks Obsidian Exporter |
+| --- | --- | --- |
+| 核心对象 | 当前网页 | X Bookmarks 列表 |
+| 工作方式 | 手动剪藏当前页面或选区 | 批量采集已加载书签 |
+| 模板能力 | 强，支持模板、变量、规则 | 固定为 Obsidian 知识库包结构 |
+| X Bookmarks 批量导出 | 不是主要目标 | 核心目标 |
+| X Article 增强 | 依赖当前页面剪藏结果 | 针对 X Article 做详情页增强 |
+| 附件结构 | 由剪藏配置和 Obsidian 工作流决定 | 按书签 ID 保存到 `attachments/x-bookmarks/` |
+| 输出结果 | 直接进入 Obsidian 工作流 | zip 包，可审计、可备份、可迁移 |
+
+一句话：Web Clipper 是通用网页剪藏刀；本项目是专门把 X Bookmarks 批量整理成 Obsidian 资料库的导出器。
 
 ## 安装
 
-本项目当前适合本地加载为未打包 Chrome 插件。
+当前推荐本地加载开发版扩展。
+
+### 1. 准备环境
+
+- Node.js 20+
+- Chrome 或 Chromium 系浏览器
+
+### 2. 安装依赖并构建
 
 ```bash
 npm install
 npm run build
 ```
 
-然后：
+### 3. 在 Chrome 中加载扩展
 
-1. 打开 Chrome。
-2. 进入 `chrome://extensions`。
-3. 开启“开发者模式”。
-4. 点击“加载已解压的扩展程序”。
-5. 选择项目中的 `dist/` 目录。
+1. 打开 `chrome://extensions`。
+2. 开启右上角“开发者模式”。
+3. 点击“加载已解压的扩展程序”。
+4. 选择本项目生成的 `dist/` 目录。
+5. 打开 `https://x.com/i/bookmarks`。
+6. 点击浏览器工具栏中的扩展图标。
 
-## 使用方式
+每次代码更新后，重新运行：
+
+```bash
+npm run build
+```
+
+然后在 `chrome://extensions` 中点击扩展的“重新加载”按钮。
+
+## 使用方法
 
 1. 登录 X。
-2. 打开 `https://x.com/i/bookmarks`。
-3. 点击浏览器工具栏里的插件图标。
-4. 点击“开始采集”。
-5. 等待插件辅助滚动并采集页面中已加载的书签。采集新书签时会尝试补齐 X 原帖详情页正文，因此可能比只读取列表页略慢。
-6. 需要时点击“停止”。
-7. 保持“下载图片附件”开启，或关闭它只保留远程图片链接。
+2. 打开 [X Bookmarks](https://x.com/i/bookmarks)。
+3. 点击扩展图标。
+4. 默认保持“下载图片附件”和“完整正文配图高级模式”开启。
+5. 点击“开始采集”。
+6. 等待页面滚动和详情增强完成。
+7. 如需提前结束，点击“停止”。
 8. 点击“导出 zip”。
-9. 将 zip 解压后放入 Obsidian vault。
+9. 解压 zip，把整个文件夹放入 Obsidian vault。
+10. 从 `X Bookmarks Index.md` 开始浏览。
 
-## 导出包结构
+### 计数说明
+
+popup 中的统计含义：
+
+- `已发现`：当前已从 X Bookmarks 列表 DOM 识别到的书签数。
+- `本轮发现`：本次点击“开始采集”后新发现的书签数。
+- `详情完成`：正文与配图增强完成数 / 已入队增强总数。
+
+所以开始后立刻出现 `已发现 4` 是正常的，它表示当前页面已经可见并识别到 4 条书签，不代表 4 条详情增强都已完成。
+
+## 导出结构
 
 ```text
 X Bookmarks Index.md
@@ -67,172 +158,342 @@ media-manifest.json
 export-report.json
 ```
 
-## Obsidian 使用建议
+## 文件格式
 
-把解压后的文件夹整体放进 Obsidian vault。优先打开 `X Bookmarks Index.md`，它会列出导出时间、书签总数、媒体下载状态和每条书签的链接。
+### `X Bookmarks Index.md`
 
-每条书签 Markdown 包含：
+总索引文件，包含：
 
-- YAML 属性：来源、原帖链接、作者、handle、发布时间、采集时间、书签 ID。
-- `## 原文`：优先使用 X 原帖详情页补齐后的正文；如果补齐失败，则保留 X Bookmarks 列表页可见正文。X Article 会尽量保留标题、段落、小标题、列表、加粗和正文图片等 Markdown 排版。
-- `## X 文章`：如果书签是 X Article，会记录文章标题和摘要。
-- `## 链接卡片`：如果页面中有外部链接卡片，会记录标题、描述和链接。
-- `## 媒体`：本地图片引用、远程图片兜底链接、视频预览信息。
-- `## 来源`：原帖链接、正文来源和正文增强状态。
-- `## 我的笔记`：留给你后续补充理解。
+- 导出时间。
+- 书签数量。
+- 媒体下载成功/失败数量。
+- 每条书签对应的 Markdown 链接。
 
-## 支持的导出格式
+### `bookmarks/*.md`
 
-- `Markdown`：Obsidian 主格式，包含索引和单条笔记。
-- `JSON`：结构化备份，便于未来重新生成其他格式。
-- `CSV`：适合表格查看、筛选、迁移。
-- `TXT`：一行一个原帖链接，最低摩擦备份。
-- `HTML`：可在浏览器中打开的浏览页，正文使用标题、段落、列表和图片等语义结构。
-- `ZIP`：打包容器，不是单独的数据格式。
+每条书签一份 Obsidian 笔记，包含：
 
-## 图片和视频说明
+- YAML 属性：来源、原帖链接、作者、handle、发布时间、采集时间、书签 ID、正文来源、增强状态。
+- `## 原文`：优先使用详情页增强后的正文和图片；失败时回退到列表页可见内容。
+- `## X 文章`：X Article 标题和摘要。
+- `## 链接卡片`：外部链接卡片标题、描述和 URL。
+- `## 媒体`：封面图、卡片图、其它媒体图和视频预览链接。
+- `## 来源`：原帖链接、正文来源、增强结果。
+- `## 我的笔记`：留给你写二次理解。
 
-图片会在可下载时保存到：
+### `bookmarks.json`
+
+完整结构化数据，适合二次开发或重新生成其它格式。
+
+### `bookmarks.csv`
+
+表格格式，包含：
+
+- `id`
+- `url`
+- `author_name`
+- `author_handle`
+- `text`
+- `text_source`
+- `text_enhancement_status`
+- `posted_at`
+- `collected_at`
+- `image_urls`
+- `article_title`
+- `article_preview`
+- `link_card_url`
+- `link_card_title`
+- `link_card_description`
+
+### `links.txt`
+
+一行一个原帖链接，适合最小备份或导入其它工具。
+
+### `bookmarks.html`
+
+可直接用浏览器打开的浏览版导出，正文会尽量保留标题、段落、列表和图片结构。
+
+### `media-manifest.json`
+
+媒体清单，记录每个媒体文件：
+
+- 来源书签 ID。
+- 来源书签 URL。
+- 媒体类型。
+- 原始 URL。
+- 本地路径。
+- 下载状态。
+
+### `export-report.json`
+
+导出报告，记录导出时间、书签数量、文件数量、媒体下载统计和视频跳过数量。
+
+## 隐私与权限
+
+设计原则：
+
+- 本地优先。
+- 不需要云账号。
+- 不上传书签数据。
+- 不读取 X 密码。
+- 不读取 X cookie。
+- 不调用未公开的 X 内部接口。
+- 不在用户未触发采集时后台静默抓取。
+- 不下载 X 视频。
+
+Chrome 权限说明：
+
+| 权限 | 用途 |
+| --- | --- |
+| `activeTab` | 与当前打开的 X Bookmarks 页面通信 |
+| `downloads` | 保存导出的 zip |
+| `scripting` | 注入采集脚本，并在详情页读取渲染正文 |
+| `https://x.com/*` | 在 X Bookmarks 和同源详情页工作 |
+| `https://pbs.twimg.com/*` | 下载 X 图片附件 |
+
+## 已知限制
+
+- 不能保证一键导出全部历史书签；完整度取决于 X 页面实际加载和滚动结果。
+- X 页面 DOM 经常变化，解析器可能需要更新。
+- X Article 完整正文和图片依赖详情页渲染，失败时会回退到列表页标题/摘要或可见正文。
+- X Article 的排版是基于 DOM、字体大小、粗细、列表符号和图片节点推断，不保证 100% 复刻原站视觉。
+- 外部文章全文不会抓取，只保存 X 页面中可见的链接卡片信息。
+- 图片下载可能因网络、权限或远程限制失败。
+- 视频不会下载，只保存原帖链接和可见预览。
+- 当前版本不做云同步、全文搜索、AI 总结、自动标签或团队协作。
+
+## FAQ
+
+### 可以导出全部 X Bookmarks 吗？
+
+不能承诺。插件只能读取当前 X Bookmarks 页面已经加载出来的内容，并通过滚动辅助加载更多。X 页面本身的加载限制会影响结果。
+
+### 为什么刚开始就显示已发现 4？
+
+这表示当前页面 DOM 里已经能识别到 4 条书签。它不是“4 条全文和图片都已经增强完成”。详情增强进度看 `详情完成`。
+
+### 会读取我的 X 密码或 cookie 吗？
+
+不会。插件运行在你已登录的浏览器页面里，不读取密码，不读取 cookie。
+
+### 会上传我的书签吗？
+
+不会。导出在本地完成，结果保存为 zip。
+
+### 为什么有些 X Article 还是不完整？
+
+X Article 的完整正文和正文图片依赖 X 详情页渲染。如果 X 没有把某段内容挂载到 DOM、网络加载失败或页面结构变化，插件会安全回退，不会伪造内容。
+
+### 为什么不抓外部文章全文？
+
+抓外部文章全文需要更宽的 host permissions，并会遇到 CORS、反爬、付费墙、版权和 Chrome Web Store 审核风险。当前版本只增强 X 原帖和 X Article。
+
+### 图片会保存在哪里？
+
+默认保存到：
 
 ```text
 attachments/x-bookmarks/<bookmark-id>/
 ```
 
-Markdown 和 HTML 会优先引用本地图片。如果图片下载失败，会保留原始远程图片 URL，并在 `media-manifest.json` 中标记为 `failed`。X Article 正文里的图片会按原文顺序插入到 `## 原文` 中；封面图和其它媒体图也会在 Markdown/HTML 中展示。
+Markdown 和 HTML 会优先引用本地图片；下载失败时保留远程 URL，并在 `media-manifest.json` 中标记。
 
-视频文件不会下载。插件只保存原帖链接和页面中可见的视频预览信息。
+### 可以关闭图片下载吗？
 
-## 隐私与权限
+可以。导出前取消“下载图片附件”，Markdown/HTML 会保留远程图片链接。
 
-本插件的设计边界：
+### 能导出 likes、profile、列表或搜索结果吗？
 
-- 数据保留在本地。
-- 不需要云端账号。
-- 不上传书签数据。
-- 不读取 X cookie。
-- 不调用未公开的 X 内部接口。
-- 不在用户未触发采集时后台静默抓取。
-- 仅对本轮新增书签请求同源 X 原帖详情页，用于补齐可能被列表页截断的正文。
-- 对 X Article，插件会在用户触发采集后打开非激活 X 详情页，读取渲染后的完整正文，完成后关闭该详情页。
-- 不下载 X 视频文件。
-
-使用的 Chrome 权限：
-
-- `activeTab`：与当前打开的 X Bookmarks 页面通信。
-- `downloads`：保存导出的 zip。
-- `scripting`：当 X Bookmarks 页面早于扩展加载时，popup 会向当前标签页注入采集脚本；也用于在非激活 X 详情页读取已渲染正文。
-- `https://x.com/*`：在 X Bookmarks 页面运行采集脚本，并读取同源 X 原帖详情页。
-- `https://pbs.twimg.com/*`：下载 X 图片附件。
-
-## 已知限制
-
-- 导出完整度取决于 X 页面实际加载了多少书签。
-- 如果 X 修改页面 DOM，解析器可能需要更新。
-- X 原帖详情页正文增强依赖 X 页面 HTML 内嵌状态、DOM 和非激活详情页渲染，失败时会安全回退到列表页可见正文或 X Article 标题/摘要。
-- X Article 排版通过页面 DOM、字体大小、粗细、列表符号和图片节点推断，不保证 100% 还原原站视觉样式；无法识别结构时会回退为纯文本段落。
-- 外部文章全文不会抓取，只保存 X 页面中可见的链接卡片信息。
-- X 视频不会下载。
-- 图片下载可能因网络、权限或远程限制失败。
-- 当前版本不做云同步、AI 总结、自动标签或全文搜索。
+当前不支持。这个项目只聚焦 X Bookmarks。
 
 ## 本地开发
 
 ```bash
 npm install
-npm run build
-```
-
-常用命令：
-
-```bash
 npm test
 npm run typecheck
 npm run build
 ```
-
-## 测试
 
 当前测试覆盖：
 
-- X DOM 解析。
-- X 原帖详情页正文增强和失败回退。
-- 书签去重。
-- 文件名安全化。
-- Markdown 渲染。
-- CSV/TXT/HTML/report/manifest 渲染。
+- X Bookmarks DOM 解析。
+- 原帖详情页正文增强和失败回退。
+- X Article 正文、图片和快照累积。
+- 采集状态和停止逻辑。
+- popup 中英文 UI。
+- Markdown、CSV、TXT、HTML、manifest、report 渲染。
 - zip 打包结构。
-- popup 中英文词典。
+- 文件名安全化和去重。
 
-运行：
+## 开源发布前建议
 
-```bash
-npm test
-npm run typecheck
-npm run build
-```
+如果你准备把这个项目发布到 GitHub，建议补齐：
 
-## Chrome Web Store 发布说明
+- `LICENSE`：建议 MIT。
+- `CONTRIBUTING.md`：说明如何提 issue、如何跑测试。
+- `SECURITY.md`：说明隐私和安全问题反馈方式。
+- `.github/ISSUE_TEMPLATE/`：bug report 和 feature request 模板。
+- `.github/workflows/ci.yml`：在 PR 上运行 `npm test`、`npm run typecheck`、`npm run build`。
 
-更安全的公开表述：
+## 适合用于 X 长文的一句话
 
-- Export loaded X Bookmarks from your own logged-in browser session.
-- Local-first export to Markdown, JSON, CSV, TXT, HTML, and media files.
-- No account, no server, no cookie access.
+我做了一个开源 Chrome 扩展，可以把 X Bookmarks 批量导出成 Obsidian 知识库包：每条收藏生成独立 Markdown，带索引、YAML、图片附件、JSON、CSV、HTML 和媒体清单；本地运行，不需要账号，不上传数据。
 
-避免表述：
+## License
 
-- Download all X bookmarks automatically.
-- Bypass X limits.
-- Scrape private data.
-- Download videos from X.
+当前仓库尚未添加 `LICENSE` 文件。正式开源前建议使用 MIT License。
 
-## FAQ
+---
 
-### 能一键导出全部历史书签吗？
+## English
 
-不能承诺。插件只能采集当前 X Bookmarks 页面已经加载出来的内容，并通过滚动辅助加载更多。
+# X Bookmarks Obsidian Exporter
 
-### 会不会读取我的 X 密码或 cookie？
+A local-first Chrome extension that turns loaded X Bookmarks into an Obsidian-ready knowledge package.
 
-不会。插件不读取密码，不读取 cookie，也不调用未公开的 X 内部接口。
+It exports your loaded X Bookmarks into Markdown notes, an index file, JSON, CSV, TXT, HTML, image attachments, a media manifest, and an export report.
 
-### 为什么每条 Markdown 里没有外部文章全文？
+## Why?
 
-当前版本会尝试补齐 X 原帖详情页正文，但不会抓取链接卡片指向的外部文章全文。抓取外部全文会引入额外权限、跨站限制、版权和稳定性问题。
+X Bookmarks are useful for saving things quickly, but they are not a long-term knowledge base:
 
-### attachments 里的图片怎么知道来自哪里？
+- Bookmarks become hard to search and revisit.
+- Valuable posts may disappear or change.
+- The bookmarks list often shows truncated text.
+- X Article content, images, and link cards are hard to preserve in context.
+- Obsidian users need local Markdown files, not a locked platform list.
 
-V2 按书签 ID 分目录保存图片，并在 `media-manifest.json` 中记录来源书签、原始 URL、本地路径和下载状态。
+This extension helps you move your saved X content into files you control.
 
-### 可以不用图片吗？
+## Features
 
-可以。导出前关闭“下载图片附件”，Markdown 会保留远程图片链接。
+- Collect loaded bookmarks from `https://x.com/i/bookmarks`.
+- Auto-scroll to load more bookmarks.
+- Export one Markdown note per bookmark.
+- Generate a clickable `X Bookmarks Index.md`.
+- Export JSON, CSV, TXT, HTML, media manifest, and export report.
+- Download accessible X images into local attachment folders.
+- Attempt to enrich truncated post text from the X detail page.
+- Attempt to capture X Article body text, inline images, and readable structure.
+- Preserve link card title, description, and URL.
+- Local-first: no cloud account, no upload, no cookie access.
+- Chinese and English popup UI.
 
-## English Quick Start
+## How it differs from Obsidian Web Clipper
 
-This is a local-first Chrome extension for exporting loaded X Bookmarks into an Obsidian-friendly zip package.
+[Obsidian Web Clipper](https://obsidian.md/clipper) is the official general-purpose web clipping tool for Obsidian. It is great for clipping the current page, highlights, templates, variables, and site rules.
+
+This project focuses on a narrower workflow: batch-exporting X Bookmarks into an Obsidian-ready archive.
+
+| Area | Obsidian Web Clipper | X Bookmarks Obsidian Exporter |
+| --- | --- | --- |
+| Main target | Current web page | X Bookmarks list |
+| Workflow | Clip one page or selection | Batch collect loaded bookmarks |
+| Templates | Powerful and customizable | Fixed Obsidian archive structure |
+| X Bookmarks batch export | Not its main purpose | Core purpose |
+| Output | Obsidian clipping workflow | Auditable zip package |
+| Attachments | Depends on clipper workflow | Per-bookmark attachment folders |
+
+## Install
 
 ```bash
 npm install
 npm run build
 ```
 
-Load `dist/` from `chrome://extensions` with Developer Mode enabled.
+Then:
 
-Usage:
+1. Open `chrome://extensions`.
+2. Enable Developer Mode.
+3. Click `Load unpacked`.
+4. Select the generated `dist/` folder.
+5. Open `https://x.com/i/bookmarks`.
+6. Click the extension icon.
 
-1. Open `https://x.com/i/bookmarks`.
-2. Click the extension icon.
-3. Click `Start collection`.
-4. Wait while the page scrolls and loaded bookmarks are collected.
-5. Click `Export zip`.
-6. Unzip the package into your Obsidian vault.
+## Usage
 
-Privacy:
+1. Log in to X.
+2. Open `https://x.com/i/bookmarks`.
+3. Click the extension icon.
+4. Keep image download and advanced full article mode enabled if needed.
+5. Click `Start collection`.
+6. Wait for scrolling and detail enhancement.
+7. Click `Stop` if you want to end early.
+8. Click `Export zip`.
+9. Unzip the package into your Obsidian vault.
+10. Start from `X Bookmarks Index.md`.
 
-- No server.
-- No account.
-- No upload.
-- No cookie access.
-- No undocumented X API calls.
-- No X video downloads.
+## Export structure
+
+```text
+X Bookmarks Index.md
+bookmarks/
+  2026-05-16-author-title.md
+attachments/
+  x-bookmarks/
+    1234567890/
+      image-01-example.jpg
+bookmarks.json
+bookmarks.csv
+links.txt
+bookmarks.html
+media-manifest.json
+export-report.json
+```
+
+## Privacy and permissions
+
+The extension:
+
+- Does not require a cloud account.
+- Does not upload bookmark data.
+- Does not read your X password.
+- Does not read X cookies.
+- Does not call undocumented X internal APIs.
+- Does not silently collect data before you start.
+- Does not download X videos.
+
+Permissions:
+
+- `activeTab`: communicate with the active X Bookmarks page.
+- `downloads`: save the exported zip.
+- `scripting`: inject the collector and read rendered detail pages.
+- `https://x.com/*`: run on X Bookmarks and same-origin detail pages.
+- `https://pbs.twimg.com/*`: download X image attachments.
+
+## Known limitations
+
+- It cannot guarantee exporting your entire historical bookmark archive.
+- Completeness depends on what X actually loads in the page.
+- X DOM changes may break parsing.
+- X Article capture is best-effort and safely falls back when detail rendering fails.
+- External article full text is not fetched.
+- X videos are not downloaded.
+- No cloud sync, AI summary, auto-tagging, or full-text search yet.
+
+## FAQ
+
+### Does it export all X Bookmarks?
+
+Not guaranteed. It collects what the X Bookmarks page can load during scrolling.
+
+### Why does the count jump immediately after starting?
+
+`Discovered` means bookmarks found in the current page DOM. It does not mean all detail text and images are finished. Check `Details done` for enrichment progress.
+
+### Does it upload my data?
+
+No. Export runs locally and saves a zip file.
+
+### Does it fetch external article full text?
+
+No. It only preserves link card metadata visible on X. Fetching arbitrary external pages would require broader permissions and create stability, copyright, and review risks.
+
+### Does it download videos?
+
+No. It only saves source links and visible preview information.
+
+## License
+
+No `LICENSE` file has been added yet. MIT License is recommended before public release.

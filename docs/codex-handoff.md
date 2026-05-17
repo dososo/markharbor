@@ -210,6 +210,11 @@
   - 修复：`CollectionState` 新增 `detailEnhancedCount` 和 `detailEnhancementTotal`，详情增强入队时增加总数，单条增强完成或安全回退后增加完成数。
   - 版本：同步升到 `0.1.9`，`dist/manifest.json` 版本确认为 `0.1.9`。
   - 验证：`npm test` 12 个测试文件、90 个测试通过；`npm run typecheck` 通过；`npm run build` 通过；`npm audit --audit-level=moderate` 通过，0 个漏洞；`git diff --check` 通过。
+- GitHub 开源 README 重写
+  - 背景：用户准备将项目打包为标准 GitHub 开源仓库，并要求先写一份适合对外传播和仓库展示的中英文 README。
+  - 修复：README 改为 GitHub 首页型结构，覆盖产品定位、痛点、功能、与同类工具和 Obsidian Web Clipper 的区别、安装、使用、导出结构、隐私权限、限制、FAQ 和开源发布前建议。
+  - 说明：README 中对 Obsidian Web Clipper 的描述参考其官方页面，采用“定位差异”表述，避免误导为替代关系。
+  - 验证：`git diff --check` 通过。
 
 ## 风险点
 

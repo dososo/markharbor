@@ -252,6 +252,15 @@
   - 修复：README 增加 CI、Release、License、Chrome Extension 徽章，并同步当前版本为 `0.1.11`。
   - 新增：`docs/assets/markharbor-social-preview.svg`、`docs/assets/markharbor-social-preview.png`、`docs/TROUBLESHOOTING.md`、`docs/STORE_LISTING.md`、`docs/LAUNCH.md`、`docs/SCREENSHOTS.md`。
   - 说明：GitHub social preview 需要在仓库 Settings 中手动上传 `docs/assets/markharbor-social-preview.png`。
+- GitHub 截图与仓库展示素材生成
+  - 背景：用户要求生成所有仓库展示图、插件完整截图和内容截图，能自动完成的不要用户配合。
+  - 新增：`scripts/generate-showcase-assets.mjs` 和 `npm run assets:showcase`，可重复生成展示素材。
+  - 新增：`docs/assets/screenshots/`，包含插件待采集、采集中、导出准备、导出包结构、Obsidian 索引、单条笔记、HTML 预览和商店截图。
+  - 新增：`docs/assets/store/`，包含 Chrome Web Store 小推广图和横幅推广图。
+  - 修复：GitHub social preview 改为同脚本生成，统一中文文案和 MarkHarbor 字标。
+  - 文档：README 新增截图区；`docs/SCREENSHOTS.md` 改为素材清单；`docs/STORE_LISTING.md` 改为中文上架材料草稿并列出已生成素材。
+  - GitHub：仓库描述、主页链接和 topics 已通过 `gh repo edit` 更新；新增 issue labels：`chrome-extension`、`privacy`、`x-dom-change`、`needs-reproduction`。
+  - 验证：`npm run assets:showcase`、`npm test`、`npm run typecheck`、`npm run build`、`npm audit --audit-level=moderate`、`git diff --check` 均通过；GitHub main CI 通过；当前 open PR 列表为空。
 
 ## 风险点
 

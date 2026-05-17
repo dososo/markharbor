@@ -483,4 +483,6 @@ GitHub 截图与展示图生成记录：
 - README 新增截图区，展示插件采集中、导出包结构、Obsidian 单条笔记和 HTML 离线预览。
 - `docs/SCREENSHOTS.md` 改为可执行素材清单，说明生成命令、用途和发布前检查规则。
 - `docs/STORE_LISTING.md` 同步为中文上架材料草稿，并列出已生成素材路径。
+- GitHub 仓库元数据已更新：描述更具体，主页链接指向最新版 Release，topics 补充 `x-bookmarks`、`twitter-bookmarks`、`obsidian-md`、`markdown-export`、`knowledge-management`。
+- GitHub issue labels 已补充：`chrome-extension`、`privacy`、`x-dom-change`、`needs-reproduction`。
 - 验证通过：`npm run assets:showcase` 通过并生成 1 张仓库展示图、10 张截图、2 张商店素材；`npm test` 12 个测试文件、90 个测试通过；`npm run typecheck` 通过；`npm run build` 通过；`npm audit --audit-level=moderate` 通过，0 个漏洞；`git diff --check` 通过。

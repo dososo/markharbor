@@ -245,6 +245,8 @@
   - 修复：新增 `src/vite-env.d.ts`，调整 `RenderedTextChromeApi`，并让 popup 测试使用本地 mock 引用以避免新版 Chrome 重载类型影响测试。
   - 版本：同步升到 `0.1.11`，`dist/manifest.json` 版本确认为 `0.1.11`。
   - 验证：`npm test` 12 个测试文件、90 个测试通过；`npm run typecheck` 通过；`npm run build` 通过；`npm run package` 通过并确认 `release/markharbor-v0.1.11.zip` 内含 `markharbor/manifest.json`；`npm audit --audit-level=moderate` 通过，0 个漏洞；`git diff --check` 通过。
+  - 发布：`main` 和 `v0.1.11` 已推送，GitHub CI 与 Release workflow 均通过，Release asset `markharbor-v0.1.11.zip` 已生成。
+  - 清理：Dependabot PR #5、#6、#7 已因被 `v0.1.11` supersede 而关闭，当前 open PR 列表为空。
 
 ## 风险点
 

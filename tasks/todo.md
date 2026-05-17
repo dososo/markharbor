@@ -444,7 +444,7 @@ GitHub 发布后依赖维护执行计划：
 - [x] Maint P0-2：处理冲突/失败的依赖 PR。验证：在 main 上手动吸收 `jsdom`、`typescript`、`@types/chrome` 升级，并修复 TypeScript 6 和新版 Chrome 类型问题。
 - [x] Maint P0-3：同步版本号。验证：`package.json`、`package-lock.json`、`src/manifest.ts` 和 `dist/manifest.json` 均为 `0.1.11`。
 - [x] Maint P0-4：跑完整验证。验证：`npm test`、`npm run typecheck`、`npm run build`、`npm run package`、`npm audit --audit-level=moderate`、`git diff --check` 全部通过。
-- [ ] Maint P0-5：提交、推送并发布 `v0.1.11`。验证：GitHub CI 和 Release workflow 通过，Release asset 已生成。
+- [x] Maint P0-5：提交、推送并发布 `v0.1.11`。验证：GitHub CI 和 Release workflow 通过，Release asset 已生成。
 
 GitHub 发布后依赖维护记录：
 - 合并 Dependabot PR #1、#2、#3、#4，更新 `actions/checkout`、`actions/upload-artifact`、`actions/setup-node` 和 `@types/node`。
@@ -453,3 +453,5 @@ GitHub 发布后依赖维护记录：
 - PR #7 的新版 `@types/chrome` CI 失败根因是 Chrome Promise 返回类型更严格，已调整 `RenderedTextChromeApi` 和 popup 测试 mock。
 - 版本号已从 `0.1.10` 升到 `0.1.11`。
 - 本地验证通过：`npm test` 12 个测试文件、90 个测试通过；`npm run typecheck` 通过；`npm run build` 通过；`npm run package` 通过并确认 zip 内含 `markharbor/manifest.json`；`npm audit --audit-level=moderate` 通过，0 个漏洞；`git diff --check` 通过。
+- 已推送 `main` 和 `v0.1.11`，GitHub CI 与 Release workflow 均通过，Release asset `markharbor-v0.1.11.zip` 已生成。
+- 已关闭被 main 手动维护提交 supersede 的 Dependabot PR #5、#6、#7；当前 open PR 列表为空。

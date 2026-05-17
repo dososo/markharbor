@@ -387,16 +387,12 @@ npm run package
 - [docs/PRIVACY.md](docs/PRIVACY.md)：隐私说明。
 - [docs/ROADMAP.md](docs/ROADMAP.md)：路线图。
 - [docs/STORE_LISTING.md](docs/STORE_LISTING.md)：Chrome Web Store 上架文案草稿。
-- [docs/LAUNCH.md](docs/LAUNCH.md)：X / GitHub / 社区发布文案。
+- [docs/LAUNCH.md](docs/LAUNCH.md)：发布链接与素材清单。
 - [docs/SCREENSHOTS.md](docs/SCREENSHOTS.md)：截图清单。
 - `.github/ISSUE_TEMPLATE/`：bug report 和 feature request 模板。
 - `.github/workflows/ci.yml`：PR 和 push 的测试、类型检查、构建、审计和打包。
 - `.github/workflows/release.yml`：推送 `vX.Y.Z` tag 后自动生成 GitHub Release zip。
 - `.github/dependabot.yml`：依赖和 GitHub Actions 更新提醒。
-
-## 适合用于 X 长文的一句话
-
-我做了一个开源 Chrome 扩展 MarkHarbor，可以把 X Bookmarks 批量导出成 Obsidian 知识库包：每条收藏生成独立 Markdown，带索引、YAML、图片附件、JSON、CSV、HTML 和媒体清单；本地运行，不需要账号，不上传数据。
 
 ## License
 

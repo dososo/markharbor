@@ -267,6 +267,10 @@
   - 上传：`/Users/manxiaochu/Movies/5月17日.mp4` 体积约 178MB，超过 GitHub 普通 git 单文件 100MB 限制，未提交进仓库；已作为 Release `v0.1.11` 资产上传，公开文件名为 `markharbor-demo-2026-05-17.mp4`。
   - 文档：中文 README、英文 README、`docs/LAUNCH.md` 和 `docs/SCREENSHOTS.md` 已加入演示视频入口；`v0.1.11` Release 说明已改为面向用户的中文安装说明，并列出插件 zip 和演示视频。
   - 经验：`tasks/lessons.md` 已记录双语 README 应拆分文件、默认中文展示的规则。
+- 公开文档语气收口
+  - 背景：用户指出 README 末尾个人口吻推广内容不适合放在仓库里。
+  - 修复：删除 README 末尾个人口吻推广段落；`docs/LAUNCH.md` 改为只保留发布链接、展示素材和发布边界。
+  - 经验：`tasks/lessons.md` 已记录开源仓库文档保持产品文档语气。
 
 ## 风险点
 

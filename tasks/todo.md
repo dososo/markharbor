@@ -485,4 +485,5 @@ GitHub 截图与展示图生成记录：
 - `docs/STORE_LISTING.md` 同步为中文上架材料草稿，并列出已生成素材路径。
 - GitHub 仓库元数据已更新：描述更具体，主页链接指向最新版 Release，topics 补充 `x-bookmarks`、`twitter-bookmarks`、`obsidian-md`、`markdown-export`、`knowledge-management`。
 - GitHub issue labels 已补充：`chrome-extension`、`privacy`、`x-dom-change`、`needs-reproduction`。
+- GitHub Wiki 已关闭，文档统一以仓库内 Markdown 为唯一维护入口；Issues 保持开启。
 - 验证通过：`npm run assets:showcase` 通过并生成 1 张仓库展示图、10 张截图、2 张商店素材；`npm test` 12 个测试文件、90 个测试通过；`npm run typecheck` 通过；`npm run build` 通过；`npm audit --audit-level=moderate` 通过，0 个漏洞；`git diff --check` 通过。

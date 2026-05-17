@@ -259,7 +259,7 @@
   - 新增：`docs/assets/store/`，包含 Chrome Web Store 小推广图和横幅推广图。
   - 修复：GitHub social preview 改为同脚本生成，统一中文文案和 MarkHarbor 字标。
   - 文档：README 新增截图区；`docs/SCREENSHOTS.md` 改为素材清单；`docs/STORE_LISTING.md` 改为中文上架材料草稿并列出已生成素材。
-  - GitHub：仓库描述、主页链接和 topics 已通过 `gh repo edit` 更新；新增 issue labels：`chrome-extension`、`privacy`、`x-dom-change`、`needs-reproduction`。
+  - GitHub：仓库描述、主页链接和 topics 已通过 `gh repo edit` 更新；新增 issue labels：`chrome-extension`、`privacy`、`x-dom-change`、`needs-reproduction`；Wiki 已关闭，文档统一在仓库内维护。
   - 验证：`npm run assets:showcase`、`npm test`、`npm run typecheck`、`npm run build`、`npm audit --audit-level=moderate`、`git diff --check` 均通过；GitHub main CI 通过；当前 open PR 列表为空。
 
 ## 风险点

@@ -468,3 +468,19 @@ GitHub 对外展示材料增强记录：
 - 新增 Chrome Web Store listing 草稿，覆盖产品名、短描述、详细描述、权限解释、隐私实践和截图素材需求。
 - 新增 X / GitHub / 社区发布文案，方便直接对外宣传。
 - 新增故障排查文档和截图清单，减少普通用户从 GitHub Releases 安装 unpacked extension 时的阻力。
+
+GitHub 截图与展示图生成执行计划：
+- [x] Assets P0-1：生成公开展示素材。验证：脚本输出仓库展示图、插件状态截图、导出内容截图和商店截图，且不包含真实账号或私人书签。
+- [x] Assets P0-2：检查图片质量。验证：PNG 尺寸正确，中文正常显示，关键画面没有裁切。
+- [x] Assets P0-3：接入仓库文档。验证：README、截图清单和 Chrome Web Store 草稿能直接引用已生成素材。
+- [x] Assets P0-4：补充可重复生成入口。验证：`npm run assets:showcase` 可重新生成 SVG 和 PNG。
+- [x] Assets P0-5：跑完整验证并提交。验证：`npm test`、`npm run typecheck`、`npm run build`、`npm audit --audit-level=moderate`、`git diff --check` 全部通过。
+
+GitHub 截图与展示图生成记录：
+- 新增 `scripts/generate-showcase-assets.mjs`，用脱敏演示数据生成 10 张截图和 2 张商店推广图。
+- 新增 `docs/assets/screenshots/`，包含插件待采集、采集中、导出准备、导出包结构、Obsidian 索引、单条笔记、HTML 预览和商店截图。
+- 新增 `docs/assets/store/`，包含 Chrome Web Store 小推广图和横幅推广图。
+- README 新增截图区，展示插件采集中、导出包结构、Obsidian 单条笔记和 HTML 离线预览。
+- `docs/SCREENSHOTS.md` 改为可执行素材清单，说明生成命令、用途和发布前检查规则。
+- `docs/STORE_LISTING.md` 同步为中文上架材料草稿，并列出已生成素材路径。
+- 验证通过：`npm run assets:showcase` 通过并生成 1 张仓库展示图、10 张截图、2 张商店素材；`npm test` 12 个测试文件、90 个测试通过；`npm run typecheck` 通过；`npm run build` 通过；`npm audit --audit-level=moderate` 通过，0 个漏洞；`git diff --check` 通过。

@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="800" viewBox="0 0 1280 800" role="img">
+  <defs>
+    <linearGradient id="pageBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0F172A"/>
+      <stop offset="48%" stop-color="#123C43"/>
+      <stop offset="100%" stop-color="#F4B860"/>
+    </linearGradient>
+    <linearGradient id="cardBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#F8FAFC"/>
+    </linearGradient>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="18" stdDeviation="24" flood-color="#0F172A" flood-opacity="0.22"/>
+    </filter>
+  </defs>
+  <rect width="1280" height="800" fill="url(#pageBg)"/>
+  <path d="M0 624 C230.39999999999998 528 435.20000000000005 736 665.6 608 C960 448.00000000000006 1126.4 624 1280 528 L1280 800 L0 800 Z" fill="#0B1220" opacity="0.26"/>
+  <g filter="url(#softShadow)"><rect x="150" y="92" width="980" height="610" rx="26" fill="#FFFFFF"/><rect x="150" y="92" width="980" height="72" rx="26" fill="#F2F4F7"/><text x="190" y="138" text-anchor="start" font-family="Hiragino Sans GB" font-size="26" font-weight="850" fill="#101828">markharbor-export.zip</text><rect x="210" y="200" width="520" height="34" rx="8" fill="#E6F4F1" stroke="#EAECF0"/>
+      <text x="228" y="222" text-anchor="start" font-family="Hiragino Sans GB" font-size="18" font-weight="800" fill="#123C43">X Bookmarks Index.md</text>
+<rect x="210" y="242" width="520" height="34" rx="8" fill="#FFFFFF" stroke="#EAECF0"/>
+      <text x="228" y="264" text-anchor="start" font-family="Hiragino Sans GB" font-size="18" font-weight="650" fill="#667085">bookmarks/</text>
+<rect x="210" y="284" width="520" height="34" rx="8" fill="#FFFFFF" stroke="#EAECF0"/>
+      <text x="228" y="306" text-anchor="start" font-family="Hiragino Sans GB" font-size="18" font-weight="650" fill="#0B57D0">  2026-05-17-design-systems-weekly.md</text>
+<rect x="210" y="326" width="520" height="34" rx="8" fill="#FFFFFF" stroke="#EAECF0"/>
+      <text x="228" y="348" text-anchor="start" font-family="Hiragino Sans GB" font-size="18" font-weight="650" fill="#0B57D0">attachments/x-bookmarks/1934/image-01.jpg</text>
+<rect x="210" y="368" width="520" height="34" rx="8" fill="#FFFFFF" stroke="#EAECF0"/>
+      <text x="228" y="390" text-anchor="start" font-family="Hiragino Sans GB" font-size="18" font-weight="650" fill="#137333">bookmarks.json</text>
+<rect x="210" y="410" width="520" height="34" rx="8" fill="#FFFFFF" stroke="#EAECF0"/>
+      <text x="228" y="432" text-anchor="start" font-family="Hiragino Sans GB" font-size="18" font-weight="650" fill="#137333">bookmarks.csv</text>
+<rect x="210" y="452" width="520" height="34" rx="8" fill="#FFFFFF" stroke="#EAECF0"/>
+      <text x="228" y="474" text-anchor="start" font-family="Hiragino Sans GB" font-size="18" font-weight="650" fill="#9A6700">bookmarks.html</text>
+<rect x="210" y="494" width="520" height="34" rx="8" fill="#FFFFFF" stroke="#EAECF0"/>
+      <text x="228" y="516" text-anchor="start" font-family="Hiragino Sans GB" font-size="18" font-weight="650" fill="#137333">media-manifest.json</text>
+<rect x="210" y="536" width="520" height="34" rx="8" fill="#FFFFFF" stroke="#EAECF0"/>
+      <text x="228" y="558" text-anchor="start" font-family="Hiragino Sans GB" font-size="18" font-weight="650" fill="#137333">export-report.json</text><rect x="788" y="222" width="270" height="270" rx="28" fill="#E6F4F1"/><g transform="translate(870 292) scale(1)">
+    <rect x="0" y="0" width="112" height="112" rx="26" fill="#123C43"/>
+    <text x="56" y="68" text-anchor="middle" font-family="Hiragino Sans GB" font-size="56" font-weight="850" fill="#FFFFFF">M</text>
+    <rect x="30" y="80" width="52" height="8" rx="4" fill="#F4B860"/>
+  </g><text x="923" y="458" text-anchor="middle" font-family="Hiragino Sans GB" font-size="24" font-weight="850" fill="#123C43">Obsidian 就绪</text><text x="923" y="492" text-anchor="middle" font-family="Hiragino Sans GB" font-size="16" font-weight="650" fill="#667085">Markdown + 媒体 + 数据</text></g>
+</svg>

@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="800" viewBox="0 0 1280 800" role="img">
+  <defs>
+    <linearGradient id="pageBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0F172A"/>
+      <stop offset="48%" stop-color="#123C43"/>
+      <stop offset="100%" stop-color="#F4B860"/>
+    </linearGradient>
+    <linearGradient id="cardBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#F8FAFC"/>
+    </linearGradient>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="18" stdDeviation="24" flood-color="#0F172A" flood-opacity="0.22"/>
+    </filter>
+  </defs>
+  <rect width="1280" height="800" fill="url(#pageBg)"/>
+  <path d="M0 624 C230.39999999999998 528 435.20000000000005 736 665.6 608 C960 448.00000000000006 1126.4 624 1280 528 L1280 800 L0 800 Z" fill="#0B1220" opacity="0.26"/>
+  <g filter="url(#softShadow)">
+    <rect x="88" y="74" width="1104" height="650" rx="20" fill="#FFFFFF"/>
+    <rect x="88" y="74" width="1104" height="52" rx="20" fill="#F2F4F7"/>
+    <circle cx="116" cy="100" r="7" fill="#F97066"/>
+    <circle cx="138" cy="100" r="7" fill="#FDB022"/>
+    <circle cx="160" cy="100" r="7" fill="#32D583"/>
+    <rect x="190" y="87" width="972" height="26" rx="13" fill="#FFFFFF"/>
+    <text x="210" y="106" text-anchor="start" font-family="Hiragino Sans GB" font-size="13" font-weight="600" fill="#667085">https://x.com/i/bookmarks</text>
+    <rect x="120" y="146" width="582" height="570" rx="24" fill="#F8FAFC"/>
+    <text x="148" y="194" text-anchor="start" font-family="Hiragino Sans GB" font-size="28" font-weight="850" fill="#101828">X 书签</text>
+    <text x="148" y="222" text-anchor="start" font-family="Hiragino Sans GB" font-size="15" font-weight="650" fill="#667085">公开截图使用的演示数据</text>
+    <rect x="148" y="238" width="526" height="112" rx="16" fill="#FFFFFF" stroke="#EAECF0"/>
+      <circle cx="178" cy="270" r="18" fill="#123C43"/>
+      <text x="208" y="266" text-anchor="start" font-family="Hiragino Sans GB" font-size="18" font-weight="800" fill="#101828">设计系统周刊</text>
+      <text x="208" y="290" text-anchor="start" font-family="Hiragino Sans GB" font-size="13" font-weight="650" fill="#667085">@designweekly</text>
+      <text x="208" y="320" text-anchor="start" font-family="Hiragino Sans GB" font-size="15" font-weight="550" fill="#344054">一份关于 AI 产品工作流可审计性的实践指南……</text>
+      <rect x="570" y="258" width="76" height="28" rx="14" fill="#E6F4EA"/>
+      <text x="608" y="277" text-anchor="middle" font-family="Hiragino Sans GB" font-size="12" font-weight="800" fill="#137333">X 长文</text>
+<rect x="148" y="368" width="526" height="112" rx="16" fill="#FFFFFF" stroke="#EAECF0"/>
+      <circle cx="178" cy="400" r="18" fill="#F4B860"/>
+      <text x="208" y="396" text-anchor="start" font-family="Hiragino Sans GB" font-size="18" font-weight="800" fill="#101828">Maya Chen</text>
+      <text x="208" y="420" text-anchor="start" font-family="Hiragino Sans GB" font-size="13" font-weight="650" fill="#667085">@maya</text>
+      <text x="208" y="450" text-anchor="start" font-family="Hiragino Sans GB" font-size="15" font-weight="550" fill="#344054">好的笔记不是摘要，而是带来源链接的长期决策记录。</text>
+      <rect x="570" y="388" width="76" height="28" rx="14" fill="#E6F4EA"/>
+      <text x="608" y="407" text-anchor="middle" font-family="Hiragino Sans GB" font-size="12" font-weight="800" fill="#137333">串文</text>
+<rect x="148" y="498" width="526" height="112" rx="16" fill="#FFFFFF" stroke="#EAECF0"/>
+      <circle cx="178" cy="530" r="18" fill="#0B57D0"/>
+      <text x="208" y="526" text-anchor="start" font-family="Hiragino Sans GB" font-size="18" font-weight="800" fill="#101828">Notebook Ops</text>
+      <text x="208" y="550" text-anchor="start" font-family="Hiragino Sans GB" font-size="13" font-weight="650" fill="#667085">@notebookops</text>
+      <text x="208" y="580" text-anchor="start" font-family="Hiragino Sans GB" font-size="15" font-weight="550" fill="#344054">如何把已保存内容整理成可检索的研究资料库。</text>
+      <rect x="570" y="518" width="76" height="28" rx="14" fill="#E6F4EA"/>
+      <text x="608" y="537" text-anchor="middle" font-family="Hiragino Sans GB" font-size="12" font-weight="800" fill="#137333">链接卡片</text><g filter="url(#softShadow)">
+    <rect x="746" y="122" width="404" height="520" rx="26" fill="#FFFAF0"/>
+    <g transform="translate(770 146)">
+      <text x="0" y="28" text-anchor="start" font-family="Hiragino Sans GB" font-size="28" font-weight="800" fill="#101828">MarkHarbor</text>
+      <text x="0" y="65" text-anchor="start" font-family="Hiragino Sans GB" font-size="17" font-weight="650" fill="#5F6368">X 书签导出到 Obsidian,</text>
+<text x="0" y="92" text-anchor="start" font-family="Hiragino Sans GB" font-size="17" font-weight="650" fill="#5F6368">本地优先的书签归档港。</text>
+      <rect x="264" y="2" width="88" height="34" rx="17" fill="#FFFFFF" stroke="#E4DED2"/>
+      <rect x="306" y="6" width="40" height="26" rx="13" fill="#FDD663"/>
+      <text x="281" y="25" text-anchor="start" font-family="Hiragino Sans GB" font-size="13" font-weight="700" fill="#5F6368">中</text>
+      <text x="326" y="25" text-anchor="start" font-family="Hiragino Sans GB" font-size="13" font-weight="800" fill="#101828">EN</text>
+    </g>
+    <rect x="770" y="276" width="102" height="86" rx="10" fill="#FFFFFF" stroke="#E4DED2"/>
+      <text x="782" y="307" text-anchor="start" font-family="Hiragino Sans GB" font-size="14" font-weight="650" fill="#5F6368">已发现</text>
+      <text x="782" y="346" text-anchor="start" font-family="Hiragino Sans GB" font-size="34" font-weight="800" fill="#202124">0</text>
+<rect x="888" y="276" width="102" height="86" rx="10" fill="#FFFFFF" stroke="#E4DED2"/>
+      <text x="900" y="307" text-anchor="start" font-family="Hiragino Sans GB" font-size="14" font-weight="650" fill="#5F6368">本轮发现</text>
+      <text x="900" y="346" text-anchor="start" font-family="Hiragino Sans GB" font-size="34" font-weight="800" fill="#202124">0</text>
+<rect x="1006" y="276" width="102" height="86" rx="10" fill="#FFFFFF" stroke="#E4DED2"/>
+      <text x="1018" y="307" text-anchor="start" font-family="Hiragino Sans GB" font-size="14" font-weight="650" fill="#5F6368">详情完成</text>
+      <text x="1018" y="346" text-anchor="start" font-family="Hiragino Sans GB" font-size="24" font-weight="800" fill="#202124">0/0</text>
+    <rect x="770" y="386" width="356" height="96" rx="10" fill="#FFFFFF" stroke="#E4DED2"/>
+    <text x="788" y="418" text-anchor="start" font-family="Hiragino Sans GB" font-size="18" font-weight="800" fill="#101828">导出包</text>
+    <rect x="788" y="436" width="48" height="26" rx="13" fill="#E8F0FE"/><text x="812" y="455" text-anchor="middle" font-family="Hiragino Sans GB" font-size="12" font-weight="800" fill="#174EA6">MD</text><rect x="848" y="436" width="48" height="26" rx="13" fill="#E6F4EA"/><text x="872" y="455" text-anchor="middle" font-family="Hiragino Sans GB" font-size="12" font-weight="800" fill="#137333">JSON</text><rect x="908" y="436" width="48" height="26" rx="13" fill="#FEF7E0"/><text x="932" y="455" text-anchor="middle" font-family="Hiragino Sans GB" font-size="12" font-weight="800" fill="#9A6700">CSV</text><rect x="968" y="436" width="48" height="26" rx="13" fill="#E8F0FE"/><text x="992" y="455" text-anchor="middle" font-family="Hiragino Sans GB" font-size="12" font-weight="800" fill="#174EA6">HTML</text><rect x="1028" y="436" width="48" height="26" rx="13" fill="#E6F4EA"/><text x="1052" y="455" text-anchor="middle" font-family="Hiragino Sans GB" font-size="12" font-weight="800" fill="#137333">IMG</text>
+    <text x="788" y="472" text-anchor="start" font-family="Hiragino Sans GB" font-size="12" font-weight="600" fill="#5F6368">索引、单条笔记、媒体清单和导出报告</text>
+    <rect x="770" y="504" width="356" height="70" rx="10" fill="#F7FBFF" stroke="#C4D7F5"/>
+
+    <text x="806" y="538" text-anchor="start" font-family="Hiragino Sans GB" font-size="16" font-weight="800" fill="#202124">等待中</text>
+    <text x="788" y="562" text-anchor="start" font-family="Hiragino Sans GB" font-size="13" font-weight="600" fill="#5F6368">打开 X 书签页面后开始采集</text>
+    <rect x="770" y="592" width="170" height="38" rx="10" fill="#0B57D0" stroke="#0B57D0"/>
+    <text x="855" y="617" text-anchor="middle" font-family="Hiragino Sans GB" font-size="14" font-weight="800" fill="#FFFFFF">开始采集</text>
+    <rect x="956" y="592" width="170" height="38" rx="10" fill="#FFFFFF" stroke="#DADCE0"/>
+    <text x="1041" y="617" text-anchor="middle" font-family="Hiragino Sans GB" font-size="14" font-weight="800" fill="#202124">导出 zip</text>
+  </g>
+  </g>
+</svg>

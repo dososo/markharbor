@@ -23,6 +23,16 @@ MarkHarbor 把 X Bookmarks 变成一个可离线保存、可检索、可二次�
 - 商店状态：尚未上架 Chrome Web Store
 - 最新版本：[GitHub Releases](https://github.com/dososo/markharbor/releases/latest)
 
+## 截图
+
+| 插件采集中 | 导出包结构 |
+| --- | --- |
+| ![MarkHarbor 插件采集中](docs/assets/screenshots/popup-collecting.png) | ![MarkHarbor 导出包结构](docs/assets/screenshots/export-zip-structure.png) |
+
+| Obsidian 单条笔记 | HTML 离线预览 |
+| --- | --- |
+| ![MarkHarbor Obsidian 单条笔记](docs/assets/screenshots/obsidian-note.png) | ![MarkHarbor HTML 离线预览](docs/assets/screenshots/html-preview.png) |
+
 ## 为什么做它？
 
 X Bookmarks 很适合“先收藏，之后再看”，但它不适合长期知识管理：

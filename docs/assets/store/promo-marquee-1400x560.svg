@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="560" viewBox="0 0 1400 560" role="img">
+  <defs>
+    <linearGradient id="pageBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0F172A"/>
+      <stop offset="48%" stop-color="#123C43"/>
+      <stop offset="100%" stop-color="#F4B860"/>
+    </linearGradient>
+    <linearGradient id="cardBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#F8FAFC"/>
+    </linearGradient>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="18" stdDeviation="24" flood-color="#0F172A" flood-opacity="0.22"/>
+    </filter>
+  </defs>
+  <rect width="1400" height="560" fill="url(#pageBg)"/>
+  <path d="M0 436.8 C252 369.6 476.00000000000006 515.2 728 425.6 C1050 313.6 1232 436.8 1400 369.6 L1400 560 L0 560 Z" fill="#0B1220" opacity="0.26"/>
+  <g transform="translate(100 112) scale(1.0357142857142858)">
+    <rect x="0" y="0" width="112" height="112" rx="26" fill="#123C43"/>
+    <text x="56" y="68" text-anchor="middle" font-family="Hiragino Sans GB" font-size="56" font-weight="850" fill="#FFFFFF">M</text>
+    <rect x="30" y="80" width="52" height="8" rx="4" fill="#F4B860"/>
+  </g><text x="250" y="178" text-anchor="start" font-family="Hiragino Sans GB" font-size="78" font-weight="850" fill="#FFFFFF">MarkHarbor</text><text x="254" y="244" text-anchor="start" font-family="Hiragino Sans GB" font-size="34" font-weight="750" fill="#F4B860">X 书签到 Obsidian</text><text x="100" y="336" text-anchor="start" font-family="Hiragino Sans GB" font-size="32" font-weight="650" fill="#FFFFFF">把已保存的 X 内容整理成本地资料库：</text>
+<text x="100" y="384" text-anchor="start" font-family="Hiragino Sans GB" font-size="32" font-weight="650" fill="#FFFFFF">Markdown 笔记、图片和结构化数据。</text><g filter="url(#softShadow)">
+    <rect x="930" y="24" width="404" height="520" rx="26" fill="#FFFAF0"/>
+    <g transform="translate(954 48)">
+      <text x="0" y="28" text-anchor="start" font-family="Hiragino Sans GB" font-size="28" font-weight="800" fill="#101828">MarkHarbor</text>
+      <text x="0" y="65" text-anchor="start" font-family="Hiragino Sans GB" font-size="17" font-weight="650" fill="#5F6368">X 书签导出到 Obsidian,</text>
+<text x="0" y="92" text-anchor="start" font-family="Hiragino Sans GB" font-size="17" font-weight="650" fill="#5F6368">本地优先的书签归档港。</text>
+      <rect x="264" y="2" width="88" height="34" rx="17" fill="#FFFFFF" stroke="#E4DED2"/>
+      <rect x="306" y="6" width="40" height="26" rx="13" fill="#FDD663"/>
+      <text x="281" y="25" text-anchor="start" font-family="Hiragino Sans GB" font-size="13" font-weight="700" fill="#5F6368">中</text>
+      <text x="326" y="25" text-anchor="start" font-family="Hiragino Sans GB" font-size="13" font-weight="800" fill="#101828">EN</text>
+    </g>
+    <rect x="954" y="178" width="102" height="86" rx="10" fill="#FFFFFF" stroke="#E4DED2"/>
+      <text x="966" y="209" text-anchor="start" font-family="Hiragino Sans GB" font-size="14" font-weight="650" fill="#5F6368">已发现</text>
+      <text x="966" y="248" text-anchor="start" font-family="Hiragino Sans GB" font-size="34" font-weight="800" fill="#202124">48</text>
+<rect x="1072" y="178" width="102" height="86" rx="10" fill="#FFFFFF" stroke="#E4DED2"/>
+      <text x="1084" y="209" text-anchor="start" font-family="Hiragino Sans GB" font-size="14" font-weight="650" fill="#5F6368">本轮发现</text>
+      <text x="1084" y="248" text-anchor="start" font-family="Hiragino Sans GB" font-size="34" font-weight="800" fill="#202124">48</text>
+<rect x="1190" y="178" width="102" height="86" rx="10" fill="#FFFFFF" stroke="#E4DED2"/>
+      <text x="1202" y="209" text-anchor="start" font-family="Hiragino Sans GB" font-size="14" font-weight="650" fill="#5F6368">详情完成</text>
+      <text x="1202" y="248" text-anchor="start" font-family="Hiragino Sans GB" font-size="24" font-weight="800" fill="#202124">48/48</text>
+    <rect x="954" y="288" width="356" height="96" rx="10" fill="#FFFFFF" stroke="#E4DED2"/>
+    <text x="972" y="320" text-anchor="start" font-family="Hiragino Sans GB" font-size="18" font-weight="800" fill="#101828">导出包</text>
+    <rect x="972" y="338" width="48" height="26" rx="13" fill="#E8F0FE"/><text x="996" y="357" text-anchor="middle" font-family="Hiragino Sans GB" font-size="12" font-weight="800" fill="#174EA6">MD</text><rect x="1032" y="338" width="48" height="26" rx="13" fill="#E6F4EA"/><text x="1056" y="357" text-anchor="middle" font-family="Hiragino Sans GB" font-size="12" font-weight="800" fill="#137333">JSON</text><rect x="1092" y="338" width="48" height="26" rx="13" fill="#FEF7E0"/><text x="1116" y="357" text-anchor="middle" font-family="Hiragino Sans GB" font-size="12" font-weight="800" fill="#9A6700">CSV</text><rect x="1152" y="338" width="48" height="26" rx="13" fill="#E8F0FE"/><text x="1176" y="357" text-anchor="middle" font-family="Hiragino Sans GB" font-size="12" font-weight="800" fill="#174EA6">HTML</text><rect x="1212" y="338" width="48" height="26" rx="13" fill="#E6F4EA"/><text x="1236" y="357" text-anchor="middle" font-family="Hiragino Sans GB" font-size="12" font-weight="800" fill="#137333">IMG</text>
+    <text x="972" y="374" text-anchor="start" font-family="Hiragino Sans GB" font-size="12" font-weight="600" fill="#5F6368">索引、单条笔记、媒体清单和导出报告</text>
+    <rect x="954" y="406" width="356" height="70" rx="10" fill="#F7FBFF" stroke="#C4D7F5"/>
+
+    <text x="990" y="440" text-anchor="start" font-family="Hiragino Sans GB" font-size="16" font-weight="800" fill="#202124">导出准备完成</text>
+    <text x="972" y="464" text-anchor="start" font-family="Hiragino Sans GB" font-size="13" font-weight="600" fill="#5F6368">可导出 Obsidian 知识库包</text>
+    <rect x="954" y="494" width="170" height="38" rx="10" fill="#0B57D0" stroke="#0B57D0"/>
+    <text x="1039" y="519" text-anchor="middle" font-family="Hiragino Sans GB" font-size="14" font-weight="800" fill="#FFFFFF">开始采集</text>
+    <rect x="1140" y="494" width="170" height="38" rx="10" fill="#0B57D0" stroke="#DADCE0"/>
+    <text x="1225" y="519" text-anchor="middle" font-family="Hiragino Sans GB" font-size="14" font-weight="800" fill="#FFFFFF">导出 zip</text>
+  </g>
+</svg>

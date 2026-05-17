@@ -1,6 +1,11 @@
 import { describe, expect, it, vi } from "vitest";
 import type { XBookmark } from "../shared/types";
-import { extractRenderedDetailContentFromPage, extractRenderedDetailTextFromPage, fetchRenderedDetailText } from "./renderedText";
+import {
+  extractRenderedDetailContentFromPage,
+  extractRenderedDetailTextFromPage,
+  fetchRenderedDetailContent,
+  fetchRenderedDetailText
+} from "./renderedText";
 
 const bookmark: XBookmark = {
   id: "2054167281241051194",
@@ -108,6 +113,98 @@ describe("rendered X detail text", () => {
     ]);
   });
 
+  it("extracts X Article rich text view images instead of stopping at the cover card", () => {
+    document.body.innerHTML = `
+      <article data-testid="tweet">
+        <div data-testid="twitterArticleReadView">
+          <div data-testid="tweetPhoto">
+            <img alt="封面图" src="https://pbs.twimg.com/media/cover.jpg?format=jpg&name=medium" />
+          </div>
+          <div data-testid="twitter-article-title" style="font-size: 34px; font-weight: 800;">
+            <span>图文长文标题</span>
+          </div>
+          <button data-testid="reply">90</button>
+          <div data-testid="twitterArticleRichTextView">
+            <div data-testid="longformRichTextComponent">
+              <span style="font-size: 17px;">正文配图前。</span>
+              <div data-testid="tweetPhoto" style='background-image: url("https://pbs.twimg.com/media/body.jpg?format=jpg&name=large");'>
+                <img alt="正文配图" src="https://pbs.twimg.com/media/body.jpg?format=jpg&name=large" />
+              </div>
+              <span style="font-size: 17px;">正文配图后。</span>
+            </div>
+          </div>
+        </div>
+        <div data-testid="tweetText">嵌入卡片摘要，不应当作为长文正文。</div>
+      </article>
+    `;
+
+    const content = extractRenderedDetailContentFromPage("123", "https://x.com/alice/status/123");
+
+    expect(content?.contentBlocks).toEqual([
+      { type: "heading", level: 2, text: "图文长文标题" },
+      { type: "paragraph", text: "正文配图前。" },
+      { type: "image", url: "https://pbs.twimg.com/media/body.jpg?format=jpg&name=large", alt: "正文配图" },
+      { type: "paragraph", text: "正文配图后。" }
+    ]);
+    expect(content?.text).not.toContain("嵌入卡片摘要");
+  });
+
+  it("extracts X Article body images from nested tweetPhoto backgrounds", () => {
+    document.body.innerHTML = `
+      <article data-testid="tweet">
+        <div data-testid="twitterArticleReadView">
+          <div data-testid="twitter-article-title" style="font-size: 34px; font-weight: 800;">
+            <span>嵌套背景图长文</span>
+          </div>
+          <div data-testid="twitterArticleRichTextView">
+            <div data-testid="longformRichTextComponent">
+              <span style="font-size: 17px;">正文前。</span>
+              <div data-testid="tweetPhoto">
+                <div style='background-image: url("https://pbs.twimg.com/media/nested-body.jpg?format=jpg&name=large");'></div>
+              </div>
+              <span style="font-size: 17px;">正文后。</span>
+            </div>
+          </div>
+        </div>
+      </article>
+    `;
+
+    const content = extractRenderedDetailContentFromPage("123", "https://x.com/alice/status/123");
+
+    expect(content?.contentBlocks).toContainEqual({
+      type: "image",
+      url: "https://pbs.twimg.com/media/nested-body.jpg?format=jpg&name=large",
+      alt: undefined
+    });
+  });
+
+  it("does not mark X Article rich text complete before scrolling through the page", () => {
+    const scrollBy = vi.spyOn(window, "scrollBy").mockImplementation(() => undefined);
+    Object.defineProperty(window, "scrollY", { value: 0, configurable: true });
+    Object.defineProperty(window, "innerHeight", { value: 600, configurable: true });
+    Object.defineProperty(document.documentElement, "scrollHeight", { value: 3000, configurable: true });
+    Object.defineProperty(document.body, "scrollHeight", { value: 3000, configurable: true });
+    document.body.innerHTML = `
+      <article data-testid="tweet">
+        <div data-testid="twitterArticleReadView">
+          <div data-testid="twitter-article-title" style="font-size: 34px; font-weight: 800;">
+            <span>图文长文标题</span>
+          </div>
+          <div data-testid="twitterArticleRichTextView">
+            <div data-testid="longformRichTextComponent">
+              <span style="font-size: 17px;">已经加载的正文。</span>
+            </div>
+          </div>
+        </div>
+      </article>
+    `;
+
+    const content = extractRenderedDetailContentFromPage("123", "https://x.com/alice/status/123");
+
+    expect(content?.isComplete).toBe(false);
+    expect(scrollBy).toHaveBeenCalled();
+  });
+
   it("keeps normal post media images in rendered content blocks after tweet text", () => {
     document.body.innerHTML = `
       <article data-testid="tweet">
@@ -153,5 +250,60 @@ describe("rendered X detail text", () => {
       args: [bookmark.id, bookmark.url]
     }));
     expect(chromeApi.tabs.remove).toHaveBeenCalledWith(42);
+  });
+
+  it("waits for rendered X Article rich text content before returning cover-only early content", async () => {
+    const chromeApi = {
+      tabs: {
+        create: vi.fn(async () => ({ id: 42 })),
+        remove: vi.fn(async () => undefined)
+      },
+      scripting: {
+        executeScript: vi.fn()
+          .mockResolvedValueOnce([{
+            result: {
+              text: "图文长文标题",
+              contentBlocks: [
+                { type: "heading", level: 2, text: "图文长文标题" },
+                { type: "image", url: "https://pbs.twimg.com/media/cover.jpg", alt: "封面图" }
+              ]
+            }
+          }])
+          .mockResolvedValueOnce([{
+            result: {
+              text: "图文长文标题\n\n正文配图前。\n\n正文配图后。",
+              contentBlocks: [
+                { type: "heading", level: 2, text: "图文长文标题" },
+                { type: "paragraph", text: "正文配图前。" },
+                { type: "image", url: "https://pbs.twimg.com/media/body.jpg", alt: "正文配图" },
+                { type: "paragraph", text: "正文配图后。" }
+              ],
+              isComplete: true
+            }
+          }])
+      }
+    };
+
+    const content = await fetchRenderedDetailContent({
+      ...bookmark,
+      text: "图文长文标题\n\n预览...",
+      imageUrls: ["https://pbs.twimg.com/media/cover.jpg"],
+      article: {
+        title: "图文长文标题",
+        preview: "预览..."
+      }
+    }, {
+      chromeApi,
+      delay: async () => undefined,
+      maxAttempts: 2
+    });
+
+    expect(content?.contentBlocks).toEqual([
+      { type: "heading", level: 2, text: "图文长文标题" },
+      { type: "paragraph", text: "正文配图前。" },
+      { type: "image", url: "https://pbs.twimg.com/media/body.jpg", alt: "正文配图" },
+      { type: "paragraph", text: "正文配图后。" }
+    ]);
+    expect(chromeApi.scripting.executeScript).toHaveBeenCalledTimes(2);
   });
 });

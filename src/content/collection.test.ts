@@ -71,6 +71,30 @@ describe("createCollectionController", () => {
     expect(controller.state.bookmarks[0].textEnhancementStatus).toBe("success");
   });
 
+  it("scrolls immediately after scanning while detail enhancement continues in the background", async () => {
+    let scrolls = 0;
+    let resolveEnhancement: ((bookmark: XBookmark) => void) | undefined;
+    const enhancement = new Promise<XBookmark>((resolve) => {
+      resolveEnhancement = resolve;
+    });
+    const controller = createCollectionController({
+      doc: bookmarkDocument(),
+      getLocation: xBookmarksLocation,
+      delay: async () => undefined,
+      maxScrollAttempts: 1,
+      scrollPage: () => {
+        scrolls += 1;
+      },
+      enhanceBookmarkText: () => enhancement
+    });
+
+    controller.handleMessage({ type: "START_COLLECTION" });
+
+    expect(scrolls).toBe(1);
+    resolveEnhancement?.(controller.state.bookmarks[0]);
+    await controller.whenIdle();
+  });
+
   it("starts a new collection from a clean state so stale empty bookmarks are enhanced", async () => {
     const enhanceBookmarkText = vi.fn(async (bookmark) => ({
       ...bookmark,

@@ -154,11 +154,24 @@
 - 正文图片导出验证
   - 结果：正文图片 Markdown/HTML 渲染、正文图片 zip 下载、禁用图片时远程 URL 回退、X Article 详情页图片提取测试均通过。
   - 结果：完整验证通过，`npm test` 12 个测试文件、74 个测试通过；`npm run typecheck`、`npm run build`、`npm audit --audit-level=moderate`、`git diff --check` 均通过。
+- X Article 正文配图与采集体感回归验证
+  - 结果：通过真实 Chrome DOM 只读检查，确认 X Article 完整正文位于 `twitterArticleReadView` / `twitterArticleRichTextView` / `longformRichTextComponent`，正文配图节点为 `tweetPhoto`，不能只依赖普通 `tweetText` 或封面卡片路径。
+  - 结果：后台详情页增强现在会优先解析 rich text 正文区域，并等待 rich text 完整结果，避免只返回封面图。
+  - 结果：采集循环已改为扫描后立即滚动，详情页正文增强后台执行；自动采集收尾前等待增强结果。
+  - 结果：版本号已升到 `0.1.2`，`dist/manifest.json` 生成版本为 `0.1.2`。
+  - 结果：完整验证通过，`npm test` 12 个测试文件、81 个测试通过；`npm run typecheck`、`npm run build`、`npm audit --audit-level=moderate`、`git diff --check` 均通过。
+- X Article 正文图片懒加载回归修复
+  - 背景：用户继续反馈 X Article 的 Markdown 和 HTML 正文仍只有封面图，没有正文配图。
+  - 根因补充：上一轮把 `twitterArticleRichTextView` 出现当作完整加载，但真实 X Article 的正文图片会随着详情页滚动懒加载；文字先出现时，正文图片节点可能还没进入 DOM。
+  - 修复：详情页未滚到底时，rich text 结果返回 `isComplete: false` 并主动滚动非激活详情页，后台轮询继续等待后续 DOM 更新。
+  - 修复：图片提取扩展到 `tweetPhoto` 后代元素的 `background-image`，覆盖正文图不是直接 `<img>` 的真实 DOM 形态。
+  - 版本：同步升到 `0.1.3`，`dist/manifest.json` 版本确认为 `0.1.3`。
+  - 验证：`npm test` 12 个测试文件、83 个测试通过；`npm run typecheck` 通过；`npm run build` 通过；`npm audit --audit-level=moderate` 通过，0 个漏洞；`git diff --check` 通过。
 
 ## 风险点
 
 - X 页面 DOM 不稳定，后续可能导致解析器失效。
-- X 原帖详情页正文增强依赖 X 页面 HTML 内嵌状态、DOM 和非激活详情页渲染，若 X 修改结构或不返回对应数据，可能回退到列表页正文或 X Article 标题/摘要。
+- X 原帖详情页正文增强依赖 X 页面 HTML 内嵌状态、DOM 和非激活详情页渲染。普通推文、X Article 卡片、X Article rich text view 是不同 DOM 路径，若 X 修改结构或不返回对应数据，可能回退到列表页正文或 X Article 标题/摘要。
 - X Article 排版依赖 DOM 字体大小、粗细、列表符号和图片节点推断，只保证尽量保留阅读结构，不保证完全复刻 X 原站视觉。
 - 外部文章全文抓取会引入更宽权限、跨站限制、反爬、付费墙和审核风险。
 - Chrome Web Store 发布文案必须避免暗示“绕过 X 限制”“自动导出全部历史书签”“下载视频”。

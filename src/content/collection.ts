@@ -102,6 +102,7 @@ export function createCollectionController(options: CollectionControllerOptions 
   let currentRun: Promise<void> | undefined;
   const enhancedUrls = new Set<string>();
   const enhancedBookmarks = new Map<string, XBookmark>();
+  const pendingEnhancements = new Set<Promise<void>>();
 
   const scrollPage = options.scrollPage ?? defaultScrollPage;
 
@@ -127,23 +128,40 @@ export function createCollectionController(options: CollectionControllerOptions 
     return parsed.filter((bookmark) => !previousUrls.has(bookmark.url) && !enhancedUrls.has(bookmark.url));
   }
 
-  async function enhanceNewBookmarks(bookmarks: XBookmark[]): Promise<void> {
+  function queueBookmarkEnhancements(bookmarks: XBookmark[], runId: number): void {
     for (const bookmark of bookmarks) {
       if (enhancedUrls.has(bookmark.url)) {
         continue;
       }
 
       enhancedUrls.add(bookmark.url);
-      const enhancedBookmark = await enhanceBookmarkText(bookmark);
-      enhancedBookmarks.set(bookmark.url, enhancedBookmark);
-      state.bookmarks = state.bookmarks.map((currentBookmark) => (
-        currentBookmark.url === bookmark.url ? enhancedBookmark : currentBookmark
-      ));
+      const task = enhanceBookmarkText(bookmark)
+        .then((enhancedBookmark) => {
+          if (!isCurrentRun(runId)) {
+            return;
+          }
+
+          enhancedBookmarks.set(bookmark.url, enhancedBookmark);
+          state.bookmarks = state.bookmarks.map((currentBookmark) => (
+            currentBookmark.url === bookmark.url ? enhancedBookmark : currentBookmark
+          ));
+        })
+        .catch(() => undefined)
+        .finally(() => {
+          pendingEnhancements.delete(task);
+        });
+      pendingEnhancements.add(task);
     }
   }
 
   function isCurrentRun(runId: number): boolean {
     return activeRunId === runId;
+  }
+
+  async function waitForPendingEnhancements(): Promise<void> {
+    while (pendingEnhancements.size > 0) {
+      await Promise.allSettled(Array.from(pendingEnhancements));
+    }
   }
 
   async function collectLoop(): Promise<void> {
@@ -166,7 +184,7 @@ export function createCollectionController(options: CollectionControllerOptions 
       stableBottomScans < stableBottomScansToStop
     ) {
       const newBookmarks = scan();
-      await enhanceNewBookmarks(newBookmarks);
+      queueBookmarkEnhancements(newBookmarks, runId);
       scrollPage();
       state.scrollAttempts += 1;
       await delay();
@@ -182,7 +200,9 @@ export function createCollectionController(options: CollectionControllerOptions 
 
     if (isCurrentRun(runId)) {
       const newBookmarks = scan();
-      await enhanceNewBookmarks(newBookmarks);
+      queueBookmarkEnhancements(newBookmarks, runId);
+      await waitForPendingEnhancements();
+      applyEnhancedBookmarks();
       state.isCollecting = false;
       activeRunId = undefined;
     }
@@ -209,6 +229,7 @@ export function createCollectionController(options: CollectionControllerOptions 
     state.idleScans = 0;
     enhancedUrls.clear();
     enhancedBookmarks.clear();
+    pendingEnhancements.clear();
   }
 
   function resetForNewCollection(): void {
@@ -219,6 +240,7 @@ export function createCollectionController(options: CollectionControllerOptions 
     state.idleScans = 0;
     enhancedUrls.clear();
     enhancedBookmarks.clear();
+    pendingEnhancements.clear();
   }
 
   function handleMessage(message: unknown): ContentToPopupResponse {

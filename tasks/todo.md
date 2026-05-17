@@ -276,3 +276,33 @@ X Article 正文增强完成：
 - 普通推文列表页解析和详情页解析现在都会把 `pbs.twimg.com/media/*` 图片作为 image block 放到正文块中，默认排在推文正文之后。
 - 单条 Markdown 的 `## 原文` 会内联这些图片；已经内联的图片不会再在 `## 媒体` 区重复展示。
 - 验证通过：`npm test` 12 个测试文件、78 个测试通过；`npm run typecheck` 通过；`npm run build` 通过；`npm audit --audit-level=moderate` 通过，0 个漏洞；`git diff --check` 通过。
+
+X Article 正文配图仍只显示封面图的回归修复执行计划：
+- [x] Article Image P0-1：补充真实 X Article read view DOM 回归测试。验证：`twitterArticleReadView` / `twitterArticleRichTextView` 内的 `tweetPhoto` 图片会按正文顺序进入 `contentBlocks`。
+- [x] Article Image P0-2：补充详情页轮询测试。验证：X Article 详情页早期只返回封面/标题时不会提前结束，等 rich text 正文和正文图片加载后再返回。
+- [x] Article Image P0-3：实现 read view 优先解析和完整性判断。验证：正文配图不再只剩封面图，失败时仍保留安全回退。
+- [x] Article Image P0-4：优化采集滚动体感。验证：开始采集后首轮扫描完成即可滚动，正文增强在后台执行，采集结束前等待增强收口。
+- [x] Article Image P0-5：同步版本号。验证：`package.json`、`package-lock.json`、`src/manifest.ts` 同步升补丁版本。
+- [x] Article Image P0-6：记录经验并跑完整验证。验证：测试、类型检查、构建、审计和 diff 空白检查通过。
+
+X Article 正文配图仍只显示封面图的回归修复完成：
+- 通过真实 Chrome DOM 只读检查确认，X Article 正文配图位于 `twitterArticleReadView` / `twitterArticleRichTextView` / `longformRichTextComponent` 下的 `tweetPhoto` 节点，不能按普通 `tweetText` 或列表卡片路径提取。
+- 后台详情页增强现在优先解析 X Article rich text 正文区域，正文配图会作为 image block 按原文顺序穿插到 `contentBlocks`。
+- 详情页轮询不会在只拿到标题、摘要或封面图时提前返回；X Article 会等 rich text 正文完整后再返回，末次尝试仍保留安全回退。
+- 采集循环改为扫描后立即滚动，正文增强后台排队执行；自动采集收尾前等待增强结果，减少点击“开始采集”后列表页长时间不动的体感问题。
+- 版本号已从 `0.1.1` 升到 `0.1.2`。
+- 验证通过：`npm test` 12 个测试文件、81 个测试通过；`npm run typecheck` 通过；`npm run build` 通过；`npm audit --audit-level=moderate` 通过，0 个漏洞；`git diff --check` 通过；`dist/manifest.json` 版本为 `0.1.2`。
+
+X Article 正文图片懒加载回归修复执行计划：
+- [x] Lazy Image P0-1：补充“rich text 已出现但页面未滚到底时不能标记完成”的失败测试。验证：详情页提取会返回 `isComplete: false` 并触发滚动。
+- [x] Lazy Image P0-2：补充嵌套背景图测试。验证：`tweetPhoto` 内层 `background-image` 里的 `pbs.twimg.com/media` 图片也会进入 image block。
+- [x] Lazy Image P0-3：实现详情页滚动等待。验证：X Article 详情页不会因为文字先出现就提前结束，会继续滚动触发正文图片懒加载。
+- [x] Lazy Image P0-4：同步版本号到 `0.1.3`。验证：`package.json`、`package-lock.json`、`src/manifest.ts` 和构建产物版本一致。
+- [x] Lazy Image P0-5：跑完整验证。验证：目标测试、全量测试、类型检查、构建、审计和 diff 空白检查全部通过。
+
+X Article 正文图片懒加载回归修复记录：
+- 根因补充：上一版只等到了 `twitterArticleRichTextView` 文字区域，但 X Article 正文深处图片是懒加载的；文字区域出现不代表正文图片节点已经进入 DOM，所以增强结果仍可能只有封面图。
+- 修复策略：如果 rich text 已出现但详情页还没滚到底，提取结果标记为未完成并在非激活详情页内继续滚动；后台轮询会继续等待后续 DOM 更新。
+- 兼容补强：正文图片可能不是直接 `<img>`，而是 `tweetPhoto` 内层元素的 `background-image`；提取逻辑现在会查找后代元素样式中的 `pbs.twimg.com/media`。
+- 版本号已从 `0.1.2` 升到 `0.1.3`，`dist/manifest.json` 版本确认为 `0.1.3`。
+- 验证通过：`npm test` 12 个测试文件、83 个测试通过；`npm run typecheck` 通过；`npm run build` 通过；`npm audit --audit-level=moderate` 通过，0 个漏洞；`git diff --check` 通过。

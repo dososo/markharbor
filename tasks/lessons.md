@@ -13,5 +13,9 @@
 - 2026-05-16：X Article 不是普通推文正文。书签列表里的 `tweetText` 可能为空，正文入口是 Article 卡片标题/摘要；详情页完整正文只在真实渲染后的 DOM 里，静态 `fetch` HTML 可能没有 `full_text`，需要用户触发后用非激活详情页读取渲染结果并安全回退。
 - 2026-05-17：X Article 正文增强不能只保留文字结构。正文里的图片也是原文内容的一部分，必须作为有序 `contentBlocks` 参与 Markdown/HTML 渲染，并纳入 zip 图片下载和 media manifest，否则 Obsidian 笔记仍然是不完整的。
 - 2026-05-17：正文增强不能只用纯文本长度判断“是否更好”。详情页文字长度可能和列表页相同，但 `contentBlocks` 里多了正文图片、排版块或其它结构化信息；这种情况下必须保留详情页结构，否则图片会从 `## 原文` 中消失。
+- 2026-05-17：真实 X Article 详情页的完整正文不一定在普通 `tweetText` 路径里，而是在 `twitterArticleReadView` / `twitterArticleRichTextView` / `longformRichTextComponent` 下；正文配图常表现为 `tweetPhoto`。详情页增强不能一看到标题、摘要或封面图就提前返回，必须等待 longform rich text 出现，否则导出只会有封面图。
+- 2026-05-17：采集循环不能把“正文增强详情页请求”串行挡在“列表滚动”之前。列表扫描/滚动应继续推进，详情增强后台限流或排队执行，采集收尾再等待增强结果；否则用户会看到点击开始后页面长时间不动。
+- 2026-05-17：X Article rich text 文字出现不等于正文图片已加载完成。正文图片可能依赖详情页继续滚动才懒加载进 DOM；增强逻辑必须在详情页未滚到底时保持未完成并继续滚动，不能把“已有正文文字”当作完整采集。
+- 2026-05-17：X Article 正文图片不一定是直接 `<img>`。真实页面可能把图片放在 `tweetPhoto` 内层元素的 `background-image` 里；提取图片时要检查后代样式里的 `pbs.twimg.com/media`，否则 Markdown/HTML 仍只会看到封面图。
 - 2026-05-16：正文增强必须从干净的本轮采集状态开始。仅让 popup 初始显示 0 不够，如果 content script 内部保留上一轮空正文书签，同 URL 会被判定为已存在并跳过增强，最终导出“未采集到可见正文 / 无需增强”。
 - 2026-05-16：Chrome 扩展重新加载后，已打开的匹配页面不一定已有最新 content script。popup 与当前标签页通信失败时，应在确认 URL 是目标页面后使用 `chrome.scripting.executeScript` 注入采集脚本并重试，而不是要求用户刷新页面。

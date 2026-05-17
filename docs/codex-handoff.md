@@ -261,6 +261,12 @@
   - 文档：README 新增截图区；`docs/SCREENSHOTS.md` 改为素材清单；`docs/STORE_LISTING.md` 改为中文上架材料草稿并列出已生成素材。
   - GitHub：仓库描述、主页链接和 topics 已通过 `gh repo edit` 更新；新增 issue labels：`chrome-extension`、`privacy`、`x-dom-change`、`needs-reproduction`；Wiki 已关闭，文档统一在仓库内维护。
   - 验证：`npm run assets:showcase`、`npm test`、`npm run typecheck`、`npm run build`、`npm audit --audit-level=moderate`、`git diff --check` 均通过；GitHub main CI 通过；当前 open PR 列表为空。
+- README 双语拆分与操作演示视频上传
+  - 背景：用户指出 GitHub README 更常见做法是默认展示一种语言，顶部切换到另一种语言，而不是把中英文长文写在一起；同时提供了操作演示视频要求上传到 GitHub。
+  - 修复：`README.md` 改为默认中文首页，顶部链接到 `README.en.md`；新增独立英文 `README.en.md`，顶部可切回中文。
+  - 上传：`/Users/manxiaochu/Movies/5月17日.mp4` 体积约 178MB，超过 GitHub 普通 git 单文件 100MB 限制，未提交进仓库；已作为 Release `v0.1.11` 资产上传，公开文件名为 `markharbor-demo-2026-05-17.mp4`。
+  - 文档：中文 README、英文 README、`docs/LAUNCH.md` 和 `docs/SCREENSHOTS.md` 已加入演示视频入口；`v0.1.11` Release 说明已改为面向用户的中文安装说明，并列出插件 zip 和演示视频。
+  - 经验：`tasks/lessons.md` 已记录双语 README 应拆分文件、默认中文展示的规则。
 
 ## 风险点
 

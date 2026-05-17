@@ -18,6 +18,12 @@ npm run assets:showcase
 | `docs/assets/store/promo-small-440x280.png` | 440 x 280 | Chrome Web Store 小推广图 |
 | `docs/assets/store/promo-marquee-1400x560.png` | 1400 x 560 | Chrome Web Store 横幅推广图 |
 
+## 操作演示视频
+
+| 文件 | 位置 | 用途 |
+| --- | --- | --- |
+| `markharbor-demo-2026-05-17.mp4` | GitHub Release `v0.1.11` | README 和 Release 页面展示完整操作流程 |
+
 ## 插件完整截图
 
 | 文件 | 尺寸 | 用途 |

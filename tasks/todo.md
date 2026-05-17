@@ -487,3 +487,17 @@ GitHub 截图与展示图生成记录：
 - GitHub issue labels 已补充：`chrome-extension`、`privacy`、`x-dom-change`、`needs-reproduction`。
 - GitHub Wiki 已关闭，文档统一以仓库内 Markdown 为唯一维护入口；Issues 保持开启。
 - 验证通过：`npm run assets:showcase` 通过并生成 1 张仓库展示图、10 张截图、2 张商店素材；`npm test` 12 个测试文件、90 个测试通过；`npm run typecheck` 通过；`npm run build` 通过；`npm audit --audit-level=moderate` 通过，0 个漏洞；`git diff --check` 通过。
+
+README 双语拆分与演示视频上传执行计划：
+- [x] README Lang P0-1：拆分中英文 README。验证：`README.md` 默认中文，顶部链接到 `README.en.md`；`README.en.md` 顶部可返回中文 README。
+- [x] README Lang P0-2：上传操作演示视频。验证：178MB 视频不进入 git 仓库，作为 GitHub Release `v0.1.11` 资产上传。
+- [x] README Lang P0-3：更新展示入口。验证：中文 README、英文 README、Release 说明和发布文案均包含演示视频链接。
+- [x] README Lang P0-4：记录纠正规则。验证：`tasks/lessons.md` 记录双语 README 应拆分文件，不把两种语言堆在同一 README。
+- [x] README Lang P0-5：跑验证并提交。验证：文档空白检查、测试、类型检查、构建和 CI 通过。
+
+README 双语拆分与演示视频上传记录：
+- `README.md` 现在只保留中文内容，作为 GitHub 默认首页展示。
+- 新增 `README.en.md`，提供独立英文版，并与中文 README 顶部互相链接。
+- 操作演示视频已上传到 GitHub Release `v0.1.11`，文件名为 `markharbor-demo-2026-05-17.mp4`。
+- `v0.1.11` Release 说明已改为面向用户的中文安装说明，并列出插件 zip 和演示视频。
+- 验证通过：`git diff --check` 通过；`npm test` 12 个测试文件、90 个测试通过；`npm run typecheck` 通过；`npm run build` 通过；`npm audit --audit-level=moderate` 通过，0 个漏洞。

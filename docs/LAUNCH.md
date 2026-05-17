@@ -45,6 +45,9 @@ https://github.com/dososo/markharbor
 Release:
 https://github.com/dososo/markharbor/releases/latest
 
+操作演示视频:
+https://github.com/dososo/markharbor/releases/download/v0.1.11/markharbor-demo-2026-05-17.mp4
+
 如果你也把 X Bookmarks 当成写作素材库、研究 inbox 或灵感收集箱，欢迎试用、提 issue 或直接贡献。
 
 ## English Launch Post
@@ -77,6 +80,9 @@ https://github.com/dososo/markharbor
 
 Latest release:
 https://github.com/dososo/markharbor/releases/latest
+
+Demo video:
+https://github.com/dososo/markharbor/releases/download/v0.1.11/markharbor-demo-2026-05-17.mp4
 
 ## Hacker News / Reddit Short Post
 

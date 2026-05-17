@@ -29,3 +29,4 @@
 - 2026-05-17：项目命名不是只改 README。品牌名确认后必须同步包名、扩展 locale、popup 标题、HTML 标题、导出标题、manifest 版本、README、交接文档、任务记录和历史计划文档，并用仓库搜索验证旧展示名无残留。
 - 2026-05-17：未上架 Chrome Web Store 的扩展开源发布，README 不能只写源码构建。普通用户路径应是 GitHub Releases 下载 release zip、解压、在 Chrome 开发者模式中加载包含 `manifest.json` 的 unpacked extension 文件夹；同时保留源码构建路径给开发者。
 - 2026-05-17：Dependabot 批量打开 PR 后不能盲目全合并。先合并 CI 通过且低风险的更新；对冲突或失败 PR 要读 CI 日志，在 main 上最小修复并完整验证，再关闭被 supersede 的 PR。
+- 2026-05-17：GitHub 首页 README 做双语时，不要把中文和英文长文堆在同一个文件里。默认 `README.md` 展示中文，顶部提供语言切换；英文放到独立 `README.en.md`，并互相链接。

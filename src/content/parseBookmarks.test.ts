@@ -27,6 +27,29 @@ describe("parseBookmarksFromDocument", () => {
     expect(bookmarks[1].video?.previewImageUrl).toBe("https://pbs.twimg.com/ext_tw_video_thumb/video.jpg");
   });
 
+  it("keeps normal post media images in content blocks after tweet text", () => {
+    document.body.innerHTML = `
+      <article data-testid="tweet">
+        <div data-testid="User-Name">
+          <span>Alice Zhang</span>
+          <span>@alice</span>
+          <a href="/alice/status/1234567890">
+            <time datetime="2026-05-15T12:30:00.000Z">May 15</time>
+          </a>
+        </div>
+        <div data-testid="tweetText">普通推文正文。</div>
+        <img alt="普通推文配图" src="https://pbs.twimg.com/media/example.jpg" />
+      </article>
+    `;
+
+    const bookmarks = parseBookmarksFromDocument(document, "2026-05-16T00:00:00.000Z");
+
+    expect(bookmarks[0].contentBlocks).toEqual([
+      { type: "paragraph", text: "普通推文正文。" },
+      { type: "image", url: "https://pbs.twimg.com/media/example.jpg", alt: "普通推文配图" }
+    ]);
+  });
+
   it("parses absolute X status links", () => {
     document.body.innerHTML = `
       <article data-testid="tweet">
@@ -145,6 +168,41 @@ describe("parseBookmarksFromDocument", () => {
     expect(bookmarks[0]).toMatchObject({
       id: "222",
       url: "https://x.com/bob/status/222"
+    });
+  });
+
+  it("extracts X Article card title and preview when tweet text is empty", () => {
+    document.body.innerHTML = `
+      <article data-testid="tweet">
+        <div data-testid="User-Name">
+          <span>Jin Chenma</span>
+          <span>@jinchenma_ai</span>
+          <a href="/jinchenma_ai/status/2054167281241051194">
+            <time datetime="2026-05-12T11:50:00.000Z">May 12</time>
+          </a>
+        </div>
+        <div>
+          <div data-testid="article-cover-image">
+            <span>文章</span>
+          </div>
+          <div>
+            <span>只需10分钟，让AI比亲妈都懂你，从此写啥都是你的味</span>
+          </div>
+          <div>
+            <span>最近线下跟一群朋友聊 AI，发现一件挺有意思的事。大家不是卡在那些花里胡哨的工作流...</span>
+          </div>
+        </div>
+      </article>
+    `;
+
+    const bookmarks = parseBookmarksFromDocument(document, "2026-05-16T00:00:00.000Z");
+
+    expect(bookmarks[0]).toMatchObject({
+      text: "只需10分钟，让AI比亲妈都懂你，从此写啥都是你的味\n\n最近线下跟一群朋友聊 AI，发现一件挺有意思的事。大家不是卡在那些花里胡哨的工作流...",
+      article: {
+        title: "只需10分钟，让AI比亲妈都懂你，从此写啥都是你的味",
+        preview: "最近线下跟一群朋友聊 AI，发现一件挺有意思的事。大家不是卡在那些花里胡哨的工作流..."
+      }
     });
   });
 });

@@ -1,8 +1,17 @@
 # Lessons
 
-- 2026-05-16: Export features must be validated by knowledge-base usefulness, not just by file existence. For Obsidian workflows, verify that notes have useful structure, source traceability, media context, and an index that can be navigated after import.
-- 2026-05-16: Product-facing Chrome extension work needs competitor and workflow research before polishing. A functional popup is not enough when the user expects a simple, attractive, repeatable export workflow.
-- 2026-05-16: Do not call a browser extension feature fully complete when real Chrome E2E validation is blocked or partial. Separate automated/local validation from acceptance validation, and keep the task open until the user can confirm the manual Chrome checklist passes.
-- 2026-05-16: Treat unresolved `npm audit` findings as fix tasks, not just documented caveats, when the user asks for validation. Upgrade the narrow vulnerable dependency chain and rerun audit, tests, typecheck, and build before reporting completion.
-- 2026-05-16: Popup UX validation must start from a fresh user's mental model. Do not show pre-scan counts as "collected", do not expose internal scan-delta terminology, and ensure all error messages are stored as localization keys rather than frozen strings.
-- 2026-05-16: X media URLs often put the file type in `?format=jpg` instead of the path. Attachment filename tests must include extensionless `/media/<id>?format=...` URLs so exported files do not appear as extensionless Unix executable files after unzip.
+- 2026-05-16：导出功能不能只验证文件存在，还必须验证知识库可用性。面向 Obsidian 的工作流，要确认笔记结构、来源可追溯、媒体上下文和索引导航都真正可用。
+- 2026-05-16：产品化 Chrome 插件在打磨前需要先研究竞品和用户工作流。用户期待的是简单、美观、可重复的导出流程，仅有一个能用的 popup 不够。
+- 2026-05-16：真实 Chrome 端到端验证被阻塞或只部分通过时，不能宣称浏览器插件功能完全完成。自动化/本地验证要和验收验证分开记录，并保持任务打开，直到用户确认手动 Chrome checklist 通过。
+- 2026-05-16：用户要求验证时，未解决的 `npm audit` 问题应视为修复任务，而不是只写成文档风险。应收窄升级有漏洞的依赖链，并重新运行 audit、测试、类型检查和构建后再报告完成。
+- 2026-05-16：popup 体验验证必须从新用户心智出发。不要把预扫描数量显示成“已采集”，不要暴露内部扫描增量术语，所有错误消息都应存为本地化 key，而不是冻结后的字符串。
+- 2026-05-16：X 媒体 URL 经常把文件类型放在 `?format=jpg` 里，而不是路径里。附件文件名测试必须覆盖无扩展名的 `/media/<id>?format=...` URL，避免导出的图片解压后变成无扩展名文件。
+- 2026-05-16：报告 `AGENTS.md` 发现结果时，必须区分项目级文件和全局 Codex 配置。说缺少指令前，要同时检查仓库路径和 `/Users/manxiaochu/.codex/AGENTS.md`。
+- 2026-05-16：用户的语言偏好覆盖所有可见工作流内容：生成文档、最终回复和中间过程说明都必须使用中文。
+- 2026-05-16：修复 popup 初始状态时，不能只保证 `GET_STATUS` 不扫描；还要避免 popup 初始化读取 content script 里残留的上一轮书签和计数。未点击“开始采集”前，当前 popup 会话应显示 0。
+- 2026-05-16：X 原帖详情页正文增强不能只依赖渲染后的 tweet DOM。真实 X HTML 可能没有 `article[data-testid="tweet"]`，但会包含 `window.__INITIAL_STATE__` 和 `tweets.entities[ID].full_text`；正文增强应优先解析该内嵌状态，再用 DOM 解析兜底。
+- 2026-05-16：X Article 不是普通推文正文。书签列表里的 `tweetText` 可能为空，正文入口是 Article 卡片标题/摘要；详情页完整正文只在真实渲染后的 DOM 里，静态 `fetch` HTML 可能没有 `full_text`，需要用户触发后用非激活详情页读取渲染结果并安全回退。
+- 2026-05-17：X Article 正文增强不能只保留文字结构。正文里的图片也是原文内容的一部分，必须作为有序 `contentBlocks` 参与 Markdown/HTML 渲染，并纳入 zip 图片下载和 media manifest，否则 Obsidian 笔记仍然是不完整的。
+- 2026-05-17：正文增强不能只用纯文本长度判断“是否更好”。详情页文字长度可能和列表页相同，但 `contentBlocks` 里多了正文图片、排版块或其它结构化信息；这种情况下必须保留详情页结构，否则图片会从 `## 原文` 中消失。
+- 2026-05-16：正文增强必须从干净的本轮采集状态开始。仅让 popup 初始显示 0 不够，如果 content script 内部保留上一轮空正文书签，同 URL 会被判定为已存在并跳过增强，最终导出“未采集到可见正文 / 无需增强”。
+- 2026-05-16：Chrome 扩展重新加载后，已打开的匹配页面不一定已有最新 content script。popup 与当前标签页通信失败时，应在确认 URL 是目标页面后使用 `chrome.scripting.executeScript` 注入采集脚本并重试，而不是要求用户刷新页面。

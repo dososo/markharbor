@@ -80,7 +80,7 @@ async function addImages(
   for (const bookmark of bookmarks) {
     let bookmarkImageIndex = 0;
 
-    for (const url of bookmark.imageUrls) {
+    for (const url of bookmarkImageUrls(bookmark)) {
       if (seenUrls.has(url)) {
         continue;
       }
@@ -160,7 +160,7 @@ function remoteOnlyMediaItems(bookmarks: XBookmark[]): ExportedMediaItem[] {
   const seenUrls = new Set<string>();
 
   for (const bookmark of bookmarks) {
-    for (const url of bookmark.imageUrls) {
+    for (const url of bookmarkImageUrls(bookmark)) {
       if (!seenUrls.has(url)) {
         seenUrls.add(url);
         items.push({
@@ -198,6 +198,16 @@ function remoteOnlyMediaItems(bookmarks: XBookmark[]): ExportedMediaItem[] {
   return items;
 }
 
+function contentBlockImageUrls(bookmark: XBookmark): string[] {
+  return (bookmark.contentBlocks ?? [])
+    .filter((block) => block.type === "image")
+    .map((block) => block.url);
+}
+
+function bookmarkImageUrls(bookmark: XBookmark): string[] {
+  return [...bookmark.imageUrls, ...contentBlockImageUrls(bookmark)];
+}
+
 function buildReport(bookmarks: XBookmark[], mediaItems: ExportedMediaItem[], noteCount: number): ExportReport {
   return {
     exportedAt: new Date().toISOString(),
@@ -220,7 +230,7 @@ export async function buildExportZip(options: BuildExportZipOptions): Promise<Bl
   zip.file("bookmarks.json", JSON.stringify(options.bookmarks, null, 2));
   zip.file("bookmarks.csv", renderBookmarksCsv(options.bookmarks));
   zip.file("links.txt", renderLinksText(options.bookmarks));
-  zip.file("bookmarks.html", renderBookmarksHtml(options.bookmarks));
+  zip.file("bookmarks.html", renderBookmarksHtml(options.bookmarks, imagePaths));
   zip.file("media-manifest.json", renderMediaManifest(mediaItems));
   zip.file("export-report.json", renderExportReport(report));
   zip.file("X Bookmarks Index.md", renderIndexMarkdown(options.bookmarks, notePaths, report));

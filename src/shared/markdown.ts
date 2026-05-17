@@ -1,4 +1,5 @@
 import type { ExportReport, XBookmark } from "./types";
+import { renderContentBlocksMarkdown } from "./contentBlocks";
 
 function escapeYaml(value: string | undefined): string {
   const escaped = (value ?? "").replace(/[\u0000-\u001f\u007f\\"]/g, (char) => {
@@ -30,6 +31,12 @@ function markdownDestination(destination: string): string {
   return `<${escaped}>`;
 }
 
+function markdownLinkLabel(value: string): string {
+  return value
+    .replace(/\\/g, "\\\\")
+    .replace(/\]/g, "\\]");
+}
+
 function imageLines(bookmark: XBookmark, imagePaths: Map<string, string>): string[] {
   return bookmark.imageUrls.map((url) => `![](${markdownDestination(imagePaths.get(url) ?? url)})`);
 }
@@ -47,10 +54,26 @@ function videoLines(bookmark: XBookmark): string[] {
 
 function titleText(bookmark: XBookmark): string {
   const author = bookmark.authorName || bookmark.authorHandle || "Unknown";
-  const text = bookmark.text.trim() || bookmark.id || "Bookmark";
-  const shortText = text.length > 72 ? `${text.slice(0, 72).trim()}...` : text;
+  const sourceText = bookmark.linkCard?.title || bookmark.article?.title || bookmark.text.split(/\r?\n/)[0] || bookmark.id || "Bookmark";
+  const text = sourceText.replace(/\s+/g, " ").trim();
+  const shortText = text.length > 120 ? `${text.slice(0, 120).trim()}...` : text;
 
   return `${author} - ${shortText}`;
+}
+
+function textSourceLabel(bookmark: XBookmark): string {
+  return bookmark.textSource === "post-detail" ? "原帖详情页" : "书签列表";
+}
+
+function textEnhancementStatusLabel(bookmark: XBookmark): string {
+  switch (bookmark.textEnhancementStatus) {
+    case "success":
+      return "成功";
+    case "failed":
+      return "失败，已回退到书签列表正文";
+    default:
+      return "无需增强";
+  }
 }
 
 function noteImageDestination(destination: string): string {
@@ -65,8 +88,15 @@ function noteImageDestination(destination: string): string {
   return markdownDestination(destination);
 }
 
+function inlineImageUrls(bookmark: XBookmark): Set<string> {
+  return new Set((bookmark.contentBlocks ?? [])
+    .filter((block) => block.type === "image")
+    .map((block) => block.url));
+}
+
 function noteImageLines(bookmark: XBookmark, imagePaths: Map<string, string>): string[] {
-  const lines = bookmark.imageUrls.map((url) => {
+  const inlineUrls = inlineImageUrls(bookmark);
+  const lines = bookmark.imageUrls.filter((url) => !inlineUrls.has(url)).map((url) => {
     const destination = imagePaths.get(url) ?? url;
     return `![](${noteImageDestination(destination)})`;
   });
@@ -90,6 +120,14 @@ function bookmarkBody(bookmark: XBookmark, imagePaths: Map<string, string>): str
   ]
     .filter((line): line is string => line !== undefined)
     .join("\n\n");
+}
+
+function originalTextMarkdown(bookmark: XBookmark, imagePaths: Map<string, string>): string {
+  if (bookmark.contentBlocks && bookmark.contentBlocks.length > 0) {
+    return renderContentBlocksMarkdown(bookmark.contentBlocks, imagePaths);
+  }
+
+  return bookmark.text || "（未采集到可见正文）";
 }
 
 export function renderCombinedMarkdown(bookmarks: XBookmark[], imagePaths: Map<string, string>): string {
@@ -116,6 +154,13 @@ export function renderBookmarkMarkdown(bookmark: XBookmark, imagePaths: Map<stri
     bookmark.linkCard.url ? `- 链接： ${markdownDestination(bookmark.linkCard.url)}` : undefined,
     ""
   ].filter((line): line is string => line !== undefined) : [];
+  const articleLines = bookmark.article ? [
+    "## X 文章",
+    "",
+    bookmark.article.title ? `- 标题： ${bookmark.article.title}` : undefined,
+    bookmark.article.preview ? `- 摘要： ${bookmark.article.preview}` : undefined,
+    ""
+  ].filter((line): line is string => line !== undefined) : [];
 
   return [
     "---",
@@ -127,7 +172,11 @@ export function renderBookmarkMarkdown(bookmark: XBookmark, imagePaths: Map<stri
     `posted_at: ${escapeYaml(bookmark.postedAt)}`,
     `collected_at: ${escapeYaml(bookmark.collectedAt)}`,
     `bookmark_id: ${escapeYaml(bookmark.id)}`,
+    `article_title: ${escapeYaml(bookmark.article?.title)}`,
+    `article_preview: ${escapeYaml(bookmark.article?.preview)}`,
     `link_card_url: ${escapeYaml(bookmark.linkCard?.url)}`,
+    `text_source: ${escapeYaml(bookmark.textSource ?? "bookmarks-list")}`,
+    `text_enhancement_status: ${escapeYaml(bookmark.textEnhancementStatus ?? "not-needed")}`,
     "tags:",
     "  - x-bookmarks",
     "---",
@@ -136,8 +185,9 @@ export function renderBookmarkMarkdown(bookmark: XBookmark, imagePaths: Map<stri
     "",
     "## 原文",
     "",
-    bookmark.text || "（未采集到可见正文）",
+    originalTextMarkdown(bookmark, imagePaths),
     "",
+    ...articleLines,
     ...linkCardLines,
     "## 媒体",
     "",
@@ -146,15 +196,13 @@ export function renderBookmarkMarkdown(bookmark: XBookmark, imagePaths: Map<stri
     "## 来源",
     "",
     `- 原帖： ${markdownDestination(bookmark.url)}`,
+    `- 正文来源： ${textSourceLabel(bookmark)}`,
+    `- 正文增强： ${textEnhancementStatusLabel(bookmark)}`,
     bookmark.postedAt ? `- 发布时间： ${bookmark.postedAt}` : undefined,
     "",
     "## 我的笔记",
     ""
   ].filter((line): line is string => line !== undefined).join("\n");
-}
-
-function obsidianLinkPath(notePath: string): string {
-  return notePath.endsWith(".md") ? notePath.slice(0, -3) : notePath;
 }
 
 export function renderIndexMarkdown(
@@ -167,8 +215,8 @@ export function renderIndexMarkdown(
     const title = titleText(bookmark);
 
     return notePath
-      ? `- [[${obsidianLinkPath(notePath)}|${title}]]`
-      : `- [${title}](${markdownDestination(bookmark.url)})`;
+      ? `- [${markdownLinkLabel(title)}](${markdownDestination(notePath)})`
+      : `- [${markdownLinkLabel(title)}](${markdownDestination(bookmark.url)})`;
   });
 
   return [

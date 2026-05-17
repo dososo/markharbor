@@ -64,6 +64,18 @@ Build a simple, convenient Chrome extension for exporting X Bookmarks into an Ob
 - [x] V2 Task 5: Add bilingual popup and expressive UI. Verification: i18n tests, typecheck, and build pass; locale files are copied to `dist/`.
 - [x] V2 Task 6: Complete README and user documentation. Verification: README covers install, usage, formats, Obsidian workflow, privacy, limits, testing, publishing, FAQ, and English Quick Start.
 - [ ] V2 Task 7: Full verification, live browser test, and audit. Verification: automated checks, security audit result, local zip validation, and Chrome live validation limits are recorded; final acceptance still requires manual Chrome checklist pass.
+- [x] V2 Task 7 P0-1：修复错误文案状态模型。验证：错误状态保存本地化 key，切换中文/英文后当前错误提示会随语言重新渲染。
+- [x] V2 Task 7 P0-2：错误提示加入 X Bookmarks 入口。验证：不在 X Bookmarks 页面时，popup 显示可点击的 `https://x.com/i/bookmarks` 链接或按钮。
+- [x] V2 Task 7 P0-3：修复初始化状态。验证：打开 popup 但未点击“开始采集”前显示 0，`GET_STATUS` 不触发扫描。
+- [x] V2 Task 7 P0-4：把“本次新增”改为“本轮新增”。验证：指标表示从点击开始采集到当前新增的累计数量，而不是最近一次 DOM 扫描增量。
+- [x] V2 Task 7 P0-5：放宽采集停止逻辑。验证：采集优先由用户手动停止，自动停止只在确认到底且多轮页面高度不变后发生。
+- [x] V2 Task 7 P0-6：优化 `X Bookmarks Index.md` 链接和标题策略。验证：索引用稳定 Markdown 链接指向 `bookmarks/*.md`，标题优先链接卡片标题，其次推文首行，并去换行、限长。
+- [x] V2 Task 7 P0 验证：运行 `npm test`、`npm run typecheck`、`npm run build`，并记录真实 Chrome checklist 仍需用户手动验收。
+- [x] V2 Task 7 P2-1：实现 X 原帖详情页正文增强采集。验证：列表页正文为空或截断时，content script 会请求同源原帖详情页并用详情页正文补齐单条书签。
+- [x] V2 Task 7 P2-2：记录正文增强状态。验证：每条书签能区分 `not-needed`、`success`、`failed`，失败时保留列表页可见正文，不阻断采集。
+- [x] V2 Task 7 P2-3：导出正文增强信息。验证：单条 Markdown、CSV、HTML、JSON 能显示增强后的正文，并记录正文来源/状态。
+- [x] V2 Task 7 P2-4：控制性能和风险边界。验证：每轮只增强本轮新增书签；同一 URL 不重复请求；请求失败、非 HTML、解析不到正文时安全回退。
+- [x] V2 Task 7 P2 验证：按 TDD 跑新增目标测试，再跑 `npm test`、`npm run typecheck`、`npm run build`、`npm audit --audit-level=moderate`。
 
 ## Review
 
@@ -171,3 +183,96 @@ V2 attachment filename follow-up:
 - Added tests for extensionless X media paths and zip integration using query-based media formats.
 - Image attachments are written with normal file permissions in the zip.
 - Verification passed: `npm test` now reports 7 files and 43 tests, `npm run typecheck` passed, `npm run build` passed, and `npm audit --audit-level=moderate` reports 0 vulnerabilities.
+
+V2 Task 7 P0 修复完成：
+- 新增项目级 `AGENTS.md`，并同步全局中文工作流要求。
+- 将 `tasks/lessons.md` 改为中文，并记录 AGENTS 搜索范围和全流程中文要求。
+- popup 错误状态改为本地化 key，语言切换后当前错误提示会重新翻译。
+- 不在 X Bookmarks 页面时，popup 错误区显示 `https://x.com/i/bookmarks` 入口。
+- content 采集逻辑拆出可测试 controller，`GET_STATUS` 不再触发扫描。
+- 新增 `runAdded` 作为“本轮新增”，popup 不再展示最近一次 DOM 扫描增量。
+- 采集循环不再因为连续 idle scan 过早停止，改为手动停止优先，自动停止仅在到底且页面高度多轮稳定后发生，并保留高安全上限防死循环。
+- `X Bookmarks Index.md` 改为标准 Markdown 链接，标题优先链接卡片标题，其次推文第一行，并去换行、限长。
+- CSV/HTML 补充链接卡片描述字段；JSON 已保留原始 `linkCard` 数据。
+- 新增 `src/content/collection.test.ts` 和 `src/popup/main.test.ts`，补充 Markdown/export format 回归测试。
+- 验证通过：`npm test` 9 个测试文件、50 个测试通过；`npm run typecheck` 通过；`npm run build` 通过；`npm audit --audit-level=moderate` 通过，0 个漏洞。
+- `V2 Task 7` 总任务仍保持打开，原因是真实 Chrome 手动 checklist 尚需用户确认。
+
+V2 Task 7 P2 原帖正文增强完成：
+- 新增 `src/content/enrichText.ts`，对本轮新增书签请求同源 X 原帖详情页，并解析匹配原帖的详情页正文。
+- 根据真实 X HTML 验证，原帖静态 HTML 常包含 `window.__INITIAL_STATE__`，其中 `tweets.entities[ID].full_text` 比 DOM 解析更适合补齐正文；已改为优先解析该状态，DOM 解析作为兜底。
+- 修复开始采集时未清空 content script 残留状态的问题；每次点击“开始采集”都会从干净状态开始，避免旧的空正文书签被判定为已存在而跳过正文增强。
+- 详情页正文更完整时，将单条书签正文替换为详情页正文，并记录 `textSource: "post-detail"` 与 `textEnhancementStatus: "success"`。
+- 请求失败、非 HTML、解析不到匹配原帖或详情页正文不更完整时，保留列表页正文，并记录 `failed` 或 `not-needed`。
+- 采集器只增强本轮新增书签，同一 URL 不重复请求；增强后的正文会缓存，避免后续列表页扫描把长正文覆盖回短正文。
+- Markdown front matter、Markdown 来源区、CSV 和 HTML 均输出正文来源和增强状态；JSON 自动保留新增字段。
+- README 已补充 X 原帖正文增强边界：只补 X 原帖，不抓外部文章全文。
+- 验证通过：`npm test` 10 个测试文件、58 个测试通过；`npm run typecheck` 通过；`npm run build` 通过；`npm audit --audit-level=moderate` 通过，0 个漏洞。
+- `V2 Task 7` 总任务仍保持打开，原因是真实 Chrome 手动 checklist 尚需用户确认。
+
+已打开 X Bookmarks 页面自动识别修复完成：
+- manifest 增加 `scripting` 权限。
+- popup 先向当前标签页发送消息；如果接收端不存在，且当前 URL 是 `https://x.com/i/bookmarks`，则自动注入 `assets/content.js` 并重试消息。
+- 新增 `src/manifest.test.ts` 和 popup 回归测试，覆盖已打开页面自动注入场景。
+- 用户不再需要因为 content script 未注入而手动刷新 X Bookmarks 页面。
+
+X Article 正文增强执行计划：
+- [x] Article P0-1：补充 X Article 卡片预览解析测试。验证：`tweetText` 为空但卡片包含标题和摘要时，`parseBookmarksFromDocument` 返回可见正文。
+- [x] Article P0-2：补充后台详情页增强测试。验证：正文为空或只有预览时，后台打开非激活 X 详情页读取渲染后的 Article 完整正文并回传。
+- [x] Article P0-3：实现 X Article 卡片预览解析。验证：单条 Markdown、CSV、HTML、JSON 不再只显示“未采集到可见正文”。
+- [x] Article P0-4：实现 background service worker 详情页增强。验证：采集长文时能安全回填完整正文，失败时保留卡片预览并标记失败。
+- [x] Article P0-5：更新 README、handoff 和 lessons。验证：明确说明只增强 X 原帖/Article，不默认抓外部网站全文。
+- [x] Article P0-6：跑完整验证。验证：`npm test`、`npm run typecheck`、`npm run build`、`npm audit --audit-level=moderate` 全部通过。
+
+X Article 正文增强完成：
+- 列表页 `tweetText` 为空但存在 X Article 卡片时，采集器现在会提取文章标题和摘要作为书签正文，并保存到 `article.title` / `article.preview`。
+- 新增 background service worker，用户触发采集后会打开非激活 X 原帖详情页，等待渲染后读取普通推文正文或 X Article 完整正文，完成后关闭详情页。
+- `enhanceBookmarkText` 对 X Article、空正文、以省略号结尾或列表页显示“显示更多”的书签优先请求渲染详情页；成功后标记 `textSource: "post-detail"` 与 `textEnhancementStatus: "success"`。
+- Markdown front matter、`## X 文章`、CSV、HTML、JSON 均保留 X Article 标题和摘要；Index 标题也会优先使用 X Article 标题。
+- 不抓外部网站全文，外部链接仍只保留 X 页面可见的链接卡片信息。
+- 验证通过：`npm test` 12 个测试文件、66 个测试通过；`npm run typecheck` 通过；`npm run build` 通过并生成 `dist/assets/background.js`；`npm audit --audit-level=moderate` 通过，0 个漏洞；`git diff --check` 通过。
+
+正文排版格式化执行计划：
+- [x] Format P0-1：补充单条 Markdown 结构化正文测试。验证：`## 原文` 下保留段落、小标题、列表和加粗格式，符合 Obsidian Markdown。
+- [x] Format P0-2：补充 HTML 语义正文测试。验证：HTML 使用 `<h2>`、`<h3>`、`<p>`、`<ul><li>` 渲染正文，而不是整段塞进一个 `<p>`。
+- [x] Format P0-3：补充渲染详情页正文块提取测试。验证：X Article 详情页可提取标题、段落、小标题、列表项和加粗片段。
+- [x] Format P0-4：实现 `contentBlocks` 数据结构和渲染器。验证：Markdown 和 HTML 从同一套正文块生成，纯文本作为 fallback。
+- [x] Format P0-5：更新 README、handoff 和任务记录。验证：说明导出会尽量保留 X Article 的可读排版，失败时安全回退纯文本。
+- [x] Format P0-6：跑完整验证。验证：`npm test`、`npm run typecheck`、`npm run build`、`npm audit --audit-level=moderate`、`git diff --check` 全部通过。
+
+正文排版格式化完成：
+- 新增 `contentBlocks`，用于保存标题、段落、列表等正文块；Markdown 和 HTML 共用这套结构渲染。
+- 单条 Markdown 的 `## 原文` 会优先输出结构化 Markdown，支持 `##`、`###`、段落、列表和 `**加粗**`。
+- HTML 导出会把正文渲染为 `<h2>`、`<h3>`、`<p>`、`<ul><li>`，并把 `**加粗**` 转成 `<strong>`。
+- X Article 详情页读取会尽量根据 DOM、字体大小、粗细和列表符号推断正文块；识别失败时保留纯文本回退。
+- `enhanceBookmarkText` 会在正文增强成功时保留后台返回的 `contentBlocks`，避免导出阶段丢失排版。
+- 验证通过：`npm test` 12 个测试文件、70 个测试通过；`npm run typecheck` 通过；`npm run build` 通过；`npm audit --audit-level=moderate` 通过，0 个漏洞；`git diff --check` 通过。
+
+正文图片按原文顺序导出执行计划：
+- [x] Image P0-1：补充正文图片 Markdown/HTML 渲染测试。验证：正文块中的图片按原文顺序出现在 `## 原文` 中，Markdown 使用本地附件路径，HTML 显示 `<img>`。
+- [x] Image P0-2：补充 zip 下载正文图片测试。验证：只出现在 `contentBlocks` 的图片也会下载、写入 `media-manifest.json`，并映射回 Markdown/HTML。
+- [x] Image P0-3：补充 X Article 详情页图片提取测试。验证：正文 DOM 中的 `pbs.twimg.com/media` 图片会生成 image block，且顺序夹在段落之间。
+- [x] Image P0-4：实现 image content block、正文图片收集、下载和渲染。验证：封面图和正文配图都能展示；失败时保留远程 URL。
+- [x] Image P0-5：更新 README、handoff 和任务记录。验证：说明正文图片会按正文顺序展示，下载失败会回退远程链接。
+- [x] Image P0-6：跑完整验证。验证：`npm test`、`npm run typecheck`、`npm run build`、`npm audit --audit-level=moderate`、`git diff --check` 全部通过。
+
+正文图片按原文顺序导出完成：
+- `contentBlocks` 新增 image block，正文图片会和段落、标题、列表一起按顺序渲染。
+- 单条 Markdown 的 `## 原文` 中会输出正文图片；下载成功时使用 `../attachments/...` 本地路径，下载失败或未启用图片时保留远程 URL。
+- HTML 正文会输出 `<figure><img ... /></figure>`；封面图、链接卡片图和其它媒体图也会显示。
+- zip 打包会扫描 `contentBlocks` 里的图片 URL，只出现在正文块中的图片也会下载、写入 `media-manifest.json`，并映射回 Markdown/HTML。
+- X Article 详情页提取会识别正文中的 `pbs.twimg.com/media` 图片，并保持它在正文块里的原始顺序。
+- 验证通过：`npm test` 12 个测试文件、74 个测试通过；`npm run typecheck` 通过；`npm run build` 通过；`npm audit --audit-level=moderate` 通过，0 个漏洞；`git diff --check` 通过。
+
+正文图片未出现在原文中的回归修复执行计划：
+- [x] Image Regression P0-1：补充增强层回归测试。验证：详情页文字不比列表页更长、但详情页 `contentBlocks` 含图片时，仍采用详情页结构化正文。
+- [x] Image Regression P0-2：修复增强判定和普通推文图片正文块。验证：图片块不会因为纯文本长度相同而被丢弃；普通推文媒体图也能进入 `contentBlocks`，Markdown/HTML 导出能拿到按顺序穿插的 image block。
+- [x] Image Regression P0-3：补充经验记录。验证：`tasks/lessons.md` 记录“正文结构比纯文本长度更重要”的规则。
+- [x] Image Regression P0-4：跑完整验证。验证：目标测试、全量测试、类型检查、构建、审计和 diff 空白检查全部通过。
+
+正文图片未出现在原文中的回归修复完成：
+- 根因是增强层只用“详情页纯文本是否更长”判断是否采用详情页结果；当详情页文字长度相同但 `contentBlocks` 多了正文图片时，图片块会被丢弃。
+- 已修复增强判定：详情页 `contentBlocks` 出现列表页没有的新正文图片时，也视为增强成功并保留结构化正文。
+- 普通推文列表页解析和详情页解析现在都会把 `pbs.twimg.com/media/*` 图片作为 image block 放到正文块中，默认排在推文正文之后。
+- 单条 Markdown 的 `## 原文` 会内联这些图片；已经内联的图片不会再在 `## 媒体` 区重复展示。
+- 验证通过：`npm test` 12 个测试文件、78 个测试通过；`npm run typecheck` 通过；`npm run build` 通过；`npm audit --audit-level=moderate` 通过，0 个漏洞；`git diff --check` 通过。

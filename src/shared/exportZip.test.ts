@@ -14,6 +14,7 @@ function bookmark(overrides: Partial<XBookmark> = {}): XBookmark {
     collectedAt: overrides.collectedAt ?? "2026-05-16T00:00:00.000Z",
     imageUrls: overrides.imageUrls ?? [],
     linkCard: overrides.linkCard,
+    contentBlocks: overrides.contentBlocks,
     video: overrides.video,
     rawText: overrides.rawText ?? "raw"
   };
@@ -131,6 +132,68 @@ describe("buildExportZip", () => {
     expect(exportReport).toContain('"bookmarkCount": 1');
     expect(exportReport).toContain('"mediaDownloadedCount": 1');
     expect(exportReport).toContain('"mediaFailedCount": 2');
+  });
+
+  it("downloads body images used only inside content blocks and renders them inline", async () => {
+    const bodyImageUrl = "https://pbs.twimg.com/media/body?format=png&name=large";
+    const fetchImage = vi.fn(async () => new Blob(["body-image"], { type: "image/png" }));
+
+    const blob = await buildExportZip({
+      bookmarks: [
+        bookmark({
+          imageUrls: [],
+          contentBlocks: [
+            { type: "paragraph", text: "图片前正文。" },
+            { type: "image", url: bodyImageUrl, alt: "正文配图" },
+            { type: "paragraph", text: "图片后正文。" }
+          ]
+        })
+      ],
+      includeImages: true,
+      fetchImage
+    });
+    const zip = await JSZip.loadAsync(blob);
+    const markdown = await zip.file("bookmarks/2026-05-16-alice-useful-thread.md")?.async("string");
+    const html = await zip.file("bookmarks.html")?.async("string");
+    const mediaManifest = await zip.file("media-manifest.json")?.async("string");
+    const attachment = await zip.file("attachments/x-bookmarks/123/image-01-body.png")?.async("string");
+
+    expect(fetchImage).toHaveBeenCalledWith(bodyImageUrl);
+    expect(attachment).toBe("body-image");
+    expect(markdown).toContain("图片前正文。");
+    expect(markdown).toContain("![正文配图](../attachments/x-bookmarks/123/image-01-body.png)");
+    expect(markdown).toContain("图片后正文。");
+    expect(html).toContain('<figure><img src="attachments/x-bookmarks/123/image-01-body.png" alt="正文配图" /></figure>');
+    expect(mediaManifest).toContain('"originalUrl": "https://pbs.twimg.com/media/body?format=png&name=large"');
+    expect(mediaManifest).toContain('"status": "downloaded"');
+  });
+
+  it("keeps remote body image references when image inclusion is disabled", async () => {
+    const bodyImageUrl = "https://pbs.twimg.com/media/body.jpg";
+    const fetchImage = vi.fn(async () => new Blob(["body-image"]));
+
+    const blob = await buildExportZip({
+      bookmarks: [
+        bookmark({
+          imageUrls: [],
+          contentBlocks: [
+            { type: "paragraph", text: "正文。" },
+            { type: "image", url: bodyImageUrl, alt: "正文配图" }
+          ]
+        })
+      ],
+      includeImages: false,
+      fetchImage
+    });
+    const zip = await JSZip.loadAsync(blob);
+    const markdown = await zip.file("bookmarks/2026-05-16-alice-useful-thread.md")?.async("string");
+    const html = await zip.file("bookmarks.html")?.async("string");
+    const mediaManifest = await zip.file("media-manifest.json")?.async("string");
+
+    expect(fetchImage).not.toHaveBeenCalled();
+    expect(markdown).toContain("![正文配图](<https://pbs.twimg.com/media/body.jpg>)");
+    expect(html).toContain('<figure><img src="https://pbs.twimg.com/media/body.jpg" alt="正文配图" /></figure>');
+    expect(mediaManifest).toContain('"status": "remote-only"');
   });
 
   it("does not treat attachment filename errors as image fetch failures", async () => {

@@ -1,4 +1,4 @@
-import type { XBookmark, XBookmarkLinkCard, XBookmarkVideo } from "../shared/types";
+import type { XBookmark, XBookmarkArticle, XBookmarkContentBlock, XBookmarkLinkCard, XBookmarkVideo } from "../shared/types";
 
 const STATUS_PATH_PATTERN = /^\/([^/]+)\/status\/(\d+)/;
 
@@ -19,10 +19,12 @@ function parseBookmarkArticle(article: HTMLElement, collectedAt: string): XBookm
   const userName = article.querySelector<HTMLElement>('[data-testid="User-Name"]');
   const userSpans = Array.from(userName?.querySelectorAll("span") ?? []);
   const authorHandle = textFrom(userSpans.find((span) => textFrom(span).startsWith("@")));
-  const text = textFrom(article.querySelector('[data-testid="tweetText"]'));
+  const articleCard = parseArticleCard(article);
+  const text = textFrom(article.querySelector('[data-testid="tweetText"]')) || articleText(articleCard);
   const postedAt = article.querySelector<HTMLTimeElement>("time[datetime]")?.dateTime;
   const url = `https://x.com/${handle}/status/${id}`;
   const video = parseVideo(article, url);
+  const images = parseImages(article);
 
   return {
     id,
@@ -30,10 +32,14 @@ function parseBookmarkArticle(article: HTMLElement, collectedAt: string): XBookm
     authorName: parseAuthorName(userSpans, authorHandle),
     authorHandle,
     text,
+    textSource: "bookmarks-list",
+    textEnhancementStatus: "not-needed",
     postedAt,
     collectedAt,
-    imageUrls: parseImageUrls(article),
+    imageUrls: images.map((image) => image.url),
     linkCard: parseLinkCard(article),
+    article: articleCard,
+    contentBlocks: bookmarkContentBlocks(text, articleCard, images),
     video,
     rawText: textFrom(article)
   };
@@ -84,14 +90,18 @@ function parseAuthorName(spans: HTMLSpanElement[], authorHandle: string): string
   return textFrom(displayName);
 }
 
-function parseImageUrls(article: HTMLElement): string[] {
-  return Array.from(article.querySelectorAll<HTMLImageElement>("img[src]"))
-    .map((img) => img.src)
-    .filter((src) => {
-      const url = new URL(src);
+function parseImages(article: HTMLElement): Array<{ url: string; alt?: string }> {
+  const images: Array<{ url: string; alt?: string }> = [];
 
-      return url.hostname === "pbs.twimg.com" && url.pathname.startsWith("/media/");
-    });
+  for (const img of Array.from(article.querySelectorAll<HTMLImageElement>("img[src]"))) {
+    const url = new URL(img.src);
+
+    if (url.hostname === "pbs.twimg.com" && url.pathname.startsWith("/media/")) {
+      images.push({ url: img.src, alt: img.getAttribute("alt") ?? undefined });
+    }
+  }
+
+  return images;
 }
 
 function parseLinkCard(article: HTMLElement): XBookmarkLinkCard | undefined {
@@ -117,6 +127,65 @@ function parseLinkCard(article: HTMLElement): XBookmarkLinkCard | undefined {
   };
 }
 
+function parseArticleCard(article: HTMLElement): XBookmarkArticle | undefined {
+  const coverImage = article.querySelector<HTMLElement>('[data-testid="article-cover-image"]');
+  const wrapper = coverImage?.parentElement;
+
+  if (!wrapper) {
+    return undefined;
+  }
+
+  const pieces = uniqueTexts(Array.from(wrapper.querySelectorAll("span, div")))
+    .filter((text) => text && text !== "文章");
+  const [title, preview] = pieces;
+
+  if (!title && !preview) {
+    return undefined;
+  }
+
+  return { title, preview };
+}
+
+function articleText(article: XBookmarkArticle | undefined): string {
+  return [article?.title, article?.preview]
+    .filter((line): line is string => Boolean(line))
+    .join("\n\n");
+}
+
+function articleContentBlocks(article: XBookmarkArticle | undefined): XBookmarkContentBlock[] | undefined {
+  if (!article) {
+    return undefined;
+  }
+
+  const blocks: XBookmarkContentBlock[] = [];
+
+  if (article.title) {
+    blocks.push({ type: "heading", level: 2, text: article.title });
+  }
+
+  if (article.preview) {
+    blocks.push({ type: "paragraph", text: article.preview });
+  }
+
+  return blocks;
+}
+
+function bookmarkContentBlocks(
+  text: string,
+  article: XBookmarkArticle | undefined,
+  images: Array<{ url: string; alt?: string }>
+): XBookmarkContentBlock[] | undefined {
+  const textBlocks = articleContentBlocks(article) ?? (text ? [{ type: "paragraph" as const, text }] : []);
+  const imageBlocks: XBookmarkContentBlock[] = images.map((image) => ({
+    type: "image",
+    url: image.url,
+    alt: image.alt
+  }));
+  const blocks = [...textBlocks, ...imageBlocks];
+
+  return blocks.length > 0 ? blocks : undefined;
+}
+
 function parseVideo(article: HTMLElement, sourceUrl: string): XBookmarkVideo | undefined {
   const previewImageUrl = article.querySelector<HTMLImageElement>('[data-testid="videoPlayer"] img[src]')?.src;
 
@@ -132,4 +201,21 @@ function parseVideo(article: HTMLElement, sourceUrl: string): XBookmarkVideo | u
 
 function textFrom(element: Element | undefined | null): string {
   return element?.textContent?.trim() ?? "";
+}
+
+function uniqueTexts(elements: Element[]): string[] {
+  const seen = new Set<string>();
+  const texts: string[] = [];
+
+  for (const element of elements) {
+    const text = textFrom(element).replace(/\s+/g, " ");
+    if (!text || seen.has(text)) {
+      continue;
+    }
+
+    seen.add(text);
+    texts.push(text);
+  }
+
+  return texts;
 }

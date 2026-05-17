@@ -8,7 +8,7 @@ export const messages = {
     pageHint: "打开 X Bookmarks 页面后开始采集。",
     language: "语言",
     collected: "已采集",
-    lastAdded: "本次新增",
+    runAdded: "本轮新增",
     scrolls: "滚动次数",
     exportPackage: "导出包",
     exportPreview: "包含 Obsidian 索引、单条笔记、JSON、CSV、TXT、HTML 和媒体清单。",
@@ -21,6 +21,8 @@ export const messages = {
     exporting: "导出中...",
     videoHint: "视频不会下载，只保存原帖链接和可见预览。",
     openBookmarksError: "请先打开 X Bookmarks 页面，并确认插件已获得当前页面权限。",
+    openBookmarksAction: "打开 X Bookmarks",
+    unknownOperationError: "未知操作，请关闭 popup 后重试。",
     exportError: "导出 zip 失败，请稍后重试。"
   },
   en: {
@@ -30,7 +32,7 @@ export const messages = {
     pageHint: "Open X Bookmarks before collecting.",
     language: "Language",
     collected: "Collected",
-    lastAdded: "New",
+    runAdded: "New this run",
     scrolls: "Scrolls",
     exportPackage: "Export package",
     exportPreview: "Includes Obsidian index, per-bookmark notes, JSON, CSV, TXT, HTML, and media manifest.",
@@ -43,6 +45,8 @@ export const messages = {
     exporting: "Exporting...",
     videoHint: "Videos are not downloaded; source links and visible previews are saved.",
     openBookmarksError: "Open the X Bookmarks page first and make sure this extension has permission.",
+    openBookmarksAction: "Open X Bookmarks",
+    unknownOperationError: "Unknown operation. Close the popup and try again.",
     exportError: "Failed to export zip. Please try again."
   }
 } as const;

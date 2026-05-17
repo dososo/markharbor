@@ -89,6 +89,22 @@ h2 {
   font-size: 13px;
 }
 
+.error p {
+  margin: 0 0 8px;
+}
+
+.error a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 0 10px;
+  border-radius: 8px;
+  color: #ffffff;
+  background: #b3261e;
+  font-weight: 700;
+  text-decoration: none;
+}
+
 .stats {
   display: grid;
   grid-template-columns: repeat(3, 1fr);

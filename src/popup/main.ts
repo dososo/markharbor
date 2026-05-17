@@ -1,23 +1,51 @@
 import { buildExportZip } from "../shared/exportZip";
 import type { ContentToPopupResponse, PopupToContentMessage } from "../shared/messages";
 import type { CollectionState, XBookmark } from "../shared/types";
-import { type AppLanguage, loadLanguage, resolveLanguage, saveLanguage, t } from "./i18n";
+import { type AppLanguage, loadLanguage, type MessageKey, resolveLanguage, saveLanguage, t } from "./i18n";
 import "./styles.css";
 
 const root = document.querySelector<HTMLDivElement>("#app");
+const contentScriptFile = "assets/content.js";
 
 let bookmarks: XBookmark[] = [];
 let state: CollectionState | undefined;
-let errorMessage: string | undefined;
+let errorKey: MessageKey | undefined;
 let includeImages = true;
 let isExporting = false;
 let statusTimer: number | undefined;
 let language: AppLanguage = resolveLanguage(navigator.language);
+let hasStartedCollectionInPopup = false;
 
 async function sendToActiveTab(message: PopupToContentMessage): Promise<ContentToPopupResponse> {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
   if (!tab.id) throw new Error("Active tab not found.");
-  return chrome.tabs.sendMessage(tab.id, message);
+  try {
+    return await chrome.tabs.sendMessage(tab.id, message);
+  } catch (error) {
+    await injectContentScript(tab);
+    return chrome.tabs.sendMessage(tab.id, message);
+  }
+}
+
+function isXBookmarksTab(tab: chrome.tabs.Tab): boolean {
+  try {
+    const url = new URL(tab.url ?? "");
+
+    return url.hostname === "x.com" && url.pathname.startsWith("/i/bookmarks");
+  } catch {
+    return false;
+  }
+}
+
+async function injectContentScript(tab: chrome.tabs.Tab): Promise<void> {
+  if (!tab.id || !isXBookmarksTab(tab)) {
+    throw new Error("Active tab is not X Bookmarks.");
+  }
+
+  await chrome.scripting.executeScript({
+    target: { tabId: tab.id },
+    files: [contentScriptFile]
+  });
 }
 
 async function fetchImage(url: string): Promise<Blob | undefined> {
@@ -43,9 +71,9 @@ async function downloadZip(): Promise<void> {
       filename: `x-bookmarks-export-${new Date().toISOString().slice(0, 10)}.zip`,
       saveAs: true
     });
-    errorMessage = undefined;
+    errorKey = undefined;
   } catch {
-    errorMessage = t(language, "exportError");
+    errorKey = "exportError";
   } finally {
     if (objectUrl) {
       const urlToRevoke = objectUrl;
@@ -56,25 +84,57 @@ async function downloadZip(): Promise<void> {
   }
 }
 
-function applyResponse(response: ContentToPopupResponse): void {
+function emptyDisplayState(responseState: CollectionState | undefined): CollectionState | undefined {
+  if (!responseState) {
+    return undefined;
+  }
+
+  return {
+    ...responseState,
+    bookmarks: [],
+    lastScanAdded: 0,
+    runAdded: 0,
+    scrollAttempts: 0,
+    idleScans: 0
+  };
+}
+
+function shouldDisplayBookmarks(message: PopupToContentMessage, response: ContentToPopupResponse): boolean {
+  if (!response.ok) {
+    return false;
+  }
+
+  return message.type !== "GET_STATUS" || hasStartedCollectionInPopup || response.state.isCollecting;
+}
+
+function applyResponse(message: PopupToContentMessage, response: ContentToPopupResponse): void {
   if (!response.ok) {
     state = response.state;
-    errorMessage = response.error;
+    errorKey = response.errorKey;
     return;
   }
 
-  if ("bookmarks" in response) {
+  if (shouldDisplayBookmarks(message, response) && "bookmarks" in response) {
     bookmarks = response.bookmarks;
   }
-  state = response.state;
-  errorMessage = undefined;
+  if (message.type === "GET_STATUS" && !shouldDisplayBookmarks(message, response)) {
+    bookmarks = [];
+    state = emptyDisplayState(response.state);
+  } else {
+    state = response.state;
+  }
+  errorKey = undefined;
 }
 
 async function runMessage(message: PopupToContentMessage): Promise<void> {
+  if (message.type === "START_COLLECTION") {
+    hasStartedCollectionInPopup = true;
+  }
+
   try {
-    applyResponse(await sendToActiveTab(message));
+    applyResponse(message, await sendToActiveTab(message));
   } catch {
-    errorMessage = t(language, "openBookmarksError");
+    errorKey = "openBookmarksError";
   }
 
   render();
@@ -93,7 +153,8 @@ function render(): void {
 
   const count = bookmarks.length;
   const isCollecting = state?.isCollecting ?? false;
-  const statusLabel = errorMessage ? t(language, "pageHint") : t(language, "pageReady");
+  const statusLabel = errorKey ? t(language, "pageHint") : t(language, "pageReady");
+  const errorMessage = errorKey ? t(language, errorKey) : undefined;
   const exportFiles = ["Obsidian", "JSON", "CSV", "TXT", "HTML", "manifest"];
 
   root.innerHTML = `
@@ -109,10 +170,15 @@ function render(): void {
           <button id="langEn" class="language-option ${language === "en" ? "active" : ""}" type="button">EN</button>
         </div>
       </header>
-      ${errorMessage ? `<p class="error">${escapeHtml(errorMessage)}</p>` : ""}
+      ${errorMessage ? `
+        <div class="error">
+          <p>${escapeHtml(errorMessage)}</p>
+          ${errorKey === "openBookmarksError" ? `<a href="https://x.com/i/bookmarks" target="_blank" rel="noreferrer">${t(language, "openBookmarksAction")}</a>` : ""}
+        </div>
+      ` : ""}
       <dl class="stats">
         <div><dt>${t(language, "collected")}</dt><dd>${count}</dd></div>
-        <div><dt>${t(language, "lastAdded")}</dt><dd>${state?.lastScanAdded ?? 0}</dd></div>
+        <div><dt>${t(language, "runAdded")}</dt><dd>${state?.runAdded ?? 0}</dd></div>
         <div><dt>${t(language, "scrolls")}</dt><dd>${state?.scrollAttempts ?? 0}</dd></div>
       </dl>
       <section class="export-card">

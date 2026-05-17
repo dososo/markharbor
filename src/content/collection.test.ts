@@ -98,9 +98,12 @@ describe("createCollectionController", () => {
 
     expect(scrolls).toBe(1);
     expect(controller.state.currentItemTitle).toBeTruthy();
+    expect(controller.state.detailEnhancementTotal).toBe(2);
+    expect(controller.state.detailEnhancedCount).toBe(0);
     resolveEnhancement?.(controller.state.bookmarks[0]);
     await controller.whenIdle();
     expect(scrolls).toBe(1);
+    expect(controller.state.detailEnhancedCount).toBe(2);
   });
 
   it("runs detail enhancements one at a time so X Article tabs do not compete for focus", async () => {

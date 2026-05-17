@@ -382,3 +382,17 @@ X Article 正文快照累积与目标锁定记录：
 - 修复：popup 采集中进度卡增加高亮、脉冲点和“采集中，请保持 X Bookmarks 页面打开。”提示，当前采集标题仍继续展示。
 - 版本号已从 `0.1.7` 升到 `0.1.8`，`dist/manifest.json` 版本确认为 `0.1.8`。
 - 验证通过：`npm test` 12 个测试文件、90 个测试通过；`npm run typecheck` 通过；`npm run build` 通过；`npm audit --audit-level=moderate` 通过，0 个漏洞；`git diff --check` 通过。
+
+采集计数语义澄清执行计划：
+- [x] Count P0-1：补充状态模型测试。验证：点击开始后“已发现/本轮发现”可立即增长，但详情增强完成数单独统计。
+- [x] Count P0-2：补充 popup 文案测试。验证：主统计显示“已发现”“本轮发现”“详情完成 0/0 或 1/4”，不再显示“已采集”。
+- [x] Count P0-3：实现详情增强进度状态。验证：每个入队详情增强增加总数，完成或安全回退后增加完成数。
+- [x] Count P0-4：同步版本和记录。验证：版本升到 `0.1.9`，交接文档和 lessons 说明计数语义。
+- [x] Count P0-5：跑完整验证并提交。验证：测试、类型检查、构建、审计和 diff 空白检查全部通过。
+
+采集计数语义澄清记录：
+- 根因：`已采集` 实际表示“已从列表 DOM 发现并加入导出队列”，用户容易理解成“正文和图片已完整抓取完成”。
+- 修复：popup 主统计文案改为 `已发现`、`本轮发现`、`详情完成`，把列表发现进度和详情增强进度分开。
+- 修复：`CollectionState` 新增 `detailEnhancedCount` 和 `detailEnhancementTotal`；详情增强入队时增加总数，单条增强完成或安全回退后增加完成数。
+- 版本号已从 `0.1.8` 升到 `0.1.9`，`dist/manifest.json` 版本确认为 `0.1.9`。
+- 验证通过：`npm test` 12 个测试文件、90 个测试通过；`npm run typecheck` 通过；`npm run build` 通过；`npm audit --audit-level=moderate` 通过，0 个漏洞；`git diff --check` 通过。

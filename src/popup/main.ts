@@ -96,7 +96,9 @@ function emptyDisplayState(responseState: CollectionState | undefined): Collecti
     lastScanAdded: 0,
     runAdded: 0,
     scrollAttempts: 0,
-    idleScans: 0
+    idleScans: 0,
+    detailEnhancedCount: 0,
+    detailEnhancementTotal: 0
   };
 }
 
@@ -157,6 +159,8 @@ function render(): void {
   const statusLabel = errorKey ? t(language, "pageHint") : t(language, "pageReady");
   const errorMessage = errorKey ? t(language, errorKey) : undefined;
   const exportFiles = ["Obsidian", "JSON", "CSV", "TXT", "HTML", "manifest"];
+  const detailEnhancedCount = state?.detailEnhancedCount ?? 0;
+  const detailEnhancementTotal = state?.detailEnhancementTotal ?? 0;
   const stageKey = state?.currentStage
     ? ({
       idle: "collectionStageIdle",
@@ -189,7 +193,7 @@ function render(): void {
       <dl class="stats ${isCollecting ? "active" : ""}">
         <div><dt>${t(language, "collected")}</dt><dd>${count}</dd></div>
         <div><dt>${t(language, "runAdded")}</dt><dd>${state?.runAdded ?? 0}</dd></div>
-        <div><dt>${t(language, "scrolls")}</dt><dd>${state?.scrollAttempts ?? 0}</dd></div>
+        <div><dt>${t(language, "detailsDone")}</dt><dd>${detailEnhancedCount}/${detailEnhancementTotal}</dd></div>
       </dl>
       <section class="export-card">
         <div>

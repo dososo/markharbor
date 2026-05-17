@@ -40,7 +40,9 @@ function initialState(): CollectionState {
     lastScanAdded: 0,
     runAdded: 0,
     scrollAttempts: 0,
-    idleScans: 0
+    idleScans: 0,
+    detailEnhancedCount: 0,
+    detailEnhancementTotal: 0
   };
 }
 
@@ -144,12 +146,15 @@ export function createCollectionController(options: CollectionControllerOptions 
       }
 
       enhancedUrls.add(bookmark.url);
+      state.detailEnhancementTotal += 1;
       enhancementQueue.push(async () => {
+        let started = false;
         try {
           if (!isCurrentRun(runId)) {
             return;
           }
 
+          started = true;
           state.currentStage = "enhancing";
           state.currentItemTitle = bookmarkTitle(bookmark);
           state.currentItemUrl = bookmark.url;
@@ -164,6 +169,10 @@ export function createCollectionController(options: CollectionControllerOptions 
           ));
         } catch {
           // 单条详情增强失败时保留列表页数据，不中断整轮采集。
+        } finally {
+          if (started && isCurrentRun(runId)) {
+            state.detailEnhancedCount += 1;
+          }
         }
       });
     }
@@ -280,6 +289,8 @@ export function createCollectionController(options: CollectionControllerOptions 
     state.runAdded = 0;
     state.scrollAttempts = 0;
     state.idleScans = 0;
+    state.detailEnhancedCount = 0;
+    state.detailEnhancementTotal = 0;
     state.currentStage = "idle";
     state.currentItemTitle = undefined;
     state.currentItemUrl = undefined;
@@ -294,6 +305,8 @@ export function createCollectionController(options: CollectionControllerOptions 
     state.runAdded = 0;
     state.scrollAttempts = 0;
     state.idleScans = 0;
+    state.detailEnhancedCount = 0;
+    state.detailEnhancementTotal = 0;
     state.currentStage = "idle";
     state.currentItemTitle = undefined;
     state.currentItemUrl = undefined;

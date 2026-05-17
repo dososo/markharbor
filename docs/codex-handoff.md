@@ -204,6 +204,12 @@
   - 修复：popup 采集中进度卡增加高亮、脉冲点和“采集中，请保持 X Bookmarks 页面打开。”提示，继续展示当前采集标题。
   - 版本：同步升到 `0.1.8`，`dist/manifest.json` 版本确认为 `0.1.8`。
   - 验证：`npm test` 12 个测试文件、90 个测试通过；`npm run typecheck` 通过；`npm run build` 通过；`npm audit --audit-level=moderate` 通过，0 个漏洞；`git diff --check` 通过。
+- 采集计数语义澄清
+  - 背景：用户确认点击开始后 `已采集/本轮新增` 立即显示 4 会误解为 4 条已完成全文和图片采集。
+  - 修复：主统计文案改为 `已发现`、`本轮发现`、`详情完成`，把列表 DOM 发现数量和详情增强完成数量分开。
+  - 修复：`CollectionState` 新增 `detailEnhancedCount` 和 `detailEnhancementTotal`，详情增强入队时增加总数，单条增强完成或安全回退后增加完成数。
+  - 版本：同步升到 `0.1.9`，`dist/manifest.json` 版本确认为 `0.1.9`。
+  - 验证：`npm test` 12 个测试文件、90 个测试通过；`npm run typecheck` 通过；`npm run build` 通过；`npm audit --audit-level=moderate` 通过，0 个漏洞；`git diff --check` 通过。
 
 ## 风险点
 

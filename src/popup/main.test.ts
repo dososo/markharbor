@@ -7,7 +7,9 @@ const emptyState: CollectionState = {
   lastScanAdded: 0,
   runAdded: 0,
   scrollAttempts: 0,
-  idleScans: 0
+  idleScans: 0,
+  detailEnhancedCount: 0,
+  detailEnhancementTotal: 0
 };
 
 const staleBookmark: XBookmark = {
@@ -27,7 +29,9 @@ const staleState: CollectionState = {
   lastScanAdded: 1,
   runAdded: 1,
   scrollAttempts: 2,
-  idleScans: 0
+  idleScans: 0,
+  detailEnhancedCount: 0,
+  detailEnhancementTotal: 0
 };
 
 async function flushAsyncWork(): Promise<void> {
@@ -86,9 +90,9 @@ describe("popup main", () => {
     await import("./main");
     await flushAsyncWork();
 
-    expect(document.body.textContent).toContain("已采集0");
-    expect(document.body.textContent).toContain("本轮新增0");
-    expect(document.body.textContent).toContain("滚动次数0");
+    expect(document.body.textContent).toContain("已发现0");
+    expect(document.body.textContent).toContain("本轮发现0");
+    expect(document.body.textContent).toContain("详情完成0/0");
   });
 
   it("injects the content script into an already-open bookmarks tab when messaging is not ready", async () => {
@@ -121,6 +125,8 @@ describe("popup main", () => {
       state: {
         ...emptyState,
         isCollecting: true,
+        detailEnhancedCount: 1,
+        detailEnhancementTotal: 4,
         currentStage: "enhancing",
         currentItemTitle: "示例长文"
       }
@@ -131,6 +137,7 @@ describe("popup main", () => {
 
     expect(document.querySelector(".progress-card.active")).toBeTruthy();
     expect(document.body.textContent).toContain("采集中，请保持 X Bookmarks 页面打开");
+    expect(document.body.textContent).toContain("详情完成1/4");
     expect(document.body.textContent).toContain("示例长文");
   });
 });

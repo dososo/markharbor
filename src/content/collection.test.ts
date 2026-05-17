@@ -71,7 +71,7 @@ describe("createCollectionController", () => {
     expect(controller.state.bookmarks[0].textEnhancementStatus).toBe("success");
   });
 
-  it("scrolls immediately after scanning while detail enhancement continues in the background", async () => {
+  it("waits for the current detail enhancement before scrolling to the next batch", async () => {
     let scrolls = 0;
     let resolveEnhancement: ((bookmark: XBookmark) => void) | undefined;
     const enhancement = new Promise<XBookmark>((resolve) => {
@@ -90,9 +90,11 @@ describe("createCollectionController", () => {
 
     controller.handleMessage({ type: "START_COLLECTION" });
 
-    expect(scrolls).toBe(1);
+    expect(scrolls).toBe(0);
+    expect(controller.state.currentItemTitle).toBeTruthy();
     resolveEnhancement?.(controller.state.bookmarks[0]);
     await controller.whenIdle();
+    expect(scrolls).toBe(1);
   });
 
   it("runs detail enhancements one at a time so X Article tabs do not compete for focus", async () => {
@@ -120,6 +122,32 @@ describe("createCollectionController", () => {
     expect(started).toHaveLength(2);
     resolvers[1]();
     await controller.whenIdle();
+  });
+
+  it("clears queued detail enhancements when collection is stopped", async () => {
+    const started: string[] = [];
+    let resolveFirst: ((bookmark: XBookmark) => void) | undefined;
+    const enhanceBookmarkText = vi.fn((bookmark: XBookmark) => new Promise<XBookmark>((resolve) => {
+      started.push(bookmark.url);
+      resolveFirst ??= () => resolve(bookmark);
+    }));
+    const controller = createCollectionController({
+      doc: bookmarkDocument(),
+      getLocation: xBookmarksLocation,
+      delay: async () => undefined,
+      maxScrollAttempts: 1,
+      scrollPage: () => undefined,
+      enhanceBookmarkText
+    });
+
+    controller.handleMessage({ type: "START_COLLECTION" });
+    controller.handleMessage({ type: "STOP_COLLECTION" });
+    resolveFirst?.(controller.state.bookmarks[0]);
+    await controller.whenIdle();
+
+    expect(started).toHaveLength(1);
+    expect(controller.state.isCollecting).toBe(false);
+    expect(controller.state.currentStage).toBe("stopped");
   });
 
   it("starts a new collection from a clean state so stale empty bookmarks are enhanced", async () => {
@@ -155,6 +183,8 @@ describe("createCollectionController", () => {
 
     expect(enhanceBookmarkText).toHaveBeenCalledWith(expect.objectContaining({
       url: "https://x.com/alice/status/1234567890"
+    }), expect.objectContaining({
+      fullArticleImages: true
     }));
     expect(controller.state.bookmarks[0].text).toBe("Full text from detail page");
     expect(controller.state.bookmarks[0].textEnhancementStatus).toBe("success");

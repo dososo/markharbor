@@ -68,4 +68,7 @@ export interface CollectionState {
   runAdded: number;
   scrollAttempts: number;
   idleScans: number;
+  currentStage?: "idle" | "scanning" | "enhancing" | "scrolling" | "stopped";
+  currentItemTitle?: string;
+  currentItemUrl?: string;
 }

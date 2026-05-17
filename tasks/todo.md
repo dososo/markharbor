@@ -321,3 +321,20 @@ X Article 激活详情页采集修复记录：
 - 体验控制：详情增强队列改为串行处理，避免同时打开多个激活详情页造成标签页焦点混乱。
 - 版本号已从 `0.1.3` 升到 `0.1.4`，`dist/manifest.json` 版本确认为 `0.1.4`。
 - 验证通过：`npm test` 12 个测试文件、85 个测试通过；`npm run typecheck` 通过；`npm run build` 通过；`npm audit --audit-level=moderate` 通过，0 个漏洞；`git diff --check` 通过。
+
+完整正文配图高级模式稳定化执行计划：
+- [x] Stable Advanced P0-1：反向锁定严重回归。验证：高级模式不能再 `active: true` 打开文章标签页，不能关闭 popup 主流程。
+- [x] Stable Advanced P0-2：实现非聚焦采集窗口。验证：X Article 高级模式通过 `chrome.windows.create({ focused: false })` 打开采集载体，读取完成后关闭窗口。
+- [x] Stable Advanced P0-3：实现一篇完成再下一篇。验证：当前详情增强完成前，书签列表页不滚动到下一批。
+- [x] Stable Advanced P0-4：修复停止语义。验证：点击停止会清空待增强队列，不再继续打开后续文章采集载体。
+- [x] Stable Advanced P0-5：增加 popup 状态展示。验证：popup 显示当前阶段和正在采集的标题/摘要，并提供“完整正文配图高级模式”开关。
+- [x] Stable Advanced P0-6：同步版本并验证。验证：版本升到 `0.1.5`，目标测试、全量测试、类型检查、构建、审计和 diff 空白检查全部通过。
+
+完整正文配图高级模式稳定化记录：
+- 彻底撤掉 `0.1.4` 的激活标签页方案；该方案会导致 Chrome popup 关闭，用户无法稳定停止、观察和导出。
+- 高级模式默认开启，但通过非聚焦采集窗口执行，不抢走当前书签页活动标签；普通推文仍用非激活标签页读取。
+- 采集循环改为“扫描当前可见书签 -> 串行增强当前批次 -> 再滚动下一批”，确保一篇完成再进入下一篇。
+- `STOP_COLLECTION` 会立即清空待增强队列并标记 `stopped`，当前已开始的一篇会自然收口，但不会再打开后续文章。
+- popup 现在展示当前采集阶段和当前书签标题，便于发布前手动验收。
+- 版本号已从 `0.1.4` 升到 `0.1.5`，`dist/manifest.json` 版本确认为 `0.1.5`。
+- 验证通过：`npm test` 12 个测试文件、86 个测试通过；`npm run typecheck` 通过；`npm run build` 通过；`npm audit --audit-level=moderate` 通过，0 个漏洞；`git diff --check` 通过。

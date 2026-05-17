@@ -9,8 +9,11 @@ export interface RenderedDetailContent {
 interface RenderedTextChromeApi {
   tabs: {
     create: (properties: chrome.tabs.CreateProperties) => Promise<{ id?: number }>;
-    update?: (tabId: number, properties: chrome.tabs.UpdateProperties) => Promise<unknown>;
     remove: (tabId: number) => Promise<void>;
+  };
+  windows?: {
+    create: (properties: chrome.windows.CreateData) => Promise<{ id?: number; tabs?: Array<{ id?: number }> }>;
+    remove: (windowId: number) => Promise<void>;
   };
   scripting: {
     executeScript: (injection: chrome.scripting.ScriptInjection<unknown[], RenderedDetailContent | undefined>) => Promise<Array<{ result?: RenderedDetailContent | string }>>;
@@ -20,14 +23,19 @@ interface RenderedTextChromeApi {
 interface FetchRenderedTextOptions {
   chromeApi?: RenderedTextChromeApi;
   delay?: (ms: number) => Promise<void>;
+  fullArticleImages?: boolean;
   maxAttempts?: number;
-  openerTabId?: number;
   waitMs?: number;
 }
 
 const DEFAULT_MAX_ATTEMPTS = 20;
 const DEFAULT_ARTICLE_MAX_ATTEMPTS = 40;
 const DEFAULT_WAIT_MS = 500;
+
+interface DetailTarget {
+  tabId: number;
+  close: () => Promise<void>;
+}
 
 function defaultDelay(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -382,6 +390,49 @@ export function extractRenderedDetailTextFromPage(targetId?: string, targetUrl?:
   return extractRenderedDetailContentFromPage(targetId, targetUrl)?.text;
 }
 
+async function createDetailTarget(
+  bookmark: XBookmark,
+  chromeApi: RenderedTextChromeApi,
+  useCaptureWindow: boolean
+): Promise<DetailTarget> {
+  if (useCaptureWindow && chromeApi.windows) {
+    const captureWindow = await chromeApi.windows.create({
+      url: bookmark.url,
+      focused: false,
+      type: "popup",
+      width: 900,
+      height: 900
+    });
+    const tabId = captureWindow.tabs?.[0]?.id;
+
+    if (!captureWindow.id || !tabId) {
+      if (captureWindow.id) {
+        await chromeApi.windows.remove(captureWindow.id);
+      }
+      throw new Error("Created detail capture window has no tab id.");
+    }
+
+    return {
+      tabId,
+      close: () => chromeApi.windows?.remove(captureWindow.id!) ?? Promise.resolve()
+    };
+  }
+
+  const tab = await chromeApi.tabs.create({
+    url: bookmark.url,
+    active: false
+  });
+
+  if (!tab.id) {
+    throw new Error("Created detail tab has no id.");
+  }
+
+  return {
+    tabId: tab.id,
+    close: () => chromeApi.tabs.remove(tab.id!)
+  };
+}
+
 export async function fetchRenderedDetailContent(
   bookmark: XBookmark,
   options: FetchRenderedTextOptions = {}
@@ -390,15 +441,11 @@ export async function fetchRenderedDetailContent(
   const delay = options.delay ?? defaultDelay;
   const maxAttempts = options.maxAttempts ?? (bookmark.article ? DEFAULT_ARTICLE_MAX_ATTEMPTS : DEFAULT_MAX_ATTEMPTS);
   const waitMs = options.waitMs ?? DEFAULT_WAIT_MS;
-  const shouldActivateDetailTab = bookmark.article !== undefined;
-  const tab = await chromeApi.tabs.create({
-    url: bookmark.url,
-    active: shouldActivateDetailTab
-  });
-
-  if (!tab.id) {
-    throw new Error("Created detail tab has no id.");
-  }
+  const target = await createDetailTarget(
+    bookmark,
+    chromeApi,
+    options.fullArticleImages === true && bookmark.article !== undefined
+  );
 
   try {
     let bestContent: RenderedDetailContent | undefined;
@@ -406,7 +453,7 @@ export async function fetchRenderedDetailContent(
     for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
       await delay(waitMs);
       const [result] = await chromeApi.scripting.executeScript({
-        target: { tabId: tab.id },
+        target: { tabId: target.tabId },
         func: extractRenderedDetailContentFromPage,
         args: [bookmark.id, bookmark.url]
       });
@@ -430,10 +477,7 @@ export async function fetchRenderedDetailContent(
       contentBlocks: bestContent.contentBlocks
     } : undefined;
   } finally {
-    await chromeApi.tabs.remove(tab.id);
-    if (shouldActivateDetailTab && options.openerTabId && chromeApi.tabs.update) {
-      await chromeApi.tabs.update(options.openerTabId, { active: true });
-    }
+    await target.close();
   }
 }
 

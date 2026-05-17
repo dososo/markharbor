@@ -24,7 +24,7 @@ interface CollectionControllerOptions {
   getPageMetrics?: () => PageMetrics;
   maxScrollAttempts?: number;
   stableBottomScansToStop?: number;
-  enhanceBookmarkText?: (bookmark: XBookmark) => Promise<XBookmark>;
+  enhanceBookmarkText?: (bookmark: XBookmark, options?: { fullArticleImages?: boolean }) => Promise<XBookmark>;
 }
 
 export interface CollectionController {
@@ -94,12 +94,14 @@ export function createCollectionController(options: CollectionControllerOptions 
   const getPageMetrics = options.getPageMetrics ?? defaultPageMetrics;
   const maxScrollAttempts = options.maxScrollAttempts ?? DEFAULT_MAX_SCROLL_ATTEMPTS;
   const stableBottomScansToStop = options.stableBottomScansToStop ?? DEFAULT_STABLE_BOTTOM_SCANS_TO_STOP;
-  const enhanceBookmarkText = options.enhanceBookmarkText ?? defaultEnhanceBookmarkText;
+  const enhanceBookmarkText: NonNullable<CollectionControllerOptions["enhanceBookmarkText"]> = options.enhanceBookmarkText
+    ?? ((bookmark, enhancementOptions) => defaultEnhanceBookmarkText(bookmark, undefined, undefined, enhancementOptions));
   const state = initialState();
 
   let nextRunId = 1;
   let activeRunId: number | undefined;
   let currentRun: Promise<void> | undefined;
+  let fullArticleImages = true;
   const enhancedUrls = new Set<string>();
   const enhancedBookmarks = new Map<string, XBookmark>();
   const enhancementQueue: Array<() => Promise<void>> = [];
@@ -107,6 +109,13 @@ export function createCollectionController(options: CollectionControllerOptions 
   let isProcessingEnhancements = false;
 
   const scrollPage = options.scrollPage ?? defaultScrollPage;
+
+  function bookmarkTitle(bookmark: XBookmark): string {
+    return bookmark.article?.title
+      ?? bookmark.linkCard?.title
+      ?? bookmark.text.split("\n").find((line) => line.trim())?.trim()
+      ?? bookmark.url;
+  }
 
   function applyEnhancedBookmarks(): void {
     state.bookmarks = state.bookmarks.map((bookmark) => enhancedBookmarks.get(bookmark.url) ?? bookmark);
@@ -139,7 +148,14 @@ export function createCollectionController(options: CollectionControllerOptions 
       enhancedUrls.add(bookmark.url);
       enhancementQueue.push(async () => {
         try {
-          const enhancedBookmark = await enhanceBookmarkText(bookmark);
+          if (!isCurrentRun(runId)) {
+            return;
+          }
+
+          state.currentStage = "enhancing";
+          state.currentItemTitle = bookmarkTitle(bookmark);
+          state.currentItemUrl = bookmark.url;
+          const enhancedBookmark = await enhanceBookmarkText(bookmark, { fullArticleImages });
           if (!isCurrentRun(runId)) {
             return;
           }
@@ -166,6 +182,10 @@ export function createCollectionController(options: CollectionControllerOptions 
     const task = (async () => {
       try {
         while (enhancementQueue.length > 0) {
+          if (activeRunId === undefined) {
+            enhancementQueue.length = 0;
+            break;
+          }
           const nextTask = enhancementQueue.shift();
           await nextTask?.();
         }
@@ -200,6 +220,9 @@ export function createCollectionController(options: CollectionControllerOptions 
     state.idleScans = 0;
     state.lastScanAdded = 0;
     state.runAdded = 0;
+    state.currentStage = "scanning";
+    state.currentItemTitle = undefined;
+    state.currentItemUrl = undefined;
 
     let previousHeight = getPageMetrics().scrollHeight;
     let stableBottomScans = 0;
@@ -210,8 +233,16 @@ export function createCollectionController(options: CollectionControllerOptions 
       state.scrollAttempts < maxScrollAttempts &&
       stableBottomScans < stableBottomScansToStop
     ) {
+      state.currentStage = "scanning";
+      state.currentItemTitle = undefined;
+      state.currentItemUrl = undefined;
       const newBookmarks = scan();
       queueBookmarkEnhancements(newBookmarks, runId);
+      await waitForPendingEnhancements();
+      if (!isCurrentRun(runId) || !state.isCollecting) {
+        break;
+      }
+      state.currentStage = "scrolling";
       scrollPage();
       state.scrollAttempts += 1;
       await delay();
@@ -231,6 +262,9 @@ export function createCollectionController(options: CollectionControllerOptions 
       await waitForPendingEnhancements();
       applyEnhancedBookmarks();
       state.isCollecting = false;
+      state.currentStage = "idle";
+      state.currentItemTitle = undefined;
+      state.currentItemUrl = undefined;
       activeRunId = undefined;
     }
   }
@@ -243,7 +277,11 @@ export function createCollectionController(options: CollectionControllerOptions 
 
   function stopCollection(): void {
     activeRunId = undefined;
+    enhancementQueue.length = 0;
     state.isCollecting = false;
+    state.currentStage = "stopped";
+    state.currentItemTitle = undefined;
+    state.currentItemUrl = undefined;
   }
 
   function clearCollection(): void {
@@ -254,6 +292,9 @@ export function createCollectionController(options: CollectionControllerOptions 
     state.runAdded = 0;
     state.scrollAttempts = 0;
     state.idleScans = 0;
+    state.currentStage = "idle";
+    state.currentItemTitle = undefined;
+    state.currentItemUrl = undefined;
     enhancedUrls.clear();
     enhancedBookmarks.clear();
     enhancementQueue.length = 0;
@@ -266,6 +307,9 @@ export function createCollectionController(options: CollectionControllerOptions 
     state.runAdded = 0;
     state.scrollAttempts = 0;
     state.idleScans = 0;
+    state.currentStage = "idle";
+    state.currentItemTitle = undefined;
+    state.currentItemUrl = undefined;
     enhancedUrls.clear();
     enhancedBookmarks.clear();
     enhancementQueue.length = 0;
@@ -282,6 +326,11 @@ export function createCollectionController(options: CollectionControllerOptions 
         return { ok: true, bookmarks: state.bookmarks, state };
 
       case "START_COLLECTION":
+        fullArticleImages = typeof message === "object"
+          && message !== null
+          && "fullArticleImages" in message
+          ? message.fullArticleImages !== false
+          : true;
         if (!state.isCollecting) {
           resetForNewCollection();
         }

@@ -9,13 +9,13 @@ function isRenderedDetailTextMessage(message: unknown): message is ContentToBack
     && "bookmark" in message;
 }
 
-chrome.runtime.onMessage.addListener((message: unknown, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((message: unknown, _sender, sendResponse) => {
   if (!isRenderedDetailTextMessage(message)) {
     return false;
   }
 
   void fetchRenderedDetailContent(message.bookmark, {
-    openerTabId: sender.tab?.id
+    fullArticleImages: message.fullArticleImages
   })
     .then((content) => {
       sendResponse({

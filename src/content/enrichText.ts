@@ -4,7 +4,10 @@ import { parseBookmarksFromDocument } from "./parseBookmarks";
 
 type DetailHtmlFetcher = (url: string) => Promise<string>;
 type RenderedDetailContent = string | { text?: string; contentBlocks?: XBookmark["contentBlocks"] };
-type RenderedDetailTextFetcher = (bookmark: XBookmark) => Promise<RenderedDetailContent | undefined>;
+interface TextEnhancementOptions {
+  fullArticleImages?: boolean;
+}
+type RenderedDetailTextFetcher = (bookmark: XBookmark, options?: TextEnhancementOptions) => Promise<RenderedDetailContent | undefined>;
 
 function textFromSource(source: TextSource | undefined): TextSource {
   return source ?? "bookmarks-list";
@@ -133,14 +136,15 @@ function shouldReadRenderedDetail(bookmark: XBookmark): boolean {
     || bookmark.article !== undefined;
 }
 
-async function fetchRenderedDetailText(bookmark: XBookmark): Promise<RenderedDetailContent | undefined> {
+async function fetchRenderedDetailText(bookmark: XBookmark, options: TextEnhancementOptions = {}): Promise<RenderedDetailContent | undefined> {
   if (typeof chrome === "undefined" || !chrome.runtime?.sendMessage) {
     return undefined;
   }
 
   const message: ContentToBackgroundMessage = {
     type: "GET_RENDERED_DETAIL_TEXT",
-    bookmark
+    bookmark,
+    fullArticleImages: options.fullArticleImages
   };
   const response = await chrome.runtime.sendMessage(message) as BackgroundToContentResponse | undefined;
 
@@ -199,11 +203,12 @@ function withTextStatus(
 export async function enhanceBookmarkText(
   bookmark: XBookmark,
   detailHtmlFetcher: DetailHtmlFetcher = fetchDetailHtml,
-  renderedDetailTextFetcher: RenderedDetailTextFetcher = fetchRenderedDetailText
+  renderedDetailTextFetcher: RenderedDetailTextFetcher = fetchRenderedDetailText,
+  options: TextEnhancementOptions = {}
 ): Promise<XBookmark> {
   try {
     const renderedDetailText = shouldReadRenderedDetail(bookmark)
-      ? await renderedDetailTextFetcher(bookmark)
+      ? await renderedDetailTextFetcher(bookmark, options)
       : undefined;
 
     const renderedText = typeof renderedDetailText === "string" ? renderedDetailText : renderedDetailText?.text;

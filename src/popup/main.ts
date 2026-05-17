@@ -11,6 +11,7 @@ let bookmarks: XBookmark[] = [];
 let state: CollectionState | undefined;
 let errorKey: MessageKey | undefined;
 let includeImages = true;
+let fullArticleImages = true;
 let isExporting = false;
 let statusTimer: number | undefined;
 let language: AppLanguage = resolveLanguage(navigator.language);
@@ -156,6 +157,15 @@ function render(): void {
   const statusLabel = errorKey ? t(language, "pageHint") : t(language, "pageReady");
   const errorMessage = errorKey ? t(language, errorKey) : undefined;
   const exportFiles = ["Obsidian", "JSON", "CSV", "TXT", "HTML", "manifest"];
+  const stageKey = state?.currentStage
+    ? ({
+      idle: "collectionStageIdle",
+      scanning: "collectionStageScanning",
+      enhancing: "collectionStageEnhancing",
+      scrolling: "collectionStageScrolling",
+      stopped: "collectionStageStopped"
+    } as const)[state.currentStage]
+    : undefined;
 
   root.innerHTML = `
     <section class="panel">
@@ -193,7 +203,17 @@ function render(): void {
           <input id="includeImages" type="checkbox" ${includeImages ? "checked" : ""} />
           ${t(language, "includeImages")}
         </label>
+        <label class="check">
+          <input id="fullArticleImages" type="checkbox" ${fullArticleImages ? "checked" : ""} ${isCollecting ? "disabled" : ""} />
+          ${t(language, "fullArticleImages")}
+        </label>
       </section>
+      ${isCollecting || state?.currentStage === "stopped" ? `
+        <section class="progress-card">
+          <strong>${stageKey ? t(language, stageKey) : t(language, "collectionStageIdle")}</strong>
+          ${state?.currentItemTitle ? `<p>${t(language, "currentTask")}：${escapeHtml(state.currentItemTitle)}</p>` : ""}
+        </section>
+      ` : ""}
       <div class="actions">
         <button id="start" type="button" ${isCollecting ? "disabled" : ""}>${isCollecting ? t(language, "collecting") : t(language, "startCollection")}</button>
         <button id="stop" type="button" ${isCollecting ? "" : "disabled"}>${t(language, "stopCollection")}</button>
@@ -217,7 +237,13 @@ function render(): void {
   document.querySelector<HTMLInputElement>("#includeImages")?.addEventListener("change", (event) => {
     includeImages = (event.currentTarget as HTMLInputElement).checked;
   });
-  document.querySelector("#start")?.addEventListener("click", () => void runMessage({ type: "START_COLLECTION" }));
+  document.querySelector<HTMLInputElement>("#fullArticleImages")?.addEventListener("change", (event) => {
+    fullArticleImages = (event.currentTarget as HTMLInputElement).checked;
+  });
+  document.querySelector("#start")?.addEventListener("click", () => void runMessage({
+    type: "START_COLLECTION",
+    fullArticleImages
+  }));
   document.querySelector("#stop")?.addEventListener("click", () => void runMessage({ type: "STOP_COLLECTION" }));
   document.querySelector("#clear")?.addEventListener("click", () => void runMessage({ type: "CLEAR_COLLECTION" }));
   document.querySelector("#export")?.addEventListener("click", () => void downloadZip());

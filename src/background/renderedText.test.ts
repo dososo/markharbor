@@ -255,11 +255,20 @@ describe("rendered X detail text", () => {
     expect(chromeApi.tabs.remove).toHaveBeenCalledWith(42);
   });
 
-  it("opens X Article detail tabs active so inline images render and restores the opener tab", async () => {
+  it("opens X Article detail capture in an unfocused window without activating a tab", async () => {
     const chromeApi = {
       tabs: {
         create: vi.fn(async () => ({ id: 42 })),
-        update: vi.fn(async () => ({})),
+        remove: vi.fn(async () => undefined)
+      },
+      windows: {
+        create: vi.fn(async () => ({
+          id: 8,
+          focused: false,
+          alwaysOnTop: false,
+          incognito: false,
+          tabs: [{ id: 42 }]
+        })),
         remove: vi.fn(async () => undefined)
       },
       scripting: {
@@ -277,16 +286,18 @@ describe("rendered X detail text", () => {
       chromeApi,
       delay: async () => undefined,
       maxAttempts: 1,
-      openerTabId: 7
+      fullArticleImages: true
     });
 
     expect(content?.text).toBe("完整长文");
-    expect(chromeApi.tabs.create).toHaveBeenCalledWith({
+    expect(chromeApi.windows.create).toHaveBeenCalledWith(expect.objectContaining({
       url: "https://x.com/jinchenma_ai/status/2054167281241051194",
+      focused: false
+    }));
+    expect(chromeApi.tabs.create).not.toHaveBeenCalledWith(expect.objectContaining({
       active: true
-    });
-    expect(chromeApi.tabs.remove).toHaveBeenCalledWith(42);
-    expect(chromeApi.tabs.update).toHaveBeenCalledWith(7, { active: true });
+    }));
+    expect(chromeApi.windows.remove).toHaveBeenCalledWith(8);
   });
 
   it("waits for rendered X Article rich text content before returning cover-only early content", async () => {

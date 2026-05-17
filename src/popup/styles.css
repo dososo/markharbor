@@ -178,6 +178,23 @@ dd {
   font-size: 13px;
 }
 
+.progress-card {
+  display: grid;
+  gap: 6px;
+  margin-top: 12px;
+  padding: 10px 12px;
+  border: 1px solid #c4d7f5;
+  border-radius: 8px;
+  background: #f7fbff;
+  font-size: 13px;
+}
+
+.progress-card p {
+  margin: 0;
+  color: #5f6368;
+  line-height: 1.4;
+}
+
 .actions {
   display: grid;
   grid-template-columns: 1fr 1fr;
